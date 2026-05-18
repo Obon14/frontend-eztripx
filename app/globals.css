@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --admin-primary-50: #fff7ed;
+  --admin-primary-500: #f97316;
+  --admin-primary-600: #ea580c;
+  --admin-primary-700: #c2410c;
+  --admin-accent-50: #f0fdf4;
+  --admin-accent-500: #22c55e;
+  --admin-accent-600: #16a34a;
+  --admin-accent-700: #15803d;
+  --landing-forest: #1b2e20;
+  --landing-forest-light: #243d2a;
+  --landing-orange: #f28538;
+  --landing-peach: #fde8d8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-admin-primary-50: var(--admin-primary-50);
+  --color-admin-primary: var(--admin-primary-500);
+  --color-admin-primary-600: var(--admin-primary-600);
+  --color-admin-primary-700: var(--admin-primary-700);
+  --color-admin-accent-50: var(--admin-accent-50);
+  --color-admin-accent: var(--admin-accent-500);
+  --color-admin-accent-600: var(--admin-accent-600);
+  --color-admin-accent-700: var(--admin-accent-700);
+  --color-landing-forest: var(--landing-forest);
+  --color-landing-forest-light: var(--landing-forest-light);
+  --color-landing-orange: var(--landing-orange);
+  --color-landing-peach: var(--landing-peach);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #020617;
+    --foreground: #e2e8f0;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }

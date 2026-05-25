@@ -7,6 +7,7 @@ import { LandingFooter } from "@/components/landing/footer";
 import { HeroSection } from "@/components/landing/hero";
 import { LandingHeader } from "@/components/landing/header";
 import { LandingProvider } from "@/components/landing/language-provider";
+import { LandingSearchProvider } from "@/components/landing/landing-search-provider";
 import { MapSection } from "@/components/landing/map-section";
 import { StoriesSection } from "@/components/landing/stories";
 import { TestimonialsSection } from "@/components/landing/testimonials";
@@ -14,6 +15,7 @@ import { TestimonialsSection } from "@/components/landing/testimonials";
 export function LandingPage() {
   return (
     <LandingProvider>
+      <LandingSearchProvider>
       <div className="min-h-screen bg-white">
         <LandingHeader />
         <main>
@@ -27,6 +29,7 @@ export function LandingPage() {
         <LandingFooter />
         <AuthModals />
       </div>
+      </LandingSearchProvider>
     </LandingProvider>
   );
 }

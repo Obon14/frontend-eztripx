@@ -54,15 +54,36 @@ export function AuthModals() {
       return;
     }
     setError("");
+    setSuccess("");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    setSuccess(t.auth.mockSuccess);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password, scope: "user" }),
+      });
+      const data = (await res.json().catch(() => null)) as { message?: string } | null;
+      if (!res.ok) {
+        setError(
+          data?.message && typeof data.message === "string"
+            ? data.message
+            : t.auth.networkError,
+        );
+        return;
+      }
+      setSuccess(t.auth.loginSuccess);
+      resetForm();
+    } catch {
+      setError(t.auth.networkError);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleRegisterSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!name || !email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       setError(t.auth.validationRequired);
       setSuccess("");
       return;
@@ -78,10 +99,31 @@ export function AuthModals() {
       return;
     }
     setError("");
+    setSuccess("");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    setSuccess(t.auth.mockSuccess);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = (await res.json().catch(() => null)) as { message?: string } | null;
+      if (!res.ok) {
+        setError(
+          data?.message && typeof data.message === "string"
+            ? data.message
+            : t.auth.networkError,
+        );
+        return;
+      }
+      setSuccess(t.auth.registerSuccess);
+      resetForm();
+      switchToLogin();
+    } catch {
+      setError(t.auth.networkError);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const isLogin = authModal === "login";

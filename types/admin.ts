@@ -38,9 +38,21 @@ export type DocumentGuideStructuredTag = {
   city: DocumentGuideGeoRef;
 };
 
+export type DocumentGuideCoverImage = {
+  id: string;
+  url: string;
+  sortOrder: number;
+};
+
 export type DocumentGuide = {
   id: string;
+  titleId: string;
+  titleEn: string | null;
+  /** Display title (titleId) for tables */
   title: string;
+  tripDays: number | null;
+  coverImages: DocumentGuideCoverImage[];
+  coverImageUrl: string | null;
   /** Harga dalam Rupiah (IDR) */
   priceIdr: number;
   /** Harga dalam Dolar AS (USD) */

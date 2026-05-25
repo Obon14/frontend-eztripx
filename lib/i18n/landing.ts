@@ -14,16 +14,57 @@ export type LandingCopy = {
     titleHighlight: string;
     subtitle: string;
     location: string;
-    locationValue: string;
-    date: string;
-    dateValue: string;
+    region: string;
+    country: string;
+    city: string;
+    duration: string;
+    durationPlaceholder: string;
     search: string;
+    allRegions: string;
+    allCountries: string;
+    allCities: string;
+    locationPlaceholder: string;
+    clearLocation: string;
+    locationDone: string;
+    pickRegionFirst: string;
+    pickCountryFirst: string;
+    multiSelectHint: string;
+    locationCount: string;
   };
   destinations: {
     title: string;
     titleHighlight: string;
-    perPerson: string;
-    book: string;
+    buy: string;
+    days: string;
+    loading: string;
+    empty: string;
+    emptyFiltered: string;
+    emptyHint: string;
+    loadError: string;
+    processing: string;
+    priceUnavailable: string;
+  };
+  guides: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    loginToBuy: string;
+    buy: string;
+    processing: string;
+    priceIdr: string;
+    priceUsd: string;
+    empty: string;
+    loadError: string;
+  };
+  payment: {
+    title: string;
+    syncing: string;
+    paid: string;
+    pending: string;
+    failed: string;
+    canceled: string;
+    backHome: string;
+    viewGuide: string;
   };
   stories: {
     title: string;
@@ -81,10 +122,12 @@ export type LandingCopy = {
     hasAccount: string;
     switchRegister: string;
     switchLogin: string;
-    mockSuccess: string;
+    loginSuccess: string;
+    registerSuccess: string;
     validationRequired: string;
     validationEmail: string;
     validationPasswordMatch: string;
+    networkError: string;
   };
 };
 
@@ -104,16 +147,57 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       subtitle:
         "Temukan destinasi, panduan dokumen perjalanan, dan pengalaman petualangan terbaik di seluruh dunia bersama EzTripx.",
       location: "Lokasi",
-      locationValue: "Bogor, Indonesia",
-      date: "Tanggal",
-      dateValue: "18 Agustus 2026",
+      region: "Wilayah",
+      country: "Negara",
+      city: "Kota",
+      duration: "Durasi",
+      durationPlaceholder: "Hari liburan",
       search: "Cari",
+      allRegions: "Cari wilayah…",
+      allCountries: "Cari negara…",
+      allCities: "Cari kota…",
+      locationPlaceholder: "Pilih wilayah, negara, atau kota",
+      clearLocation: "Reset lokasi",
+      locationDone: "Selesai",
+      pickRegionFirst: "Pilih wilayah dulu",
+      pickCountryFirst: "Pilih negara dulu",
+      multiSelectHint: "Bisa pilih lebih dari satu",
+      locationCount: "{n} {what}",
     },
     destinations: {
       title: "TEMUKAN DESTINASI",
       titleHighlight: "POPULER",
-      perPerson: "/Orang",
-      book: "Pesan",
+      buy: "Beli",
+      days: "hari",
+      loading: "Memuat panduan…",
+      empty: "Belum ada panduan tersedia.",
+      emptyFiltered: "Tidak ada panduan untuk filter ini. Coba ubah lokasi atau durasi.",
+      emptyHint: "Gunakan pencarian di atas atau jelajahi semua panduan.",
+      loadError: "Gagal memuat panduan.",
+      processing: "Memproses…",
+      priceUnavailable: "Harga belum tersedia untuk mata uang ini.",
+    },
+    guides: {
+      title: "PANDUAN DOKUMEN",
+      titleHighlight: "PERJALANAN",
+      subtitle: "Beli panduan PDF resmi. Setelah pembayaran berhasil, dokumen bisa diakses dari akunmu.",
+      loginToBuy: "Masuk untuk membeli",
+      buy: "Beli panduan",
+      processing: "Memproses…",
+      priceIdr: "IDR",
+      priceUsd: "USD",
+      empty: "Belum ada panduan tersedia.",
+      loadError: "Gagal memuat panduan. Pastikan sudah login.",
+    },
+    payment: {
+      title: "Status pembayaran",
+      syncing: "Memverifikasi pembayaran…",
+      paid: "Pembayaran berhasil. Panduan dikirim ke email Anda dan bisa diakses dari akun.",
+      pending: "Pembayaran masih diproses. Coba refresh halaman ini sebentar lagi.",
+      failed: "Pembayaran gagal. Silakan buat pesanan baru.",
+      canceled: "Pembayaran dibatalkan atau kedaluwarsa.",
+      backHome: "Kembali ke beranda",
+      viewGuide: "Lihat panduan (perlu login)",
     },
     stories: {
       title: "CERITA KAMI BERSAMA",
@@ -175,7 +259,9 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       hasAccount: "Sudah punya akun?",
       switchRegister: "Daftar sekarang",
       switchLogin: "Masuk di sini",
-      mockSuccess: "Berhasil! Integrasi akun pengguna akan segera tersedia.",
+      loginSuccess: "Berhasil masuk. Sesi kamu sudah aktif.",
+      registerSuccess: "Akun berhasil dibuat. Silakan masuk dengan email dan password kamu.",
+      networkError: "Tidak bisa menghubungi server. Coba lagi.",
       validationRequired: "Semua field wajib diisi.",
       validationEmail: "Format email belum valid.",
       validationPasswordMatch: "Konfirmasi kata sandi tidak cocok.",
@@ -196,16 +282,57 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       subtitle:
         "Discover destinations, travel document guides, and the best adventure experiences worldwide with EzTripx.",
       location: "Location",
-      locationValue: "Bogor, Indonesia",
-      date: "Date",
-      dateValue: "18 August 2026",
+      region: "Region",
+      country: "Country",
+      city: "City",
+      duration: "Duration",
+      durationPlaceholder: "Trip days",
       search: "Search",
+      allRegions: "Search region…",
+      allCountries: "Search country…",
+      allCities: "Search city…",
+      locationPlaceholder: "Choose region, country, or city",
+      clearLocation: "Clear location",
+      locationDone: "Done",
+      pickRegionFirst: "Select a region first",
+      pickCountryFirst: "Select a country first",
+      multiSelectHint: "Multiple selection allowed",
+      locationCount: "{n} {what}",
     },
     destinations: {
       title: "FIND POPULAR",
       titleHighlight: "DESTINATIONS",
-      perPerson: "/Person",
-      book: "Book",
+      buy: "Buy",
+      days: "days",
+      loading: "Loading guides…",
+      empty: "No guides available yet.",
+      emptyFiltered: "No guides match these filters. Try a different location or duration.",
+      emptyHint: "Use the search bar above or browse all available guides.",
+      loadError: "Failed to load guides.",
+      processing: "Processing…",
+      priceUnavailable: "Price is not available for this currency.",
+    },
+    guides: {
+      title: "TRAVEL DOCUMENT",
+      titleHighlight: "GUIDES",
+      subtitle: "Purchase official PDF guides. After successful payment, access them from your account.",
+      loginToBuy: "Sign in to purchase",
+      buy: "Buy guide",
+      processing: "Processing…",
+      priceIdr: "IDR",
+      priceUsd: "USD",
+      empty: "No guides available yet.",
+      loadError: "Failed to load guides. Please sign in first.",
+    },
+    payment: {
+      title: "Payment status",
+      syncing: "Verifying payment…",
+      paid: "Payment successful. Your guide was sent to your email and is available in your account.",
+      pending: "Payment is still processing. Try refreshing this page shortly.",
+      failed: "Payment failed. Please create a new order.",
+      canceled: "Payment was canceled or expired.",
+      backHome: "Back to home",
+      viewGuide: "View guides (sign in required)",
     },
     stories: {
       title: "OUR STORIES WITH",
@@ -267,7 +394,9 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       hasAccount: "Already have an account?",
       switchRegister: "Register now",
       switchLogin: "Login here",
-      mockSuccess: "Success! User account integration coming soon.",
+      loginSuccess: "Signed in successfully. Your session is active.",
+      registerSuccess: "Account created. Please sign in with your email and password.",
+      networkError: "Could not reach the server. Please try again.",
       validationRequired: "All fields are required.",
       validationEmail: "Please enter a valid email.",
       validationPasswordMatch: "Passwords do not match.",

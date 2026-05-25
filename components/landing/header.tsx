@@ -22,8 +22,8 @@ export function LandingHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-landing-forest/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-landing-forest/90 shadow-sm shadow-black/10 backdrop-blur-lg">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
         <a href="#" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
           <span className="text-landing-orange">Ez</span>Tripx
         </a>

@@ -38,7 +38,12 @@ export const adminUsers: AdminUser[] = [
 export const documentGuides: DocumentGuide[] = [
   {
     id: "d1",
+    titleId: "Tokyo Smart Travel Guide",
+    titleEn: "Tokyo Smart Travel Guide",
     title: "Tokyo Smart Travel Guide",
+    tripDays: 5,
+    coverImages: [],
+    coverImageUrl: null,
     priceIdr: 149000,
     priceUsd: 9.49,
     regionIds: ["r1"],
@@ -50,7 +55,12 @@ export const documentGuides: DocumentGuide[] = [
   },
   {
     id: "d2",
+    titleId: "Paris Family Trip Guide",
+    titleEn: "Paris Family Trip Guide",
     title: "Paris Family Trip Guide",
+    tripDays: 3,
+    coverImages: [],
+    coverImageUrl: null,
     priceIdr: 199000,
     priceUsd: 12.49,
     regionIds: ["r2"],

@@ -51,12 +51,35 @@ function parseMeta(v: unknown): ListMeta | null {
   return { page, limit, total, totalPages };
 }
 
+function parseCoverImages(raw: unknown, guideId: string): DocumentGuide["coverImages"] {
+  if (!Array.isArray(raw)) return [];
+  const out: DocumentGuide["coverImages"] = [];
+  for (const item of raw) {
+    if (!isRecord(item)) continue;
+    const id = typeof item.id === "string" ? item.id : null;
+    const url = typeof item.url === "string" ? item.url : null;
+    if (!id || !url) continue;
+    const sortOrder =
+      typeof item.sortOrder === "number" ? item.sortOrder : Number(item.sortOrder) || 0;
+    out.push({ id, url, sortOrder });
+  }
+  return out.sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
 export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
   if (!isRecord(raw)) return null;
   const id = typeof raw.id === "string" ? raw.id : typeof raw.id === "number" ? String(raw.id) : null;
   if (!id) return null;
 
-  const title = typeof raw.title === "string" ? raw.title : "";
+  const titleId =
+    typeof raw.titleId === "string"
+      ? raw.titleId
+      : typeof raw.title === "string"
+        ? raw.title
+        : "";
+  const titleEn =
+    typeof raw.titleEn === "string" ? raw.titleEn : raw.titleEn === null ? null : null;
+
   const nameDocument =
     typeof raw.nameDocument === "string"
       ? raw.nameDocument
@@ -94,7 +117,7 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
     ),
   ];
 
-  const tags: string[] = [title, nameDocument];
+  const tags: string[] = [titleId, titleEn ?? "", nameDocument];
   for (const t of structuredTags) {
     if (t.region?.name) tags.push(t.region.name);
     if (t.country?.name) tags.push(t.country.name);
@@ -105,9 +128,26 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
   const status =
     statusRaw === "published" || statusRaw === "draft" ? statusRaw : ("draft" as const);
 
+  const tripDays =
+    typeof raw.tripDays === "number" && Number.isFinite(raw.tripDays)
+      ? raw.tripDays
+      : raw.tripDays === null
+        ? null
+        : null;
+
+  const coverImages = parseCoverImages(raw.coverImages, id);
+  const coverImageUrl =
+    coverImages[0]?.url ??
+    (typeof raw.coverImageUrl === "string" ? raw.coverImageUrl : null);
+
   return {
     id,
-    title,
+    titleId,
+    titleEn,
+    title: titleId,
+    tripDays,
+    coverImages,
+    coverImageUrl,
     priceIdr: parsePrice(raw.priceIdr),
     priceUsd: parsePrice(raw.priceUsd),
     regionIds,

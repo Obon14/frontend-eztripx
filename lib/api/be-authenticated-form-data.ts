@@ -12,7 +12,12 @@ async function cloneFormData(source: FormData): Promise<FormData> {
   for (const [key, value] of source.entries()) {
     if (value instanceof File) {
       const buf = await value.arrayBuffer();
-      out.append(key, new File([buf], value.name || "document.pdf", { type: value.type || "application/pdf" }));
+      out.append(
+        key,
+        new File([buf], value.name || "file", {
+          type: value.type || "application/octet-stream",
+        }),
+      );
     } else {
       out.append(key, String(value));
     }

@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, scope: "admin" }),
       });
       const data = (await res.json().catch(() => null)) as LoginJson | null;
       const msg =

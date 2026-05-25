@@ -18,6 +18,7 @@ import {
   loadRegionOptionsPage,
 } from "@/lib/geo/select-options";
 import { parseDocumentGuideListResponse } from "@/lib/document-guide/parse-list-response";
+import { publicGuideCoverSrc } from "@/lib/document-guide/parse-public-list";
 import { cities, countries, regions } from "@/lib/mock/admin-data";
 import { cn } from "@/lib/utils";
 import type { DocumentGuide } from "@/types/admin";
@@ -94,7 +95,9 @@ function buildGeoLabelsFromRow(row: DocumentGuide): Record<string, string> {
 }
 
 type GuideFormState = {
-  title: string;
+  titleId: string;
+  titleEn: string;
+  tripDays: string;
   priceIdr: string;
   priceUsd: string;
   fileName: string;
@@ -110,6 +113,14 @@ function isPdfFile(file: File): boolean {
   return nameOk || typeOk;
 }
 
+function isCoverImageFile(file: File): boolean {
+  const nameOk = /\.(jpe?g|png|webp)$/i.test(file.name);
+  const typeOk = /^image\/(jpeg|png|webp)$/i.test(file.type);
+  return nameOk || typeOk;
+}
+
+const DEFAULT_COVER = "/images/default-guide-cover.svg";
+
 export function DocumentGuideTablePage() {
   const router = useRouter();
   const [rows, setRows] = useState<DocumentGuide[]>([]);
@@ -122,7 +133,9 @@ export function DocumentGuideTablePage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<GuideFormState>({
-    title: "",
+    titleId: "",
+    titleEn: "",
+    tripDays: "",
     priceIdr: "0",
     priceUsd: "0",
     fileName: "",
@@ -140,6 +153,11 @@ export function DocumentGuideTablePage() {
   const createCityIdsRef = useRef(createCityIds);
   createCityIdsRef.current = createCityIds;
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [coverFiles, setCoverFiles] = useState<File[]>([]);
+  const [removeCoverIds, setRemoveCoverIds] = useState<string[]>([]);
+  const [existingCovers, setExistingCovers] = useState<
+    { id: string; url: string }[]
+  >([]);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createSubmitting, setCreateSubmitting] = useState(false);
 
@@ -333,7 +351,41 @@ export function DocumentGuideTablePage() {
 
   const columns = useMemo(
     () => [
-      { key: "title", header: "Title", render: (row: DocumentGuide) => row.title },
+      {
+        key: "title",
+        header: "Title",
+        render: (row: DocumentGuide) => (
+          <div>
+            <div className="font-medium">{row.titleId}</div>
+            {row.titleEn ? (
+              <div className="text-xs text-slate-500">{row.titleEn}</div>
+            ) : null}
+          </div>
+        ),
+      },
+      {
+        key: "cover",
+        header: "Cover",
+        render: (row: DocumentGuide) => (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={publicGuideCoverSrc(
+              row.id,
+              row.coverImages[0]?.id ?? "legacy",
+            )}
+            alt=""
+            className="h-10 w-14 rounded object-cover"
+            onError={(e) => {
+              e.currentTarget.src = DEFAULT_COVER;
+            }}
+          />
+        ),
+      },
+      {
+        key: "tripDays",
+        header: "Hari",
+        render: (row: DocumentGuide) => (row.tripDays ? `${row.tripDays} hari` : "—"),
+      },
       {
         key: "region",
         header: "Region",
@@ -401,7 +453,9 @@ export function DocumentGuideTablePage() {
               onClick={() => {
                 setEditingId(row.id);
                 setForm({
-                  title: row.title,
+                  titleId: row.titleId,
+                  titleEn: row.titleEn ?? "",
+                  tripDays: row.tripDays ? String(row.tripDays) : "",
                   priceIdr: String(row.priceIdr),
                   priceUsd: String(row.priceUsd),
                   fileName: row.fileName,
@@ -415,6 +469,11 @@ export function DocumentGuideTablePage() {
                 setCreateCityIds([...row.cityIds]);
                 setCreateGeoLabels(buildGeoLabelsFromRow(row));
                 setPdfFile(null);
+                setCoverFiles([]);
+                setRemoveCoverIds([]);
+                setExistingCovers(
+                  row.coverImages.map((c) => ({ id: c.id, url: c.url })),
+                );
                 setCreateError(null);
                 setOpen(true);
               }}
@@ -441,7 +500,9 @@ export function DocumentGuideTablePage() {
   function openCreate() {
     setEditingId(null);
     setForm({
-      title: "",
+      titleId: "",
+      titleEn: "",
+      tripDays: "",
       priceIdr: "",
       priceUsd: "",
       fileName: "",
@@ -455,6 +516,9 @@ export function DocumentGuideTablePage() {
     setCreateCityIds([]);
     setCreateGeoLabels({});
     setPdfFile(null);
+    setCoverFiles([]);
+    setRemoveCoverIds([]);
+    setExistingCovers([]);
     setCreateError(null);
     setOpen(true);
   }
@@ -465,6 +529,9 @@ export function DocumentGuideTablePage() {
     setCreateError(null);
     setCreateSubmitting(false);
     setPdfFile(null);
+    setCoverFiles([]);
+    setRemoveCoverIds([]);
+    setExistingCovers([]);
     setCreateRegionIds([]);
     setCreateCountryIds([]);
     setCreateCityIds([]);
@@ -542,12 +609,13 @@ export function DocumentGuideTablePage() {
 
   const submitSave = useCallback(async () => {
     setCreateError(null);
-    const title = form.title.trim();
+    const titleId = form.titleId.trim();
+    const titleEn = form.titleEn.trim();
     const priceIdrStr = form.priceIdr.trim();
     const priceUsdStr = form.priceUsd.trim();
 
-    if (!title) {
-      setCreateError("Title is required.");
+    if (!titleId) {
+      setCreateError("Title (Indonesian) is required.");
       return;
     }
     if (!priceIdrStr || !priceUsdStr) {
@@ -580,16 +648,49 @@ export function DocumentGuideTablePage() {
       setCreateError("Only PDF files are allowed.");
       return;
     }
+    for (const f of coverFiles) {
+      if (!isCoverImageFile(f)) {
+        setCreateError("Cover must be JPEG, PNG, or WebP.");
+        return;
+      }
+    }
+    const remainingCovers =
+      existingCovers.length - removeCoverIds.length + coverFiles.length;
+    if (remainingCovers > 8) {
+      setCreateError("Maximum 8 cover images allowed.");
+      return;
+    }
+
+    const tripDaysStr = form.tripDays.trim();
+    if (tripDaysStr) {
+      const td = Number(tripDaysStr);
+      if (!Number.isInteger(td) || td < 1 || td > 365) {
+        setCreateError("Trip days must be an integer between 1 and 365.");
+        return;
+      }
+    }
 
     setCreateSubmitting(true);
     try {
       const fd = new FormData();
-      fd.append("title", title);
+      fd.append("titleId", titleId);
+      if (titleEn) {
+        fd.append("titleEn", titleEn);
+      }
+      if (tripDaysStr) {
+        fd.append("tripDays", tripDaysStr);
+      }
       fd.append("priceIdr", String(Math.round(priceIdrNum)));
       fd.append("priceUsd", String(priceUsdNum));
       fd.append("tags", JSON.stringify(tagsPayload));
       if (pdfFile) {
         fd.append("document", pdfFile, pdfFile.name);
+      }
+      for (const f of coverFiles) {
+        fd.append("coverImages", f, f.name);
+      }
+      if (removeCoverIds.length > 0) {
+        fd.append("removeCoverIds", JSON.stringify(removeCoverIds));
       }
 
       const url = isEdit ? `/api/document-guide/${encodeURIComponent(editingId!)}` : "/api/document-guide";
@@ -630,13 +731,18 @@ export function DocumentGuideTablePage() {
     }
   }, [
     editingId,
-    form.title,
+    form.titleId,
+    form.titleEn,
+    form.tripDays,
     form.priceIdr,
     form.priceUsd,
     createRegionIds,
     createCountryIds,
     createCityIds,
     pdfFile,
+    coverFiles,
+    removeCoverIds,
+    existingCovers,
     router,
     search,
     loadRows,
@@ -720,12 +826,97 @@ export function DocumentGuideTablePage() {
           ) : null}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Title (Indonesian)
+            </label>
             <Input
-              value={form.title}
-              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              value={form.titleId}
+              onChange={(e) => setForm((f) => ({ ...f, titleId: e.target.value }))}
               disabled={createSubmitting}
             />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Title (English)
+            </label>
+            <Input
+              value={form.titleEn}
+              onChange={(e) => setForm((f) => ({ ...f, titleEn: e.target.value }))}
+              placeholder="Optional"
+              disabled={createSubmitting}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Lama liburan (hari)
+            </label>
+            <Input
+              type="number"
+              min={1}
+              max={365}
+              step={1}
+              value={form.tripDays}
+              onChange={(e) => setForm((f) => ({ ...f, tripDays: e.target.value }))}
+              placeholder="Contoh: 3"
+              disabled={createSubmitting}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Cover images (max 8)
+            </label>
+            {existingCovers.length > 0 ? (
+              <ul className="mb-2 space-y-1">
+                {existingCovers.map((c) => (
+                  <li
+                    key={c.id}
+                    className="flex items-center justify-between gap-2 rounded border border-slate-100 px-2 py-1 text-xs"
+                  >
+                    <span className="truncate">{c.id.slice(0, 8)}…</span>
+                    {removeCoverIds.includes(c.id) ? (
+                      <button
+                        type="button"
+                        className="text-admin-primary-600"
+                        onClick={() =>
+                          setRemoveCoverIds((ids) => ids.filter((x) => x !== c.id))
+                        }
+                      >
+                        Undo
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-red-600"
+                        onClick={() =>
+                          setRemoveCoverIds((ids) => [...ids, c.id])
+                        }
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <input
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+              className="block w-full cursor-pointer text-sm text-slate-600 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-admin-primary-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-admin-primary-700 hover:file:bg-admin-primary-100"
+              disabled={createSubmitting}
+              onChange={(e) =>
+                setCoverFiles(Array.from(e.target.files ?? []))
+              }
+            />
+            {coverFiles.length > 0 ? (
+              <p className="mt-1 text-xs text-slate-500">
+                {coverFiles.length} file baru dipilih
+              </p>
+            ) : (
+              <p className="mt-1 text-xs text-slate-500">
+                Opsional. JPEG, PNG, atau WebP. Bisa lebih dari satu.
+              </p>
+            )}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>

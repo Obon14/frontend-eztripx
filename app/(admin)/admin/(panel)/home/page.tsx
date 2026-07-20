@@ -76,7 +76,7 @@ export default function AdminDashboardPage() {
         };
 
         setStats({
-          totalDocuments: docsMeta.total,
+          totalDocuments: docsMeta?.total ?? 0,
           totalRegions: regionsRes.ok ? countFromBody(regionsBody) : 0,
           totalCountries: countriesRes.ok ? countFromBody(countriesBody) : 0,
           totalCities: citiesRes.ok ? countFromBody(citiesBody) : 0,

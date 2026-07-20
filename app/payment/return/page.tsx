@@ -9,6 +9,9 @@ import { Alert } from "@/components/ui/alert";
 import { parseOrderResponse } from "@/lib/order/parse-order";
 import type { OrderItem, OrderStatusPayment } from "@/types/order";
 
+const MAX_SYNC_ATTEMPTS = 6;
+const SYNC_RETRY_DELAY_MS = 2000;
+
 function PaymentReturnContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId")?.trim() ?? "";
@@ -27,16 +30,39 @@ function PaymentReturnContent() {
     async function sync() {
       setLoading(true);
       try {
-        await fetch(`/api/order/${encodeURIComponent(orderId)}/sync-status`, {
-          method: "POST",
-          credentials: "include",
-        });
-        const res = await fetch(`/api/order/${encodeURIComponent(orderId)}`, {
-          credentials: "include",
-        });
-        const body = await res.json().catch(() => null);
-        if (!cancelled && res.ok) {
-          setOrder(parseOrderResponse(body));
+        const encodedOrderId = encodeURIComponent(orderId);
+
+        for (let attempt = 0; attempt < MAX_SYNC_ATTEMPTS && !cancelled; attempt += 1) {
+          await fetch(`/api/order/${encodedOrderId}/sync-status`, {
+            method: "POST",
+            credentials: "include",
+          });
+
+          const res = await fetch(`/api/order/${encodedOrderId}`, {
+            credentials: "include",
+          });
+          const body = await res.json().catch(() => null);
+
+          if (!res.ok) {
+            break;
+          }
+
+          const nextOrder = parseOrderResponse(body);
+          if (!cancelled) {
+            setOrder(nextOrder);
+          }
+
+          if (
+            nextOrder.statusPayment === "PAID" ||
+            nextOrder.statusPayment === "FAILED" ||
+            nextOrder.statusPayment === "CANCELED"
+          ) {
+            break;
+          }
+
+          if (attempt < MAX_SYNC_ATTEMPTS - 1) {
+            await new Promise((resolve) => setTimeout(resolve, SYNC_RETRY_DELAY_MS));
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);

@@ -8,6 +8,7 @@ export type LandingCopy = {
     about: string;
     login: string;
     register: string;
+    logout: string;
   };
   hero: {
     titleLine1: string;
@@ -34,6 +35,8 @@ export type LandingCopy = {
   destinations: {
     title: string;
     titleHighlight: string;
+    titleFiltered: string;
+    titleFilteredHighlight: string;
     buy: string;
     days: string;
     loading: string;
@@ -140,6 +143,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       about: "Tentang Kami",
       login: "Masuk",
       register: "Daftar",
+      logout: "Keluar",
     },
     hero: {
       titleLine1: "JALANI",
@@ -167,6 +171,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
     destinations: {
       title: "TEMUKAN DESTINASI",
       titleHighlight: "POPULER",
+      titleFiltered: "HASIL",
+      titleFilteredHighlight: "PENCARIAN",
       buy: "Beli",
       days: "hari",
       loading: "Memuat panduan…",
@@ -275,6 +281,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       about: "About Us",
       login: "Login",
       register: "Register",
+      logout: "Logout",
     },
     hero: {
       titleLine1: "LIVE YOUR",
@@ -302,6 +309,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
     destinations: {
       title: "FIND POPULAR",
       titleHighlight: "DESTINATIONS",
+      titleFiltered: "SEARCH",
+      titleFilteredHighlight: "RESULTS",
       buy: "Buy",
       days: "days",
       loading: "Loading guides…",

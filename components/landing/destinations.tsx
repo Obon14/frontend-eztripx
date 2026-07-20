@@ -35,6 +35,12 @@ export function DestinationsSection() {
   const [error, setError] = useState("");
   const [buyingId, setBuyingId] = useState<string | null>(null);
 
+  const hasFilters =
+    filters.regionIds.length > 0 ||
+    filters.countryIds.length > 0 ||
+    filters.cityIds.length > 0 ||
+    filters.tripDays != null;
+
   const loadGuides = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -45,17 +51,23 @@ export function DestinationsSection() {
         search: "",
         locale,
       });
-      for (const id of filters.regionIds) {
-        params.append("regionIds", String(id));
-      }
-      for (const id of filters.countryIds) {
-        params.append("countryIds", String(id));
-      }
-      for (const id of filters.cityIds) {
-        params.append("cityIds", String(id));
-      }
-      if (filters.tripDays != null) {
-        params.set("tripDays", String(filters.tripDays));
+
+      // Empty search → popular (PAID count); with filters → match filter (newest).
+      if (!hasFilters) {
+        params.set("sort", "popular");
+      } else {
+        for (const id of filters.regionIds) {
+          params.append("regionIds", String(id));
+        }
+        for (const id of filters.countryIds) {
+          params.append("countryIds", String(id));
+        }
+        for (const id of filters.cityIds) {
+          params.append("cityIds", String(id));
+        }
+        if (filters.tripDays != null) {
+          params.set("tripDays", String(filters.tripDays));
+        }
       }
 
       const res = await fetch(`/api/document-guide/public?${params}`);
@@ -77,6 +89,7 @@ export function DestinationsSection() {
   }, [
     t.destinations.loadError,
     locale,
+    hasFilters,
     filters.regionIds,
     filters.countryIds,
     filters.cityIds,
@@ -155,12 +168,6 @@ export function DestinationsSection() {
     return `${days} ${t.destinations.days}`;
   }
 
-  const hasFilters =
-    filters.regionIds.length > 0 ||
-    filters.countryIds.length > 0 ||
-    filters.cityIds.length > 0 ||
-    filters.tripDays != null;
-
   return (
     <section id="services" className="bg-gradient-to-b from-slate-50/80 to-white py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -170,8 +177,17 @@ export function DestinationsSection() {
               {locale === "id" ? "Panduan perjalanan" : "Travel guides"}
             </p>
             <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-              {t.destinations.title}{" "}
-              <span className="text-landing-orange">{t.destinations.titleHighlight}</span>
+              {hasFilters ? (
+                <>
+                  {t.destinations.titleFiltered}{" "}
+                  <span className="text-landing-orange">{t.destinations.titleFilteredHighlight}</span>
+                </>
+              ) : (
+                <>
+                  {t.destinations.title}{" "}
+                  <span className="text-landing-orange">{t.destinations.titleHighlight}</span>
+                </>
+              )}
             </h2>
           </div>
           {guides.length > 3 ? (

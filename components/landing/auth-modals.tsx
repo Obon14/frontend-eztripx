@@ -15,6 +15,7 @@ export function AuthModals() {
     closeAuth,
     switchToLogin,
     switchToRegister,
+    refreshCurrentUser,
     t,
   } = useLanding();
 
@@ -74,6 +75,8 @@ export function AuthModals() {
       }
       setSuccess(t.auth.loginSuccess);
       resetForm();
+      await refreshCurrentUser();
+      closeAuth();
     } catch {
       setError(t.auth.networkError);
     } finally {

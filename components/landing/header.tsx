@@ -12,7 +12,16 @@ const navIds = [
 ] as const;
 
 export function LandingHeader() {
-  const { t, locale, setLocale, openLogin, openRegister } = useLanding();
+  const {
+    t,
+    locale,
+    setLocale,
+    openLogin,
+    openRegister,
+    currentUser,
+    isCheckingAuth,
+    logout,
+  } = useLanding();
 
   const navLabels = {
     discover: t.nav.discover,
@@ -42,20 +51,42 @@ export function LandingHeader() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <LanguageToggle locale={locale} onChange={setLocale} />
-          <button
-            type="button"
-            onClick={openLogin}
-            className="text-sm font-medium text-white/90 transition hover:text-landing-orange"
-          >
-            {t.nav.login}
-          </button>
-          <button
-            type="button"
-            onClick={openRegister}
-            className="rounded-lg bg-landing-orange px-4 py-2 text-sm font-semibold text-white transition hover:bg-admin-primary-600"
-          >
-            {t.nav.register}
-          </button>
+          {!isCheckingAuth && currentUser ? (
+            <>
+              <span
+                className="max-w-[170px] truncate text-sm font-medium text-white/90"
+                title={currentUser.email}
+              >
+                {currentUser.email}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  void logout();
+                }}
+                className="rounded-lg border border-white/25 px-3 py-1.5 text-sm font-medium text-white/90 transition hover:border-landing-orange hover:text-landing-orange"
+              >
+                {t.nav.logout}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={openLogin}
+                className="text-sm font-medium text-white/90 transition hover:text-landing-orange"
+              >
+                {t.nav.login}
+              </button>
+              <button
+                type="button"
+                onClick={openRegister}
+                className="rounded-lg bg-landing-orange px-4 py-2 text-sm font-semibold text-white transition hover:bg-admin-primary-600"
+              >
+                {t.nav.register}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

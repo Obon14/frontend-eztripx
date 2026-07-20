@@ -22,6 +22,9 @@ export async function GET(request: Request) {
   const locale = searchParams.get("locale");
   if (locale) qs.set("locale", locale);
 
+  const sort = searchParams.get("sort");
+  if (sort === "popular" || sort === "newest") qs.set("sort", sort);
+
   const tripDays = searchParams.get("tripDays");
   if (tripDays) qs.set("tripDays", tripDays);
 

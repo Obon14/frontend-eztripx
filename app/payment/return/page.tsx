@@ -48,6 +48,10 @@ function PaymentReturnContent() {
           }
 
           const nextOrder = parseOrderResponse(body);
+          if (!nextOrder) {
+            break;
+          }
+
           if (!cancelled) {
             setOrder(nextOrder);
           }

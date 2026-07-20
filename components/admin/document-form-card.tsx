@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { cities, countries, regions } from "@/lib/mock/admin-data";
 
 export function DocumentFormCard() {
   const [title, setTitle] = useState("");
@@ -20,7 +19,7 @@ export function DocumentFormCard() {
     <Card>
       <h2 className="text-lg font-semibold text-slate-900">Upload Document Guide (Frontend Only)</h2>
       <p className="mt-1 text-sm text-slate-600">
-        Form ini simulasi untuk alur input dokumen, tag lokasi, dan harga.
+        Form ini placeholder frontend. Data lokasi diambil dari halaman admin utama yang terhubung API.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
@@ -33,13 +32,8 @@ export function DocumentFormCard() {
           <label className="mb-1 block text-sm font-medium text-slate-700">Region</label>
           <Select defaultValue="">
             <option value="" disabled>
-              Select region
+              Belum ada data region
             </option>
-            {regions.map((region) => (
-              <option key={region.id} value={region.id}>
-                {region.name}
-              </option>
-            ))}
           </Select>
         </div>
 
@@ -47,13 +41,8 @@ export function DocumentFormCard() {
           <label className="mb-1 block text-sm font-medium text-slate-700">Country</label>
           <Select defaultValue="">
             <option value="" disabled>
-              Select country
+              Belum ada data country
             </option>
-            {countries.map((country) => (
-              <option key={country.id} value={country.id}>
-                {country.name}
-              </option>
-            ))}
           </Select>
         </div>
 
@@ -61,13 +50,8 @@ export function DocumentFormCard() {
           <label className="mb-1 block text-sm font-medium text-slate-700">City</label>
           <Select defaultValue="">
             <option value="" disabled>
-              Select city
+              Belum ada data city
             </option>
-            {cities.map((city) => (
-              <option key={city.id} value={city.id}>
-                {city.name}
-              </option>
-            ))}
           </Select>
         </div>
 

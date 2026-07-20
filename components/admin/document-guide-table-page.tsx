@@ -19,7 +19,6 @@ import {
 } from "@/lib/geo/select-options";
 import { parseDocumentGuideListResponse } from "@/lib/document-guide/parse-list-response";
 import { publicGuideCoverSrc } from "@/lib/document-guide/parse-public-list";
-import { cities, countries, regions } from "@/lib/mock/admin-data";
 import { cn } from "@/lib/utils";
 import type { DocumentGuide } from "@/types/admin";
 import { PdfJsPreview } from "@/components/admin/pdf-js-preview";
@@ -43,11 +42,9 @@ function pdfDownloadName(fileName: string): string {
   return /\.pdf$/i.test(t) ? t : `${t}.pdf`;
 }
 
-function namesFromIds(ids: string[], list: { id: string; name: string }[]) {
+function namesFromIds(ids: string[]) {
   if (ids.length === 0) return "—";
-  return ids
-    .map((id) => list.find((item) => item.id === id)?.name ?? id)
-    .join(", ");
+  return ids.join(", ");
 }
 
 function getTagDisplayLines(row: DocumentGuide): { region: string; country: string; city: string }[] {
@@ -60,9 +57,9 @@ function getTagDisplayLines(row: DocumentGuide): { region: string; country: stri
   }
   return [
     {
-      region: namesFromIds(row.regionIds, regions),
-      country: namesFromIds(row.countryIds, countries),
-      city: namesFromIds(row.cityIds, cities),
+      region: namesFromIds(row.regionIds),
+      country: namesFromIds(row.countryIds),
+      city: namesFromIds(row.cityIds),
     },
   ];
 }

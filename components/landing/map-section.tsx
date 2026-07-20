@@ -1,7 +1,6 @@
 "use client";
 
 import { useLanding } from "@/components/landing/language-provider";
-import { mapPins } from "@/lib/mock/landing-data";
 
 export function MapSection() {
   const { t } = useLanding();
@@ -27,16 +26,6 @@ export function MapSection() {
               return <circle key={i} cx={x} cy={y} r="2" fill="currentColor" opacity={0.5} />;
             })}
           </svg>
-
-          {mapPins.map((pin) => (
-            <span
-              key={pin.id}
-              title={pin.label}
-              className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-landing-orange ring-4 ring-landing-orange/25"
-              style={{ top: pin.top, left: pin.left }}
-            />
-          ))}
-
           <div
             className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lg"
           >

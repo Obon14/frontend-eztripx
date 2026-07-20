@@ -12,7 +12,7 @@ export function StoriesSection() {
   ];
 
   return (
-    <section id="about" className="bg-white py-16 sm:py-24">
+    <section id="about" className="bg-white py-16 sm:py-24 dark:bg-slate-950">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
         <div
           className="relative min-h-[300px] overflow-hidden rounded-3xl bg-gradient-to-br from-landing-forest via-landing-forest-light to-[#2d4a34] shadow-xl shadow-landing-forest/20 lg:min-h-[360px]"
@@ -41,23 +41,23 @@ export function StoriesSection() {
           <p className="text-xs font-bold uppercase tracking-widest text-landing-orange">
             EzTripx
           </p>
-          <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
             {t.stories.title}{" "}
             <span className="text-landing-orange">{t.stories.titleHighlight}</span>
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-slate-600">{t.stories.p1}</p>
-          <p className="mt-4 text-base leading-relaxed text-slate-600">{t.stories.p2}</p>
+          <p className="mt-5 text-base leading-relaxed text-slate-600 dark:text-slate-300">{t.stories.p1}</p>
+          <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-300">{t.stories.p2}</p>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-2xl border border-slate-100 bg-slate-50/80 p-5 text-center transition hover:border-landing-orange/30 hover:bg-white hover:shadow-md"
+                className="rounded-2xl border border-slate-100 bg-slate-50/80 p-5 text-center transition hover:border-landing-orange/30 hover:bg-white hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
               >
                 <p className="text-2xl font-extrabold text-landing-orange sm:text-3xl">
                   {stat.value}
                 </p>
-                <p className="mt-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="mt-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   {stat.label}
                 </p>
               </div>

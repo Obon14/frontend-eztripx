@@ -108,10 +108,10 @@ export function EntityTablePage({ title, description, entities }: EntityTablePag
   return (
     <section>
       <Card className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5 dark:border-slate-800">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-            <p className="mt-1 text-sm text-slate-600">{description}</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{title}</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{description}</p>
           </div>
           <Button onClick={openCreate}>Add {title}</Button>
         </div>
@@ -156,7 +156,7 @@ export function EntityTablePage({ title, description, entities }: EntityTablePag
         }
       >
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Name</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Name</label>
           <Input value={name} onChange={(event) => setName(event.target.value)} autoFocus />
         </div>
       </Modal>

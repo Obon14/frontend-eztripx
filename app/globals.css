@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 (defaults to prefers-color-scheme otherwise). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -18,20 +21,20 @@
 }
 
 html.dark {
-  --background: #020617;
+  --background: #0b1120;
   --foreground: #e2e8f0;
-  --admin-primary-50: #2a1306;
+  --admin-primary-50: #2a1408;
   --admin-primary-500: #fb923c;
   --admin-primary-600: #f97316;
-  --admin-primary-700: #ea580c;
-  --admin-accent-50: #052e16;
+  --admin-primary-700: #fdba74;
+  --admin-accent-50: #082b16;
   --admin-accent-500: #4ade80;
   --admin-accent-600: #22c55e;
-  --admin-accent-700: #16a34a;
-  --landing-forest: #d9f0de;
-  --landing-forest-light: #bbdfc4;
+  --admin-accent-700: #86efac;
+  --landing-forest: #0f1e15;
+  --landing-forest-light: #16261c;
   --landing-orange: #fb923c;
-  --landing-peach: #7c2d12;
+  --landing-peach: #23303a;
 }
 
 @theme inline {
@@ -58,4 +61,5 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }

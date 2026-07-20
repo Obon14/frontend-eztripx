@@ -8,7 +8,7 @@ type AdminShellProps = {
 
 export function AdminShell({ children }: AdminShellProps) {
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-slate-100 dark:bg-slate-950">
       <AdminSidebar />
       <div className="flex min-h-screen flex-1 flex-col">
         <AdminHeader />

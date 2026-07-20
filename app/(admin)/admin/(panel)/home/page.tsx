@@ -132,8 +132,8 @@ export default function AdminDashboardPage() {
   return (
     <section className="space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-slate-900">Home</h1>
-        <p className="text-sm text-slate-600">Ringkasan data admin panel document guide untuk traveler.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Home</h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Ringkasan data admin panel document guide untuk traveler.</p>
       </div>
 
       <Alert variant="success">
@@ -148,25 +148,25 @@ export default function AdminDashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
-          <p className="text-sm text-slate-500">Total Document</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Total Document</p>
           <p className="mt-1 text-2xl font-bold text-admin-primary-700">{stats.totalDocuments}</p>
         </Card>
         <Card>
-          <p className="text-sm text-slate-500">Total Region</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Total Region</p>
           <p className="mt-1 text-2xl font-bold text-admin-accent-700">{stats.totalRegions}</p>
         </Card>
         <Card>
-          <p className="text-sm text-slate-500">Total Country</p>
-          <p className="mt-1 text-2xl font-bold text-slate-800">{stats.totalCountries}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Total Country</p>
+          <p className="mt-1 text-2xl font-bold text-slate-800 dark:text-slate-200">{stats.totalCountries}</p>
         </Card>
         <Card>
-          <p className="text-sm text-slate-500">Total City</p>
-          <p className="mt-1 text-2xl font-bold text-slate-800">{stats.totalCities}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Total City</p>
+          <p className="mt-1 text-2xl font-bold text-slate-800 dark:text-slate-200">{stats.totalCities}</p>
         </Card>
       </div>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">Latest Document Guides</h2>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">Latest Document Guides</h2>
         <DataTable
           data={documentGuides}
           getRowKey={(row) => row.id}

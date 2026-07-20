@@ -164,7 +164,7 @@ export function AuthModals() {
           <Button type="submit" className="w-full" disabled={loading}>
             {t.auth.submitLogin}
           </Button>
-          <p className="text-center text-sm text-slate-600">
+          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
             {t.auth.noAccount}{" "}
             <button
               type="button"
@@ -228,7 +228,7 @@ export function AuthModals() {
           <Button type="submit" className="w-full" disabled={loading}>
             {t.auth.submitRegister}
           </Button>
-          <p className="text-center text-sm text-slate-600">
+          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
             {t.auth.hasAccount}{" "}
             <button
               type="button"
@@ -257,7 +257,7 @@ function FormField({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-slate-700">{label}</label>
+      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
       {children}
     </div>
   );

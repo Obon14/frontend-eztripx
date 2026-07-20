@@ -32,32 +32,32 @@ export function Modal({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4",
+        "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 dark:bg-black/60",
         rootClassName,
       )}
     >
       <div className="absolute inset-0" onClick={onClose} />
       <div
         className={cn(
-          "relative z-10 w-full max-w-lg rounded-xl border border-slate-200 bg-white shadow-xl",
+          "relative z-10 w-full max-w-lg rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900",
           panelClassName,
         )}
       >
-        <div className="flex items-start justify-between border-b border-slate-200 p-4">
+        <div className="flex items-start justify-between border-b border-slate-200 p-4 dark:border-slate-800">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-            {description ? <p className="mt-1 text-sm text-slate-600">{description}</p> : null}
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+            {description ? <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{description}</p> : null}
           </div>
           <button
             type="button"
-            className="rounded-md p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-md p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <div className="overflow-visible p-4">{children}</div>
-        {footer ? <div className="border-t border-slate-200 p-4">{footer}</div> : null}
+        {footer ? <div className="border-t border-slate-200 p-4 dark:border-slate-800">{footer}</div> : null}
       </div>
     </div>
   );

@@ -623,10 +623,10 @@ export function GeoListPage({ title, description, kind, enableMutations = false 
   return (
     <section>
       <Card className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5 dark:border-slate-800">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-            <p className="mt-1 text-sm text-slate-600">{description}</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{title}</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{description}</p>
           </div>
           {showAddButton ? (
             <Button
@@ -687,7 +687,7 @@ export function GeoListPage({ title, description, kind, enableMutations = false 
           )}
 
           {meta && !loading ? (
-            <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600">
+            <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-400">
               <p className="min-w-0 flex-1">
                 {meta.total === 0
                   ? "No records."
@@ -695,7 +695,7 @@ export function GeoListPage({ title, description, kind, enableMutations = false 
               </p>
               <div className="flex flex-wrap items-end gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-medium text-slate-600" htmlFor={`${kind}-page-size`}>
+                  <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor={`${kind}-page-size`}>
                     Rows per page ({MIN_LIMIT}–{MAX_LIMIT})
                   </label>
                   <Select
@@ -778,7 +778,7 @@ export function GeoListPage({ title, description, kind, enableMutations = false 
               </Alert>
             ) : null}
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="region-name-input">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="region-name-input">
                 Name
               </label>
               <Input
@@ -835,7 +835,7 @@ export function GeoListPage({ title, description, kind, enableMutations = false 
               </Alert>
             ) : null}
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="country-name-input">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="country-name-input">
                 Name
               </label>
               <Input
@@ -890,7 +890,7 @@ export function GeoListPage({ title, description, kind, enableMutations = false 
               </Alert>
             ) : null}
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="city-name-input">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="city-name-input">
                 Name
               </label>
               <Input

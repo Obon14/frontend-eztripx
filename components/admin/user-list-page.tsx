@@ -168,10 +168,10 @@ export function UserListPage() {
   return (
     <section className="space-y-5">
       <Card className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5 dark:border-slate-800">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">User Management</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Kelola akun USER dan ADMIN. Registrasi publik di landing hanya membuat role USER.
             </p>
           </div>
@@ -190,7 +190,7 @@ export function UserListPage() {
           </div>
 
           {error ? (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
               {error}
             </div>
           ) : null}
@@ -262,13 +262,13 @@ export function UserListPage() {
         }
       >
         {formError ? (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
             {formError}
           </div>
         ) : null}
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
             <Input
               type="email"
               value={form.email}
@@ -277,7 +277,7 @@ export function UserListPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Password {editingId ? "(kosongkan jika tidak diubah)" : ""}
             </label>
             <Input
@@ -288,7 +288,7 @@ export function UserListPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Role</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Role</label>
             <Select
               value={form.role}
               onChange={(e) =>
@@ -324,7 +324,7 @@ export function UserListPage() {
         }
       >
         {formError ? (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
             {formError}
           </div>
         ) : null}

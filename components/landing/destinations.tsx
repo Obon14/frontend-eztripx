@@ -169,14 +169,14 @@ export function DestinationsSection() {
   }
 
   return (
-    <section id="services" className="bg-gradient-to-b from-slate-50/80 to-white py-16 sm:py-20">
+    <section id="services" className="bg-gradient-to-b from-slate-50/80 to-white py-16 sm:py-20 dark:from-slate-900 dark:to-slate-950">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-landing-orange">
               {locale === "id" ? "Panduan perjalanan" : "Travel guides"}
             </p>
-            <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
               {hasFilters ? (
                 <>
                   {t.destinations.titleFiltered}{" "}
@@ -214,19 +214,19 @@ export function DestinationsSection() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="animate-pulse overflow-hidden rounded-2xl border border-slate-100 bg-white"
+                className="animate-pulse overflow-hidden rounded-2xl border border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900"
               >
-                <div className="aspect-[4/3] bg-slate-200" />
+                <div className="aspect-[4/3] bg-slate-200 dark:bg-slate-800" />
                 <div className="space-y-3 p-4">
-                  <div className="h-4 w-3/4 rounded bg-slate-200" />
-                  <div className="h-3 w-1/2 rounded bg-slate-100" />
-                  <div className="h-8 w-full rounded bg-slate-100" />
+                  <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-3 w-1/2 rounded bg-slate-100 dark:bg-slate-800" />
+                  <div className="h-8 w-full rounded bg-slate-100 dark:bg-slate-800" />
                 </div>
               </div>
             ))}
           </div>
         ) : guides.length === 0 ? (
-          <div className="mx-auto max-w-md rounded-2xl border border-dashed border-slate-200 bg-white px-8 py-14 text-center shadow-sm">
+          <div className="mx-auto max-w-md rounded-2xl border border-dashed border-slate-200 bg-white px-8 py-14 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-landing-orange/10">
               {hasFilters ? (
                 <Search className="h-6 w-6 text-landing-orange" aria-hidden />
@@ -234,17 +234,17 @@ export function DestinationsSection() {
                 <Compass className="h-6 w-6 text-landing-orange" aria-hidden />
               )}
             </span>
-            <p className="mt-4 text-base font-semibold text-slate-800">
+            <p className="mt-4 text-base font-semibold text-slate-800 dark:text-slate-200">
               {hasFilters ? t.destinations.emptyFiltered : t.destinations.empty}
             </p>
-            <p className="mt-2 text-sm text-slate-500">{t.destinations.emptyHint}</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t.destinations.emptyHint}</p>
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((item) => (
               <article
                 key={item.id}
-                className="group overflow-hidden rounded-2xl border border-slate-100/80 bg-white shadow-sm ring-1 ring-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-landing-orange/20"
+                className="group overflow-hidden rounded-2xl border border-slate-100/80 bg-white shadow-sm ring-1 ring-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-landing-orange/20 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5"
               >
                 <div className="relative">
                   <GuideCoverCarousel
@@ -259,9 +259,9 @@ export function DestinationsSection() {
                   ) : null}
                 </div>
                 <div className="p-4">
-                  <h3 className="font-bold text-slate-900">{item.title}</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100">{item.title}</h3>
                   {item.locationLabel ? (
-                    <p className="mt-1 text-sm text-slate-500">{item.locationLabel}</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.locationLabel}</p>
                   ) : null}
                   <div className="mt-4 flex items-center justify-between gap-2">
                     <p className="text-lg font-bold text-landing-orange">
@@ -300,7 +300,7 @@ function CarouselBtn({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-landing-orange hover:text-landing-orange disabled:opacity-30"
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-landing-orange hover:text-landing-orange disabled:opacity-30 dark:border-slate-700 dark:text-slate-300"
     >
       {children}
     </button>

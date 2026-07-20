@@ -16,7 +16,7 @@ export function LandingPage() {
   return (
     <LandingProvider>
       <LandingSearchProvider>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white dark:bg-slate-950">
         <LandingHeader />
         <main>
           <HeroSection />

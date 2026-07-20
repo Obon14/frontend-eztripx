@@ -7,38 +7,38 @@ export function TestimonialsSection() {
   const { t } = useLanding();
 
   return (
-    <section className="bg-slate-50 py-16 sm:py-20">
+    <section className="bg-slate-50 py-16 sm:py-20 dark:bg-slate-900">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
             {t.testimonials.title}{" "}
             <span className="text-landing-orange">{t.testimonials.titleHighlight}</span>
           </h2>
-          <p className="mt-4 text-slate-600">{t.testimonials.intro}</p>
+          <p className="mt-4 text-slate-600 dark:text-slate-300">{t.testimonials.intro}</p>
 
-          <div className="mt-8 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-            <p className="text-slate-700 leading-relaxed">&ldquo;{t.testimonials.quote}&rdquo;</p>
+          <div className="mt-8 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <p className="text-slate-700 leading-relaxed dark:text-slate-200">&ldquo;{t.testimonials.quote}&rdquo;</p>
             <div className="mt-4 flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="h-4 w-4 fill-landing-orange text-landing-orange" />
               ))}
             </div>
-            <p className="mt-4 font-bold text-slate-900">Alice Agusta</p>
-            <p className="text-sm text-slate-500">{t.testimonials.role}</p>
+            <p className="mt-4 font-bold text-slate-900 dark:text-slate-100">Alice Agusta</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t.testimonials.role}</p>
             <div className="mt-4 flex gap-2">
               <NavDot active />
               <NavDot />
               <NavDot />
               <button
                 type="button"
-                className="ml-auto flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500"
+                className="ml-auto flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 dark:border-slate-700 dark:text-slate-400"
                 aria-label="Previous"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 type="button"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 dark:border-slate-700 dark:text-slate-400"
                 aria-label="Next"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -48,10 +48,10 @@ export function TestimonialsSection() {
         </div>
 
         <div
-          className="hidden min-h-[320px] rounded-3xl bg-gradient-to-br from-landing-peach to-orange-100 lg:flex lg:items-center lg:justify-center"
+          className="hidden min-h-[320px] rounded-3xl bg-gradient-to-br from-landing-peach to-orange-100 lg:flex lg:items-center lg:justify-center dark:from-slate-800 dark:to-slate-900"
           aria-hidden
         >
-          <div className="h-36 w-36 rounded-full border-4 border-landing-orange/50 bg-white/60" />
+          <div className="h-36 w-36 rounded-full border-4 border-landing-orange/50 bg-white/60 dark:bg-white/10" />
         </div>
       </div>
     </section>

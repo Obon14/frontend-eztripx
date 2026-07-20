@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useLanding } from "@/components/landing/language-provider";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { Locale } from "@/lib/i18n/landing";
 
 const navIds = [
@@ -87,6 +88,7 @@ export function LandingHeader() {
               </button>
             </>
           )}
+          <ThemeToggle tone="onDark" />
         </div>
       </div>
     </header>

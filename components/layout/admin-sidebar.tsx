@@ -9,7 +9,7 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 border-r border-slate-200 bg-white p-4">
+    <aside className="w-64 border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-8 px-2">
         <p className="text-xs font-semibold tracking-wide text-admin-accent-700">EzTripx</p>
         <h1 className="text-xl font-bold text-admin-primary-700">Admin Panel</h1>
@@ -29,8 +29,8 @@ export function AdminSidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
                 isActive
-                  ? "bg-admin-primary-50 text-admin-primary-700"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                  ? "bg-admin-primary-50 text-admin-primary-700 dark:bg-admin-primary/15"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
               )}
             >
               <Icon className="h-4 w-4" />

@@ -17,19 +17,19 @@ export function DocumentFormCard() {
 
   return (
     <Card>
-      <h2 className="text-lg font-semibold text-slate-900">Upload Document Guide (Frontend Only)</h2>
-      <p className="mt-1 text-sm text-slate-600">
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Upload Document Guide (Frontend Only)</h2>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
         Form ini placeholder frontend. Data lokasi diambil dari halaman admin utama yang terhubung API.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-slate-700">Document Title</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Document Title</label>
           <Input value={title} onChange={(event) => setTitle(event.target.value)} required />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Region</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Region</label>
           <Select defaultValue="">
             <option value="" disabled>
               Belum ada data region
@@ -38,7 +38,7 @@ export function DocumentFormCard() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Country</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Country</label>
           <Select defaultValue="">
             <option value="" disabled>
               Belum ada data country
@@ -47,7 +47,7 @@ export function DocumentFormCard() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">City</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">City</label>
           <Select defaultValue="">
             <option value="" disabled>
               Belum ada data city
@@ -56,22 +56,22 @@ export function DocumentFormCard() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Price (IDR)</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Price (IDR)</label>
           <Input type="number" min={0} placeholder="149000" required />
         </div>
 
         <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-slate-700">Tags</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Tags</label>
           <Input placeholder="budget, itinerary, family" />
         </div>
 
         <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-slate-700">File Name / URL</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">File Name / URL</label>
           <Input placeholder="tokyo-guide-v1.pdf or https://..." />
         </div>
 
         <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
           <Textarea placeholder="Describe the guide content..." />
         </div>
 

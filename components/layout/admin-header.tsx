@@ -4,6 +4,7 @@ import { Bell, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export function AdminHeader() {
   const router = useRouter();
@@ -21,11 +22,12 @@ export function AdminHeader() {
   }
 
   return (
-    <header className="border-b border-slate-200 bg-white p-4">
+    <header className="border-b border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center justify-end gap-3">
+        <ThemeToggle tone="onLight" />
         <button
           type="button"
-          className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
+          className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
           aria-label="Notifications"
         >
           <Bell className="h-4 w-4" />

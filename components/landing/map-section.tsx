@@ -6,15 +6,15 @@ export function MapSection() {
   const { t } = useLanding();
 
   return (
-    <section id="community" className="bg-white py-16 sm:py-20">
+    <section id="community" className="bg-white py-16 sm:py-20 dark:bg-slate-950">
       <div className="mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+        <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
           {t.map.title}{" "}
           <span className="text-landing-orange">{t.map.titleHighlight}</span>
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-slate-600">{t.map.subtitle}</p>
+        <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-300">{t.map.subtitle}</p>
 
-        <div className="relative mx-auto mt-12 aspect-[2/1] max-w-4xl overflow-hidden rounded-3xl border border-slate-100 bg-slate-50">
+        <div className="relative mx-auto mt-12 aspect-[2/1] max-w-4xl overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
           <svg
             viewBox="0 0 800 400"
             className="h-full w-full text-slate-300"
@@ -27,9 +27,9 @@ export function MapSection() {
             })}
           </svg>
           <div
-            className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lg"
+            className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lg dark:border-slate-700 dark:bg-slate-800"
           >
-            <p className="text-sm font-bold text-slate-900">{t.map.featured}</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{t.map.featured}</p>
             <div className="mt-2 flex -space-x-2">
               {[1, 2, 3].map((n) => (
                 <span

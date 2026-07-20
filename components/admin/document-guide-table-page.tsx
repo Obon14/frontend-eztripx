@@ -66,11 +66,11 @@ function getTagDisplayLines(row: DocumentGuide): { region: string; country: stri
 
 function GeoStack({ lines }: { lines: string[] }) {
   return (
-    <div className="space-y-1 text-left text-xs leading-snug text-slate-700">
+    <div className="space-y-1 text-left text-xs leading-snug text-slate-700 dark:text-slate-300">
       {lines.map((line, i) => (
         <div
           key={i}
-          className="border-b border-slate-100 py-1 last:border-b-0 last:pb-0 first:pt-0"
+          className="border-b border-slate-100 py-1 last:border-b-0 last:pb-0 first:pt-0 dark:border-slate-800"
         >
           {line}
         </div>
@@ -748,10 +748,10 @@ export function DocumentGuideTablePage() {
   return (
     <section>
       <Card className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5 dark:border-slate-800">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Document Guide</h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Document Guide</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Kelola e-book panduan liburan: lokasi, harga, file, dan status publikasi.
             </p>
           </div>
@@ -771,7 +771,7 @@ export function DocumentGuideTablePage() {
           </div>
 
           {listError ? (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
               {listError}
             </div>
           ) : null}
@@ -817,13 +817,13 @@ export function DocumentGuideTablePage() {
       >
         <div className="max-h-[70vh] space-y-4 overflow-visible pr-1">
           {createError ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
               {createError}
             </div>
           ) : null}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Title (Indonesian)
             </label>
             <Input
@@ -833,7 +833,7 @@ export function DocumentGuideTablePage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Title (English)
             </label>
             <Input
@@ -844,7 +844,7 @@ export function DocumentGuideTablePage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Lama liburan (hari)
             </label>
             <Input
@@ -859,7 +859,7 @@ export function DocumentGuideTablePage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Cover images (max 8)
             </label>
             {existingCovers.length > 0 ? (
@@ -917,7 +917,7 @@ export function DocumentGuideTablePage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Harga Rupiah (IDR)</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Harga Rupiah (IDR)</label>
               <Input
                 type="number"
                 min={0}
@@ -929,7 +929,7 @@ export function DocumentGuideTablePage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Harga USD</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Harga USD</label>
               <Input
                 type="number"
                 min={0}
@@ -944,7 +944,7 @@ export function DocumentGuideTablePage() {
 
           <div className="space-y-5">
             <div>
-              <span className="text-sm font-medium text-slate-800">Lokasi (multi-select)</span>
+              <span className="text-sm font-medium text-slate-800 dark:text-slate-200">Lokasi (multi-select)</span>
               <p className="mt-1 text-xs text-slate-500">
                 Tidak ada filter silang: semua region/negara/kota bisa dicari. Menambah negara (mis. Indonesia)
                 otomatis menambah region (Asia). Menambah kota (mis. Bandung) otomatis menambah negara & region.
@@ -990,7 +990,7 @@ export function DocumentGuideTablePage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Document (PDF only)</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Document (PDF only)</label>
             <input
               type="file"
               accept="application/pdf,.pdf"
@@ -1044,7 +1044,7 @@ export function DocumentGuideTablePage() {
             <p className="py-16 text-center text-sm text-slate-500">Memuat PDF…</p>
           ) : null}
           {previewError ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
               {previewError}
             </div>
           ) : null}
@@ -1078,23 +1078,23 @@ export function DocumentGuideTablePage() {
           <div className="space-y-4">
             {deleteDialogError ? (
               <div
-                className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+                className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
                 role="alert"
               >
                 {deleteDialogError}
               </div>
             ) : null}
 
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Judul</p>
-              <p className="mt-0.5 font-semibold text-slate-900">{deleteTarget.title}</p>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-800 dark:bg-slate-800/50">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Judul</p>
+              <p className="mt-0.5 font-semibold text-slate-900 dark:text-slate-100">{deleteTarget.title}</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-slate-500">Berkas</p>
-                  <p className="truncate font-mono text-xs text-slate-800">{deleteTarget.fileName}</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Berkas</p>
+                  <p className="truncate font-mono text-xs text-slate-800 dark:text-slate-200">{deleteTarget.fileName}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-slate-500">Status</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Status</p>
                   <p className="mt-0.5">
                     <Badge variant={deleteTarget.status === "published" ? "accent" : "primary"}>
                       {deleteTarget.status}

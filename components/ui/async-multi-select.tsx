@@ -1,7 +1,9 @@
 "use client";
 
 import { Check, ChevronDown, Search, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 export type AsyncMultiOption = { id: string; label: string };
@@ -75,10 +77,13 @@ export function AsyncMultiSelect({
   const [loadingMore, setLoadingMore] = useState(false);
   const [labels, setLabels] = useState<Map<string, string>>(() => new Map());
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const skipDebounceOnce = useRef(false);
   const loadSeq = useRef(0);
   const nextPageRef = useRef(2);
+  const [menuStyle, setMenuStyle] = useState<CSSProperties | null>(null);
 
   const mergeLabels = useCallback((opts: AsyncMultiOption[]) => {
     setLabels((prev) => {
@@ -156,8 +161,9 @@ export function AsyncMultiSelect({
   useEffect(() => {
     if (!open) return;
     function onDocMouseDown(e: MouseEvent) {
-      const el = rootRef.current;
-      if (!el || !(e.target instanceof Node) || el.contains(e.target)) return;
+      const t = e.target;
+      if (!(t instanceof Node)) return;
+      if (rootRef.current?.contains(t) || menuRef.current?.contains(t)) return;
       setOpen(false);
     }
     function onKeyDown(e: KeyboardEvent) {
@@ -168,6 +174,41 @@ export function AsyncMultiSelect({
     return () => {
       document.removeEventListener("mousedown", onDocMouseDown);
       document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setMenuStyle(null);
+      return;
+    }
+    function updatePosition() {
+      const trigger = triggerRef.current;
+      if (!trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      const gap = 4;
+      const maxMenu = Math.min(320, window.innerHeight - 16);
+      const spaceBelow = window.innerHeight - rect.bottom - gap - 8;
+      const spaceAbove = rect.top - gap - 8;
+      const placeAbove = spaceBelow < 180 && spaceAbove > spaceBelow;
+      const available = Math.max(120, placeAbove ? spaceAbove : spaceBelow);
+      setMenuStyle({
+        position: "fixed",
+        left: rect.left,
+        width: rect.width,
+        top: placeAbove ? undefined : rect.bottom + gap,
+        bottom: placeAbove ? window.innerHeight - rect.top + gap : undefined,
+        maxHeight: Math.min(maxMenu, available),
+        zIndex: 130,
+      });
+    }
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    // Capture scroll from modal body / nested scrollers
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
     };
   }, [open]);
 
@@ -205,18 +246,19 @@ export function AsyncMultiSelect({
 
   return (
     <div ref={rootRef} className={cn("relative", className)}>
-      <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span>
+      <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
       <button
+        ref={triggerRef}
         type="button"
         aria-expanded={open}
         aria-haspopup="listbox"
         disabled={disabled}
         onClick={() => !disabled && setOpen((o) => !o)}
         className={cn(
-          "flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-slate-300 bg-white px-3 text-left text-sm text-slate-900 outline-none transition",
+          "flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-slate-300 bg-white px-3 text-left text-sm text-slate-900 outline-none transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100",
           "hover:border-slate-400 focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/20",
           disabled && "cursor-not-allowed opacity-50",
-          value.length === 0 && "text-slate-500",
+          value.length === 0 && "text-slate-500 dark:text-slate-400",
         )}
       >
         <span className="min-w-0 flex-1 truncate">{summary}</span>
@@ -230,13 +272,13 @@ export function AsyncMultiSelect({
           {value.map((id) => (
             <span
               key={id}
-              className="inline-flex max-w-full items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-800"
+              className="inline-flex max-w-full items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <span className="truncate">{displayLabel(id, labels, resolvedLabels)}</span>
               <button
                 type="button"
                 disabled={disabled}
-                className="rounded-full p-0.5 text-slate-500 hover:bg-slate-200 hover:text-slate-900 disabled:opacity-50"
+                className="rounded-full p-0.5 text-slate-500 hover:bg-slate-200 hover:text-slate-900 disabled:opacity-50 dark:hover:bg-slate-700 dark:hover:text-slate-100"
                 aria-label={`Remove ${displayLabel(id, labels, resolvedLabels)}`}
                 onClick={() => !disabled && removeId(id)}
               >
@@ -247,87 +289,99 @@ export function AsyncMultiSelect({
         </div>
       ) : null}
 
-      {open ? (
-        <div
-          className="absolute left-0 right-0 z-[120] mt-1 rounded-lg border border-slate-200 bg-white py-2 shadow-lg"
-          role="listbox"
-          aria-multiselectable
-        >
-          <div className="border-b border-slate-200 bg-slate-50 px-2 pb-2 pt-1">
-            <div className="relative">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600"
-                aria-hidden
-              />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={searchPlaceholder}
-                aria-label={searchPlaceholder}
-                className={cn(
-                  "h-9 w-full rounded-md border border-slate-300 bg-white pl-9 pr-3 text-sm text-slate-900 outline-none",
-                  "focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/20",
-                )}
-                autoFocus
-              />
-            </div>
-            {value.length > 0 ? (
-              <button
-                type="button"
-                className="mt-1.5 text-xs font-medium text-admin-primary-700 hover:underline"
-                onClick={() => onChange([])}
-              >
-                Clear all
-              </button>
-            ) : null}
-          </div>
-
-          <div
-            ref={listRef}
-            onScroll={onListScroll}
-            className="max-h-72 overflow-y-auto px-1 pt-1"
-          >
-            {loading ? (
-              <p className="px-2 py-3 text-sm text-slate-500">Loading…</p>
-            ) : options.length === 0 ? (
-              <p className="px-2 py-3 text-sm text-slate-500">{emptyHint}</p>
-            ) : filtered.length === 0 ? (
-              <p className="px-2 py-3 text-sm text-slate-500">No results for &quot;{query}&quot;</p>
-            ) : (
-              filtered.map((opt) => {
-                const selected = value.includes(opt.id);
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    onClick={() => toggle(opt.id, opt.label)}
+      {open && menuStyle
+        ? createPortal(
+            <div
+              ref={menuRef}
+              style={menuStyle}
+              className="flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white py-2 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+              role="listbox"
+              aria-multiselectable
+            >
+              <div className="shrink-0 border-b border-slate-200 bg-slate-50 px-2 pb-2 pt-1 dark:border-slate-700 dark:bg-slate-800/80">
+                <div className="relative">
+                  <Search
+                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600 dark:text-slate-400"
+                    aria-hidden
+                  />
+                  <input
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={searchPlaceholder}
+                    aria-label={searchPlaceholder}
                     className={cn(
-                      "flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-800",
-                      selected ? "bg-admin-primary-50 font-medium" : "hover:bg-slate-50",
+                      "h-9 w-full rounded-md border border-slate-300 bg-white pl-9 pr-3 text-sm text-slate-900 outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100",
+                      "focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/20",
                     )}
+                    autoFocus
+                  />
+                </div>
+                {value.length > 0 ? (
+                  <button
+                    type="button"
+                    className="mt-1.5 text-xs font-medium text-admin-primary-700 hover:underline"
+                    onClick={() => onChange([])}
                   >
-                    <span className="min-w-0 flex-1 truncate">{opt.label}</span>
-                    {selected ? (
-                      <Check className="h-4 w-4 shrink-0 text-admin-primary-700" aria-hidden />
-                    ) : (
-                      <span className="h-4 w-4 shrink-0" />
-                    )}
+                    Clear all
                   </button>
-                );
-              })
-            )}
-            {loadingMore ? (
-              <p className="px-2 py-2 text-center text-xs text-slate-500">Loading more…</p>
-            ) : null}
-            {!loading && !loadingMore && hasMore && options.length > 0 && filtered.length > 0 ? (
-              <p className="px-2 pb-2 text-center text-[11px] text-slate-400">Scroll for more</p>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+                ) : null}
+              </div>
+
+              <div
+                ref={listRef}
+                onScroll={onListScroll}
+                className="min-h-0 flex-1 overflow-y-auto px-1 pt-1"
+              >
+                {loading ? (
+                  <p className="px-2 py-3 text-sm text-slate-500">Loading…</p>
+                ) : options.length === 0 ? (
+                  <p className="px-2 py-3 text-sm text-slate-500">{emptyHint}</p>
+                ) : filtered.length === 0 ? (
+                  <p className="px-2 py-3 text-sm text-slate-500">
+                    No results for &quot;{query}&quot;
+                  </p>
+                ) : (
+                  filtered.map((opt) => {
+                    const selected = value.includes(opt.id);
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        role="option"
+                        aria-selected={selected}
+                        onClick={() => toggle(opt.id, opt.label)}
+                        className={cn(
+                          "flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-800 dark:text-slate-200",
+                          selected
+                            ? "bg-admin-primary-50 font-medium dark:bg-admin-primary-900/30"
+                            : "hover:bg-slate-50 dark:hover:bg-slate-800",
+                        )}
+                      >
+                        <span className="min-w-0 flex-1 truncate">{opt.label}</span>
+                        {selected ? (
+                          <Check
+                            className="h-4 w-4 shrink-0 text-admin-primary-700"
+                            aria-hidden
+                          />
+                        ) : (
+                          <span className="h-4 w-4 shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })
+                )}
+                {loadingMore ? (
+                  <p className="px-2 py-2 text-center text-xs text-slate-500">Loading more…</p>
+                ) : null}
+                {!loading && !loadingMore && hasMore && options.length > 0 && filtered.length > 0 ? (
+                  <p className="px-2 pb-2 text-center text-[11px] text-slate-400">Scroll for more</p>
+                ) : null}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

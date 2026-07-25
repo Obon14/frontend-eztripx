@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Compass, Search } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { GuideCoverCarousel } from "@/components/landing/guide-cover-carousel";
+import { GuideDocumentCard } from "@/components/landing/guide-document-card";
 import { useLandingSearch } from "@/components/landing/landing-search-provider";
 import { useLanding } from "@/components/landing/language-provider";
 import { Alert } from "@/components/ui/alert";
@@ -10,30 +10,14 @@ import {
   parsePublicGuideListResponse,
   type PublicDocumentGuideCard,
 } from "@/lib/document-guide/parse-public-list";
-import { parseOrderResponse } from "@/lib/order/parse-order";
-import type { OrderCurrency } from "@/types/order";
-
-const formatIdr = new Intl.NumberFormat("id-ID", {
-  style: "currency",
-  currency: "IDR",
-  maximumFractionDigits: 0,
-});
-
-const formatUsd = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 export function DestinationsSection() {
-  const { t, locale, openRegister } = useLanding();
+  const { t, locale } = useLanding();
   const { filters, searchVersion } = useLandingSearch();
   const [guides, setGuides] = useState<PublicDocumentGuideCard[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [buyingId, setBuyingId] = useState<string | null>(null);
 
   const hasFilters =
     filters.regionIds.length > 0 ||
@@ -103,65 +87,6 @@ export function DestinationsSection() {
   const visible = guides.slice(index, index + 3);
   const canPrev = index > 0;
   const canNext = index + 3 < guides.length;
-
-  const currency: OrderCurrency = locale === "id" ? "IDR" : "USD";
-
-  async function handleBuy(guide: PublicDocumentGuideCard) {
-    const price = currency === "IDR" ? guide.priceIdr : guide.priceUsd;
-    if (!price || Number(price) <= 0) {
-      setError(t.destinations.priceUnavailable);
-      return;
-    }
-
-    setBuyingId(guide.id);
-    setError("");
-    try {
-      const res = await fetch("/api/order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          documentGuideId: guide.id,
-          currency,
-        }),
-      });
-      const body = await res.json().catch(() => null);
-
-      if (res.status === 401) {
-        openRegister();
-        return;
-      }
-
-      if (!res.ok) {
-        const msg =
-          body && typeof body === "object" && "message" in body && typeof body.message === "string"
-            ? body.message
-            : t.auth.networkError;
-        setError(msg);
-        return;
-      }
-
-      const order = parseOrderResponse(body);
-      if (order?.paymentUrl) {
-        window.location.href = order.paymentUrl;
-        return;
-      }
-      setError(t.auth.networkError);
-    } catch {
-      setError(t.auth.networkError);
-    } finally {
-      setBuyingId(null);
-    }
-  }
-
-  function displayPrice(guide: PublicDocumentGuideCard): string {
-    if (locale === "id") {
-      const n = guide.priceIdr ? Number(guide.priceIdr) : 0;
-      return n > 0 ? formatIdr.format(n) : "—";
-    }
-    const n = guide.priceUsd ? Number(guide.priceUsd) : 0;
-    return n > 0 ? formatUsd.format(n) : "—";
-  }
 
   function daysLabel(days: number | null): string {
     if (!days || days < 1) return "";
@@ -242,42 +167,16 @@ export function DestinationsSection() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((item) => (
-              <article
+              <GuideDocumentCard
                 key={item.id}
-                className="group overflow-hidden rounded-2xl border border-slate-100/80 bg-white shadow-sm ring-1 ring-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-landing-orange/20 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5"
-              >
-                <div className="relative">
-                  <GuideCoverCarousel
-                    guideId={item.id}
-                    coverImages={item.coverImages}
-                    alt={item.title}
-                  />
-                  {item.tripDays ? (
-                    <span className="absolute right-3 top-3 z-10 rounded-full bg-landing-orange px-2.5 py-1 text-xs font-bold text-white">
-                      {daysLabel(item.tripDays)}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100">{item.title}</h3>
-                  {item.locationLabel ? (
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.locationLabel}</p>
-                  ) : null}
-                  <div className="mt-4 flex items-center justify-between gap-2">
-                    <p className="text-lg font-bold text-landing-orange">
-                      {displayPrice(item)}
-                    </p>
-                    <button
-                      type="button"
-                      disabled={buyingId === item.id}
-                      onClick={() => void handleBuy(item)}
-                      className="shrink-0 rounded-lg bg-landing-orange px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] disabled:opacity-50"
-                    >
-                      {buyingId === item.id ? t.destinations.processing : t.destinations.buy}
-                    </button>
-                  </div>
-                </div>
-              </article>
+                item={item}
+                daysLabel={daysLabel(item.tripDays)}
+                buyLabel={t.destinations.buy}
+                processingLabel={t.destinations.processing}
+                priceUnavailableLabel={t.destinations.priceUnavailable}
+                networkErrorLabel={t.auth.networkError}
+                onError={setError}
+              />
             ))}
           </div>
         )}

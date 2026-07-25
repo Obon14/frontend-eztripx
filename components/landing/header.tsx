@@ -1,15 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLanding } from "@/components/landing/language-provider";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { Locale } from "@/lib/i18n/landing";
 
 const navIds = [
-  { id: "discover", href: "#discover" },
-  { id: "services", href: "#services" },
-  { id: "community", href: "#community" },
-  { id: "about", href: "#about" },
+  { id: "discover", href: "/#discover" },
+  { id: "services", href: "/#services" },
+  { id: "guideDocument", href: "/guide-document" },
+  { id: "community", href: "/#community" },
+  { id: "about", href: "/#about" },
 ] as const;
 
 export function LandingHeader() {
@@ -27,6 +29,7 @@ export function LandingHeader() {
   const navLabels = {
     discover: t.nav.discover,
     services: t.nav.services,
+    guideDocument: t.nav.guideDocument,
     community: t.nav.community,
     about: t.nav.about,
   };
@@ -34,19 +37,19 @@ export function LandingHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-landing-forest/90 shadow-sm shadow-black/10 backdrop-blur-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
-        <a href="#" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
+        <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
           <span className="text-landing-orange">Ez</span>Tripx
-        </a>
+        </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-6 lg:flex lg:gap-8">
           {navIds.map((item) => (
-            <a
+            <Link
               key={item.id}
               href={item.href}
-              className="text-sm font-medium text-white/85 transition hover:text-landing-orange"
+              className="whitespace-nowrap text-sm font-medium text-white/85 transition hover:text-landing-orange"
             >
               {navLabels[item.id]}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -55,7 +58,7 @@ export function LandingHeader() {
           {!isCheckingAuth && currentUser ? (
             <>
               <span
-                className="max-w-[170px] truncate text-sm font-medium text-white/90"
+                className="hidden max-w-[170px] truncate text-sm font-medium text-white/90 sm:inline"
                 title={currentUser.email}
               >
                 {currentUser.email}

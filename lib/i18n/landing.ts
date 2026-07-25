@@ -6,6 +6,7 @@ export type LandingCopy = {
     services: string;
     community: string;
     about: string;
+    guideDocument: string;
     login: string;
     register: string;
     logout: string;
@@ -48,16 +49,26 @@ export type LandingCopy = {
     priceUnavailable: string;
   };
   guides: {
+    eyebrow: string;
     title: string;
     titleHighlight: string;
     subtitle: string;
+    search: string;
+    searchPlaceholder: string;
+    clearSearch: string;
     loginToBuy: string;
     buy: string;
     processing: string;
     priceIdr: string;
     priceUsd: string;
     empty: string;
+    emptySearch: string;
+    emptyHint: string;
     loadError: string;
+    resultsCount: string;
+    prevPage: string;
+    nextPage: string;
+    pageOf: string;
   };
   payment: {
     title: string;
@@ -141,6 +152,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       services: "Layanan",
       community: "Komunitas",
       about: "Tentang Kami",
+      guideDocument: "Guide Document",
       login: "Masuk",
       register: "Daftar",
       logout: "Keluar",
@@ -178,22 +190,33 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       loading: "Memuat panduan…",
       empty: "Belum ada panduan tersedia.",
       emptyFiltered: "Tidak ada panduan untuk filter ini. Coba ubah lokasi atau durasi.",
-      emptyHint: "Gunakan pencarian di atas atau jelajahi semua panduan.",
+      emptyHint: "Gunakan pencarian di atas atau buka menu Guide Document.",
       loadError: "Gagal memuat panduan.",
       processing: "Memproses…",
       priceUnavailable: "Harga belum tersedia untuk mata uang ini.",
     },
     guides: {
-      title: "PANDUAN DOKUMEN",
-      titleHighlight: "PERJALANAN",
-      subtitle: "Beli panduan PDF resmi. Setelah pembayaran berhasil, dokumen bisa diakses dari akunmu.",
+      eyebrow: "Katalog panduan",
+      title: "SEMUA",
+      titleHighlight: "GUIDE DOCUMENT",
+      subtitle:
+        "Jelajahi seluruh panduan dokumen perjalanan yang sudah dipublikasikan. Cari judul, lalu beli PDF resmi yang kamu butuhkan.",
+      search: "Cari",
+      searchPlaceholder: "Cari judul panduan…",
+      clearSearch: "Reset",
       loginToBuy: "Masuk untuk membeli",
       buy: "Beli panduan",
       processing: "Memproses…",
       priceIdr: "IDR",
       priceUsd: "USD",
       empty: "Belum ada panduan tersedia.",
-      loadError: "Gagal memuat panduan. Pastikan sudah login.",
+      emptySearch: "Tidak ada panduan yang cocok dengan pencarian ini.",
+      emptyHint: "Coba kata kunci lain atau hapus filter pencarian.",
+      loadError: "Gagal memuat panduan.",
+      resultsCount: "Menampilkan {shown} dari {total} panduan",
+      prevPage: "Sebelumnya",
+      nextPage: "Berikutnya",
+      pageOf: "Halaman {page} / {totalPages}",
     },
     payment: {
       title: "Status pembayaran",
@@ -279,6 +302,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       services: "Services",
       community: "Community",
       about: "About Us",
+      guideDocument: "Guide Document",
       login: "Login",
       register: "Register",
       logout: "Logout",
@@ -316,22 +340,33 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       loading: "Loading guides…",
       empty: "No guides available yet.",
       emptyFiltered: "No guides match these filters. Try a different location or duration.",
-      emptyHint: "Use the search bar above or browse all available guides.",
+      emptyHint: "Use the search bar above or open the Guide Document menu.",
       loadError: "Failed to load guides.",
       processing: "Processing…",
       priceUnavailable: "Price is not available for this currency.",
     },
     guides: {
-      title: "TRAVEL DOCUMENT",
-      titleHighlight: "GUIDES",
-      subtitle: "Purchase official PDF guides. After successful payment, access them from your account.",
+      eyebrow: "Guide catalog",
+      title: "ALL",
+      titleHighlight: "GUIDE DOCUMENTS",
+      subtitle:
+        "Browse every published travel document guide. Search by title and purchase the official PDF you need.",
+      search: "Search",
+      searchPlaceholder: "Search guide titles…",
+      clearSearch: "Clear",
       loginToBuy: "Sign in to purchase",
       buy: "Buy guide",
       processing: "Processing…",
       priceIdr: "IDR",
       priceUsd: "USD",
       empty: "No guides available yet.",
-      loadError: "Failed to load guides. Please sign in first.",
+      emptySearch: "No guides match this search.",
+      emptyHint: "Try another keyword or clear the search.",
+      loadError: "Failed to load guides.",
+      resultsCount: "Showing {shown} of {total} guides",
+      prevPage: "Previous",
+      nextPage: "Next",
+      pageOf: "Page {page} / {totalPages}",
     },
     payment: {
       title: "Payment status",

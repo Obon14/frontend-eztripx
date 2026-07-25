@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Download, Eye, Pencil, Search, Trash2 } from "lucide-react";
+import { AlertTriangle, Download, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AsyncMultiSelect } from "@/components/ui/async-multi-select";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
+import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { DataTable } from "@/components/ui/table";
 import { buildDocumentGuideTags } from "@/lib/geo/document-guide-tags";
 import { resolveTripleFromCityId, resolveTripleFromCountryId } from "@/lib/geo/document-guide-resolve";
@@ -369,6 +370,69 @@ export function DocumentGuideTablePage() {
     setDeleteDialogError(null);
   }, []);
 
+  const openEdit = useCallback((row: DocumentGuide) => {
+    setEditingId(row.id);
+    setForm({
+      titleId: row.titleId,
+      titleEn: row.titleEn ?? "",
+      tripDays: row.tripDays ? String(row.tripDays) : "",
+      priceIdr: idrFromNumber(row.priceIdr),
+      priceUsd: usdFromNumber(row.priceUsd),
+      fileName: row.fileName,
+      status: row.status,
+      regionIds: [...row.regionIds],
+      countryIds: [...row.countryIds],
+      cityIds: [...row.cityIds],
+    });
+    setCreateRegionIds([...row.regionIds]);
+    setCreateCountryIds([...row.countryIds]);
+    setCreateCityIds([...row.cityIds]);
+    setCreateGeoLabels(buildGeoLabelsFromRow(row));
+    setPdfFile(null);
+    setCoverFiles([]);
+    setRemoveCoverIds([]);
+    setExistingCovers(row.coverImages.map((c) => ({ id: c.id, url: c.url })));
+    setCreateError(null);
+    setOpen(true);
+  }, []);
+
+  const updateStatus = useCallback(
+    async (row: DocumentGuide, status: DocumentGuide["status"]) => {
+      if (row.status === status) return;
+      try {
+        const fd = new FormData();
+        fd.append("status", status);
+        const res = await fetch(`/api/document-guide/${encodeURIComponent(row.id)}`, {
+          method: "PATCH",
+          body: fd,
+          credentials: "include",
+        });
+        if (res.status === 401) {
+          router.push("/admin");
+          router.refresh();
+          return;
+        }
+        if (!res.ok) {
+          const body: unknown = await res.json().catch(() => null);
+          const msg =
+            typeof body === "object" &&
+            body !== null &&
+            "message" in body &&
+            typeof (body as { message: string }).message === "string"
+              ? (body as { message: string }).message
+              : `Gagal mengubah status (${res.status}).`;
+          setListError(msg);
+          return;
+        }
+        setListError(null);
+        await loadRows(search.trim());
+      } catch {
+        setListError("Tidak dapat mengubah status. Periksa koneksi lalu coba lagi.");
+      }
+    },
+    [router, loadRows, search],
+  );
+
   const performDelete = useCallback(async () => {
     const row = deleteTarget;
     if (!row) return;
@@ -481,77 +545,51 @@ export function DocumentGuideTablePage() {
         key: "status",
         header: "Status",
         render: (row: DocumentGuide) => (
-          <Badge variant={row.status === "published" ? "accent" : "primary"}>{row.status}</Badge>
+          <Badge variant={row.status === "published" ? "accent" : "primary"}>
+            {row.status === "published" ? "published" : "draft"}
+          </Badge>
         ),
       },
       { key: "fileName", header: "File", render: (row: DocumentGuide) => row.fileName },
       {
         key: "action",
         header: "Action",
-        className: "w-[150px]",
+        className: "w-[72px]",
         render: (row: DocumentGuide) => (
-          <div className="flex items-center gap-1">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-9 w-9 shrink-0 p-0 text-slate-600 hover:text-admin-primary-700"
-              aria-label={`Preview PDF: ${row.title}`}
-              onClick={() => void openDocumentPreview(row)}
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-9 w-9 shrink-0 p-0 text-slate-600 hover:text-admin-primary-700"
-              aria-label={`Edit ${row.title}`}
-              onClick={() => {
-                setEditingId(row.id);
-                setForm({
-                  titleId: row.titleId,
-                  titleEn: row.titleEn ?? "",
-                  tripDays: row.tripDays ? String(row.tripDays) : "",
-                  priceIdr: idrFromNumber(row.priceIdr),
-                  priceUsd: usdFromNumber(row.priceUsd),
-                  fileName: row.fileName,
-                  status: row.status,
-                  regionIds: [...row.regionIds],
-                  countryIds: [...row.countryIds],
-                  cityIds: [...row.cityIds],
-                });
-                setCreateRegionIds([...row.regionIds]);
-                setCreateCountryIds([...row.countryIds]);
-                setCreateCityIds([...row.cityIds]);
-                setCreateGeoLabels(buildGeoLabelsFromRow(row));
-                setPdfFile(null);
-                setCoverFiles([]);
-                setRemoveCoverIds([]);
-                setExistingCovers(
-                  row.coverImages.map((c) => ({ id: c.id, url: c.url })),
-                );
-                setCreateError(null);
-                setOpen(true);
-              }}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-9 w-9 shrink-0 p-0 text-slate-600 hover:text-red-600"
-              aria-label={`Delete ${row.title}`}
-              onClick={() => openDeleteDialog(row)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          <RowActionMenu
+            label={`Aksi ${row.title}`}
+            items={[
+              {
+                key: "edit",
+                label: "Edit",
+                onSelect: () => openEdit(row),
+              },
+              {
+                key: "preview",
+                label: "Preview doc",
+                onSelect: () => void openDocumentPreview(row),
+              },
+              {
+                key: "status",
+                label: row.status === "published" ? "Jadikan draft" : "Post",
+                onSelect: () =>
+                  void updateStatus(
+                    row,
+                    row.status === "published" ? "draft" : "published",
+                  ),
+              },
+              {
+                key: "delete",
+                label: "Hapus",
+                tone: "danger",
+                onSelect: () => openDeleteDialog(row),
+              },
+            ]}
+          />
         ),
       },
     ],
-    [openDocumentPreview, openDeleteDialog],
+    [openDocumentPreview, openDeleteDialog, openEdit, updateStatus],
   );
 
   function openCreate() {

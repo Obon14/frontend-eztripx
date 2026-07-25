@@ -36,6 +36,66 @@ const formatUsd = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
+/** Thousand separators with `.` (e.g. 49000 → 49.000). */
+function formatThousandDots(digits: string): string {
+  if (!digits) return "";
+  const trimmed = digits.replace(/^0+(?=\d)/, "") || "0";
+  return trimmed.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/** Format IDR input while typing (integers only). */
+function formatIdrInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  return formatThousandDots(digits);
+}
+
+/** Format USD input: `.` thousands, `,` decimals (max 2). */
+function formatUsdInput(raw: string): string {
+  const normalized = raw.replace(/[^\d.,]/g, "");
+  if (!normalized) return "";
+
+  const commaIdx = normalized.indexOf(",");
+  let intPart: string;
+  let decPart: string | null = null;
+
+  if (commaIdx >= 0) {
+    intPart = normalized.slice(0, commaIdx).replace(/\D/g, "");
+    decPart = normalized.slice(commaIdx + 1).replace(/\D/g, "").slice(0, 2);
+  } else {
+    // Treat `.` as thousand sep; also allow trailing `.` typed as start of decimal via `,` only
+    intPart = normalized.replace(/\D/g, "");
+  }
+
+  const formattedInt = formatThousandDots(intPart || (decPart !== null ? "0" : ""));
+  if (decPart !== null) {
+    return `${formattedInt},${decPart}`;
+  }
+  return formattedInt;
+}
+
+function parseIdrInput(formatted: string): number {
+  return Number(formatted.replace(/\./g, ""));
+}
+
+function parseUsdInput(formatted: string): number {
+  const cleaned = formatted.replace(/\./g, "").replace(",", ".");
+  return Number(cleaned);
+}
+
+function idrFromNumber(n: number): string {
+  if (!Number.isFinite(n)) return "";
+  return formatThousandDots(String(Math.round(n)));
+}
+
+function usdFromNumber(n: number): string {
+  if (!Number.isFinite(n)) return "";
+  const fixed = n.toFixed(2);
+  const [intRaw, dec] = fixed.split(".");
+  const intFormatted = formatThousandDots(intRaw);
+  if (dec === "00") return intFormatted;
+  return `${intFormatted},${dec}`;
+}
+
 /** File name for Content-Disposition / download (ensure .pdf). */
 function pdfDownloadName(fileName: string): string {
   const t = fileName.trim() || "document";
@@ -453,8 +513,8 @@ export function DocumentGuideTablePage() {
                   titleId: row.titleId,
                   titleEn: row.titleEn ?? "",
                   tripDays: row.tripDays ? String(row.tripDays) : "",
-                  priceIdr: String(row.priceIdr),
-                  priceUsd: String(row.priceUsd),
+                  priceIdr: idrFromNumber(row.priceIdr),
+                  priceUsd: usdFromNumber(row.priceUsd),
                   fileName: row.fileName,
                   status: row.status,
                   regionIds: [...row.regionIds],
@@ -619,8 +679,8 @@ export function DocumentGuideTablePage() {
       setCreateError("Price IDR and price USD are required.");
       return;
     }
-    const priceIdrNum = Number(priceIdrStr);
-    const priceUsdNum = Number(priceUsdStr);
+    const priceIdrNum = parseIdrInput(priceIdrStr);
+    const priceUsdNum = parseUsdInput(priceUsdStr);
     if (Number.isNaN(priceIdrNum) || Number.isNaN(priceUsdNum) || priceIdrNum < 0 || priceUsdNum < 0) {
       setCreateError("Prices must be valid non-negative numbers.");
       return;
@@ -919,24 +979,26 @@ export function DocumentGuideTablePage() {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Harga Rupiah (IDR)</label>
               <Input
-                type="number"
-                min={0}
-                step={1}
+                type="text"
+                inputMode="numeric"
                 value={form.priceIdr}
-                onChange={(e) => setForm((f) => ({ ...f, priceIdr: e.target.value }))}
-                placeholder="150000"
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, priceIdr: formatIdrInput(e.target.value) }))
+                }
+                placeholder="150.000"
                 disabled={createSubmitting}
               />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Harga USD</label>
               <Input
-                type="number"
-                min={0}
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={form.priceUsd}
-                onChange={(e) => setForm((f) => ({ ...f, priceUsd: e.target.value }))}
-                placeholder="9.99"
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, priceUsd: formatUsdInput(e.target.value) }))
+                }
+                placeholder="9,99"
                 disabled={createSubmitting}
               />
             </div>

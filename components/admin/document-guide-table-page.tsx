@@ -975,12 +975,15 @@ export function DocumentGuideTablePage() {
               </p>
             )}
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Harga Rupiah (IDR)</label>
+          <div className="grid grid-cols-2 items-end gap-4">
+            <div className="min-w-0">
+              <label className="mb-1 block truncate text-sm font-medium text-slate-700 dark:text-slate-300">
+                Harga Rupiah (IDR)
+              </label>
               <Input
                 type="text"
                 inputMode="numeric"
+                className="tabular-nums"
                 value={form.priceIdr}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, priceIdr: formatIdrInput(e.target.value) }))
@@ -989,11 +992,14 @@ export function DocumentGuideTablePage() {
                 disabled={createSubmitting}
               />
             </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Harga USD</label>
+            <div className="min-w-0">
+              <label className="mb-1 block truncate text-sm font-medium text-slate-700 dark:text-slate-300">
+                Harga USD
+              </label>
               <Input
                 type="text"
                 inputMode="decimal"
+                className="tabular-nums"
                 value={form.priceUsd}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, priceUsd: formatUsdInput(e.target.value) }))

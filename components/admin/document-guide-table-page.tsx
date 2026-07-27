@@ -160,6 +160,8 @@ type GuideFormState = {
   priceUsd: string;
   fileName: string;
   status: DocumentGuide["status"];
+  previewMode: DocumentGuide["previewMode"];
+  previewPageCount: string;
   regionIds: string[];
   countryIds: string[];
   cityIds: string[];
@@ -198,6 +200,8 @@ export function DocumentGuideTablePage() {
     priceUsd: "0",
     fileName: "",
     status: "draft",
+    previewMode: "hide",
+    previewPageCount: "3",
     regionIds: [],
     countryIds: [],
     cityIds: [],
@@ -380,6 +384,8 @@ export function DocumentGuideTablePage() {
       priceUsd: usdFromNumber(row.priceUsd),
       fileName: row.fileName,
       status: row.status,
+      previewMode: row.previewMode ?? "hide",
+      previewPageCount: String(row.previewPageCount ?? 3),
       regionIds: [...row.regionIds],
       countryIds: [...row.countryIds],
       cityIds: [...row.cityIds],
@@ -602,6 +608,8 @@ export function DocumentGuideTablePage() {
       priceUsd: "",
       fileName: "",
       status: "draft",
+      previewMode: "hide",
+      previewPageCount: "3",
       regionIds: [],
       countryIds: [],
       cityIds: [],
@@ -765,6 +773,17 @@ export function DocumentGuideTablePage() {
       }
     }
 
+    const previewMode = form.previewMode === "show" ? "show" : "hide";
+    let previewPageCount = 3;
+    if (previewMode === "hide") {
+      const pc = Number(form.previewPageCount.trim());
+      if (!Number.isInteger(pc) || pc < 1 || pc > 999) {
+        setCreateError("Preview page limit must be an integer between 1 and 999.");
+        return;
+      }
+      previewPageCount = pc;
+    }
+
     setCreateSubmitting(true);
     try {
       const fd = new FormData();
@@ -777,6 +796,10 @@ export function DocumentGuideTablePage() {
       }
       fd.append("priceIdr", String(Math.round(priceIdrNum)));
       fd.append("priceUsd", String(priceUsdNum));
+      fd.append("previewMode", previewMode);
+      if (previewMode === "hide") {
+        fd.append("previewPageCount", String(previewPageCount));
+      }
       fd.append("tags", JSON.stringify(tagsPayload));
       if (pdfFile) {
         fd.append("document", pdfFile, pdfFile.name);
@@ -831,6 +854,8 @@ export function DocumentGuideTablePage() {
     form.tripDays,
     form.priceIdr,
     form.priceUsd,
+    form.previewMode,
+    form.previewPageCount,
     createRegionIds,
     createCountryIds,
     createCityIds,
@@ -1046,6 +1071,64 @@ export function DocumentGuideTablePage() {
                 disabled={createSubmitting}
               />
             </div>
+          </div>
+
+          <div>
+            <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Preview doc
+            </span>
+            <p className="mb-2 text-xs text-slate-500">
+              Hide: publik hanya melihat N halaman pertama (dipotong di server). Show: publik
+              bisa melihat seluruh PDF — gunakan hati-hati untuk dokumen berbayar.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                <input
+                  type="radio"
+                  name="previewMode"
+                  value="hide"
+                  checked={form.previewMode === "hide"}
+                  disabled={createSubmitting}
+                  onChange={() => setForm((f) => ({ ...f, previewMode: "hide" }))}
+                  className="h-4 w-4 accent-admin-primary-600"
+                />
+                hide
+              </label>
+              <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                <input
+                  type="radio"
+                  name="previewMode"
+                  value="show"
+                  checked={form.previewMode === "show"}
+                  disabled={createSubmitting}
+                  onChange={() => setForm((f) => ({ ...f, previewMode: "show" }))}
+                  className="h-4 w-4 accent-admin-primary-600"
+                />
+                show
+              </label>
+            </div>
+            {form.previewMode === "hide" ? (
+              <div className="mt-3 max-w-xs">
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Limit halaman preview
+                </label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={999}
+                  step={1}
+                  value={form.previewPageCount}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, previewPageCount: e.target.value }))
+                  }
+                  placeholder="3"
+                  disabled={createSubmitting}
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  Default 3. Hanya halaman 1 sampai angka ini yang dikirim ke publik.
+                </p>
+              </div>
+            ) : null}
           </div>
 
           <div className="space-y-5">

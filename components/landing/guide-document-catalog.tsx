@@ -9,12 +9,13 @@ import {
   parsePublicGuideListResponse,
   type PublicDocumentGuideCard,
 } from "@/lib/document-guide/parse-public-list";
+import { parseOrderList } from "@/lib/order/parse-order";
 import type { ListMeta } from "@/types/geo-api";
 
 const PAGE_SIZE = 10;
 
 export function GuideDocumentCatalog() {
-  const { t, locale } = useLanding();
+  const { t, locale, currentUser } = useLanding();
   const [guides, setGuides] = useState<PublicDocumentGuideCard[]>([]);
   const [meta, setMeta] = useState<ListMeta | null>(null);
   const [page, setPage] = useState(1);
@@ -22,6 +23,36 @@ export function GuideDocumentCatalog() {
   const [appliedSearch, setAppliedSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set());
+
+  const loadOwned = useCallback(async () => {
+    if (!currentUser) {
+      setOwnedIds(new Set());
+      return;
+    }
+    try {
+      const res = await fetch("/api/order", { credentials: "include" });
+      if (!res.ok) {
+        setOwnedIds(new Set());
+        return;
+      }
+      const body = await res.json().catch(() => null);
+      const orders = parseOrderList(body);
+      setOwnedIds(
+        new Set(
+          orders
+            .filter((o) => o.statusPayment === "PAID" && o.documentGuide.id)
+            .map((o) => o.documentGuide.id),
+        ),
+      );
+    } catch {
+      setOwnedIds(new Set());
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    void loadOwned();
+  }, [loadOwned]);
 
   const loadGuides = useCallback(async () => {
     setLoading(true);
@@ -189,10 +220,17 @@ export function GuideDocumentCatalog() {
                 key={item.id}
                 item={item}
                 daysLabel={daysLabel(item.tripDays)}
-                buyLabel={t.destinations.buy}
+                buyLabel={t.guides.buy}
+                previewLabel={t.guides.preview}
+                downloadLabel={t.guides.download}
                 processingLabel={t.destinations.processing}
                 priceUnavailableLabel={t.destinations.priceUnavailable}
                 networkErrorLabel={t.auth.networkError}
+                previewLoadingLabel={t.destinations.previewLoading}
+                previewErrorLabel={t.destinations.previewError}
+                previewLimitedHint={t.destinations.previewLimitedHint}
+                previewFullHint={t.destinations.previewFullHint}
+                owned={ownedIds.has(item.id)}
                 onError={setError}
               />
             ))}

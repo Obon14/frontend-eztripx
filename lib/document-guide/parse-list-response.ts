@@ -128,6 +128,18 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
   const status =
     statusRaw === "published" || statusRaw === "draft" ? statusRaw : ("draft" as const);
 
+  const previewModeRaw = raw.previewMode;
+  const previewMode =
+    previewModeRaw === "show" || previewModeRaw === "hide" ? previewModeRaw : ("hide" as const);
+
+  const previewPageCountRaw = raw.previewPageCount;
+  const previewPageCount =
+    typeof previewPageCountRaw === "number" && Number.isFinite(previewPageCountRaw)
+      ? Math.max(1, Math.floor(previewPageCountRaw))
+      : typeof previewPageCountRaw === "string" && /^\d+$/.test(previewPageCountRaw)
+        ? Math.max(1, Number(previewPageCountRaw))
+        : 3;
+
   const tripDays =
     typeof raw.tripDays === "number" && Number.isFinite(raw.tripDays)
       ? raw.tripDays
@@ -156,6 +168,8 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
     tags,
     fileName: nameDocument,
     status,
+    previewMode,
+    previewPageCount,
     structuredTags: structuredTags.length > 0 ? structuredTags : undefined,
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
   };

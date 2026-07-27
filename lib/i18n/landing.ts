@@ -39,6 +39,12 @@ export type LandingCopy = {
     titleFiltered: string;
     titleFilteredHighlight: string;
     buy: string;
+    preview: string;
+    download: string;
+    previewLoading: string;
+    previewError: string;
+    previewLimitedHint: string;
+    previewFullHint: string;
     days: string;
     loading: string;
     empty: string;
@@ -58,6 +64,8 @@ export type LandingCopy = {
     clearSearch: string;
     loginToBuy: string;
     buy: string;
+    preview: string;
+    download: string;
     processing: string;
     priceIdr: string;
     priceUsd: string;
@@ -186,6 +194,12 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       titleFiltered: "HASIL",
       titleFilteredHighlight: "PENCARIAN",
       buy: "Beli",
+      preview: "Lihat preview",
+      download: "Download",
+      previewLoading: "Memuat PDF…",
+      previewError: "Tidak dapat memuat preview.",
+      previewLimitedHint: "Preview terbatas: halaman 1–{n}. Beli untuk akses penuh + unduhan.",
+      previewFullHint: "Preview lengkap dokumen (tanpa batas halaman).",
       days: "hari",
       loading: "Memuat panduan…",
       empty: "Belum ada panduan tersedia.",
@@ -206,6 +220,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       clearSearch: "Reset",
       loginToBuy: "Masuk untuk membeli",
       buy: "Beli panduan",
+      preview: "Lihat preview",
+      download: "Download",
       processing: "Memproses…",
       priceIdr: "IDR",
       priceUsd: "USD",
@@ -336,6 +352,12 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       titleFiltered: "SEARCH",
       titleFilteredHighlight: "RESULTS",
       buy: "Buy",
+      preview: "Preview",
+      download: "Download",
+      previewLoading: "Loading PDF…",
+      previewError: "Could not load preview.",
+      previewLimitedHint: "Limited preview: pages 1–{n}. Purchase for full access + download.",
+      previewFullHint: "Full document preview (all pages).",
       days: "days",
       loading: "Loading guides…",
       empty: "No guides available yet.",
@@ -356,6 +378,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       clearSearch: "Clear",
       loginToBuy: "Sign in to purchase",
       buy: "Buy guide",
+      preview: "Preview",
+      download: "Download",
       processing: "Processing…",
       priceIdr: "IDR",
       priceUsd: "USD",

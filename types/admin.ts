@@ -68,6 +68,10 @@ export type DocumentGuide = {
   /** Nama file dokumen (BE: `nameDocument`) */
   fileName: string;
   status: "draft" | "published";
+  /** Public preview: hide = limited pages; show = full PDF */
+  previewMode: "hide" | "show";
+  /** Used when previewMode is hide */
+  previewPageCount: number;
   /** Present when row was loaded from list API */
   structuredTags?: DocumentGuideStructuredTag[];
   createdAt?: string;

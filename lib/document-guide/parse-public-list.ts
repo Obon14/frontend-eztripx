@@ -14,6 +14,8 @@ export type PublicDocumentGuideCard = {
   priceUsd: string | null;
   coverImages: PublicCoverImage[];
   locationLabel: string;
+  previewMode: "hide" | "show";
+  previewPageCount: number;
 };
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -70,6 +72,18 @@ export function parsePublicGuideItem(raw: unknown): PublicDocumentGuideCard | nu
     coverImages = [{ id: "legacy", url: raw.coverImageUrl, sortOrder: 0 }];
   }
 
+  const previewModeRaw = raw.previewMode;
+  const previewMode =
+    previewModeRaw === "show" || previewModeRaw === "hide" ? previewModeRaw : ("hide" as const);
+
+  const pageRaw = raw.previewPageCount;
+  const previewPageCount =
+    typeof pageRaw === "number" && Number.isFinite(pageRaw)
+      ? Math.max(1, Math.floor(pageRaw))
+      : typeof pageRaw === "string" && /^\d+$/.test(pageRaw)
+        ? Math.max(1, Number(pageRaw))
+        : 3;
+
   return {
     id,
     title: typeof raw.title === "string" ? raw.title : "",
@@ -79,6 +93,8 @@ export function parsePublicGuideItem(raw: unknown): PublicDocumentGuideCard | nu
     coverImages,
     locationLabel:
       typeof raw.locationLabel === "string" ? raw.locationLabel : "",
+    previewMode,
+    previewPageCount,
   };
 }
 

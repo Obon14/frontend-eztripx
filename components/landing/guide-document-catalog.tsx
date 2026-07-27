@@ -1,8 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Compass, Search } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Compass, MapPin, Search } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { GuideDocumentCard } from "@/components/landing/guide-document-card";
+import {
+  HeroLocationPicker,
+  type LocationSelection,
+} from "@/components/landing/hero-location-picker";
 import { useLanding } from "@/components/landing/language-provider";
 import { Alert } from "@/components/ui/alert";
 import {
@@ -14,13 +18,53 @@ import type { ListMeta } from "@/types/geo-api";
 
 const PAGE_SIZE = 10;
 
+const emptyLocation: LocationSelection = {
+  regions: [],
+  countries: [],
+  cities: [],
+};
+
+type AppliedFilters = {
+  search: string;
+  regionIds: number[];
+  countryIds: number[];
+  cityIds: number[];
+  tripDays: number | null;
+};
+
+function locationToIds(location: LocationSelection) {
+  return {
+    regionIds: location.regions.map((r) => Number(r.id)).filter(Number.isFinite),
+    countryIds: location.countries.map((c) => Number(c.id)).filter(Number.isFinite),
+    cityIds: location.cities.map((c) => Number(c.id)).filter(Number.isFinite),
+  };
+}
+
+function hasAnyFilter(f: AppliedFilters): boolean {
+  return (
+    f.search.length > 0 ||
+    f.regionIds.length > 0 ||
+    f.countryIds.length > 0 ||
+    f.cityIds.length > 0 ||
+    f.tripDays != null
+  );
+}
+
 export function GuideDocumentCatalog() {
   const { t, locale, currentUser } = useLanding();
   const [guides, setGuides] = useState<PublicDocumentGuideCard[]>([]);
   const [meta, setMeta] = useState<ListMeta | null>(null);
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
-  const [appliedSearch, setAppliedSearch] = useState("");
+  const [location, setLocation] = useState<LocationSelection>(emptyLocation);
+  const [tripDays, setTripDays] = useState("");
+  const [applied, setApplied] = useState<AppliedFilters>({
+    search: "",
+    regionIds: [],
+    countryIds: [],
+    cityIds: [],
+    tripDays: null,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set());
@@ -61,10 +105,23 @@ export function GuideDocumentCatalog() {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(PAGE_SIZE),
-        search: appliedSearch,
+        search: applied.search,
         locale,
         sort: "newest",
       });
+      for (const id of applied.regionIds) {
+        params.append("regionIds", String(id));
+      }
+      for (const id of applied.countryIds) {
+        params.append("countryIds", String(id));
+      }
+      for (const id of applied.cityIds) {
+        params.append("cityIds", String(id));
+      }
+      if (applied.tripDays != null) {
+        params.set("tripDays", String(applied.tripDays));
+      }
+
       const res = await fetch(`/api/document-guide/public?${params}`);
       const body = await res.json().catch(() => null);
       if (!res.ok) {
@@ -83,7 +140,7 @@ export function GuideDocumentCatalog() {
     } finally {
       setLoading(false);
     }
-  }, [appliedSearch, locale, page, t.guides.loadError]);
+  }, [applied, locale, page, t.guides.loadError]);
 
   useEffect(() => {
     void loadGuides();
@@ -91,29 +148,70 @@ export function GuideDocumentCatalog() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [page, appliedSearch]);
+  }, [page, applied]);
 
   function submitSearch(e: FormEvent) {
     e.preventDefault();
+    const ids = locationToIds(location);
+    const daysRaw = tripDays.trim();
+    const daysNum = daysRaw ? Number(daysRaw) : null;
+    const nextTripDays =
+      daysNum != null && Number.isInteger(daysNum) && daysNum >= 1 && daysNum <= 365
+        ? daysNum
+        : null;
+
     setPage(1);
-    setAppliedSearch(searchInput.trim());
+    setApplied({
+      search: searchInput.trim(),
+      regionIds: ids.regionIds,
+      countryIds: ids.countryIds,
+      cityIds: ids.cityIds,
+      tripDays: nextTripDays,
+    });
   }
 
-  function clearSearch() {
+  function clearFilters() {
     setSearchInput("");
+    setLocation(emptyLocation);
+    setTripDays("");
     setPage(1);
-    setAppliedSearch("");
+    setApplied({
+      search: "",
+      regionIds: [],
+      countryIds: [],
+      cityIds: [],
+      tripDays: null,
+    });
   }
 
   const totalPages = meta?.totalPages ?? 1;
   const total = meta?.total ?? 0;
   const canPrev = page > 1;
   const canNext = page < totalPages;
+  const filtersActive = hasAnyFilter(applied);
 
   function daysLabel(days: number | null): string {
     if (!days || days < 1) return "";
     return `${days} ${t.destinations.days}`;
   }
+
+  function emptyMessage(): { title: string; hint: string } {
+    if (!filtersActive) {
+      return { title: t.guides.empty, hint: t.guides.emptyHint };
+    }
+    if (
+      applied.search &&
+      applied.regionIds.length === 0 &&
+      applied.countryIds.length === 0 &&
+      applied.cityIds.length === 0 &&
+      applied.tripDays == null
+    ) {
+      return { title: t.guides.emptySearch, hint: t.guides.emptyHint };
+    }
+    return { title: t.guides.emptyFiltered, hint: t.guides.emptyHint };
+  }
+
+  const emptyCopy = emptyMessage();
 
   return (
     <section className="bg-gradient-to-b from-slate-50/80 to-white py-12 sm:py-16 dark:from-slate-900 dark:to-slate-950">
@@ -133,39 +231,84 @@ export function GuideDocumentCatalog() {
 
         <form
           onSubmit={submitSearch}
-          className="mb-8 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center dark:border-slate-700 dark:bg-slate-900"
+          className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900"
         >
-          <label className="relative min-w-0 flex-1">
-            <span className="sr-only">{t.guides.searchPlaceholder}</span>
-            <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-              aria-hidden
-            />
-            <input
-              type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={t.guides.searchPlaceholder}
-              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-landing-orange focus:ring-2 focus:ring-landing-orange/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-            />
-          </label>
-          <div className="flex shrink-0 gap-2">
-            {appliedSearch ? (
+          <div className="flex flex-col lg:flex-row lg:items-stretch">
+            <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r dark:border-slate-800">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
+                  <MapPin className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  {t.hero.location}
+                </span>
+              </div>
+              <HeroLocationPicker value={location} onChange={setLocation} />
+            </div>
+
+            <div className="flex border-b border-slate-100 lg:w-40 lg:flex-col lg:border-b-0 lg:border-r dark:border-slate-800 xl:w-44">
+              <div className="flex flex-1 flex-col justify-center px-4 py-4 sm:px-5">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
+                    <Calendar className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    {t.hero.duration}
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  max={365}
+                  placeholder={t.hero.durationPlaceholder}
+                  value={tripDays}
+                  onChange={(e) => setTripDays(e.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+            <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r dark:border-slate-800">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
+                  <Search className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  {t.guides.search}
+                </span>
+              </div>
+              <input
+                type="search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder={t.guides.searchPlaceholder}
+                className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-stretch lg:w-auto lg:flex-col lg:justify-center lg:p-3">
+              {filtersActive ||
+              searchInput ||
+              tripDays ||
+              location.regions.length > 0 ||
+              location.countries.length > 0 ||
+              location.cities.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 lg:min-w-[6.5rem]"
+                >
+                  {t.guides.clearSearch}
+                </button>
+              ) : null}
               <button
-                type="button"
-                onClick={clearSearch}
-                className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300"
+                type="submit"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-landing-orange px-5 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] lg:min-w-[6.5rem]"
               >
-                {t.guides.clearSearch}
+                <Search className="h-4 w-4" aria-hidden />
+                {t.guides.search}
               </button>
-            ) : null}
-            <button
-              type="submit"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-landing-orange px-5 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830]"
-            >
-              <Search className="h-4 w-4" aria-hidden />
-              {t.guides.search}
-            </button>
+            </div>
           </div>
         </form>
 
@@ -202,16 +345,16 @@ export function GuideDocumentCatalog() {
         ) : guides.length === 0 ? (
           <div className="mx-auto max-w-md rounded-2xl border border-dashed border-slate-200 bg-white px-8 py-14 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-landing-orange/10">
-              {appliedSearch ? (
+              {filtersActive ? (
                 <Search className="h-6 w-6 text-landing-orange" aria-hidden />
               ) : (
                 <Compass className="h-6 w-6 text-landing-orange" aria-hidden />
               )}
             </span>
             <p className="mt-4 text-base font-semibold text-slate-800 dark:text-slate-200">
-              {appliedSearch ? t.guides.emptySearch : t.guides.empty}
+              {emptyCopy.title}
             </p>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t.guides.emptyHint}</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{emptyCopy.hint}</p>
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

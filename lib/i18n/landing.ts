@@ -71,6 +71,7 @@ export type LandingCopy = {
     priceUsd: string;
     empty: string;
     emptySearch: string;
+    emptyFiltered: string;
     emptyHint: string;
     loadError: string;
     resultsCount: string;
@@ -227,6 +228,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       priceUsd: "USD",
       empty: "Belum ada panduan tersedia.",
       emptySearch: "Tidak ada panduan yang cocok dengan pencarian ini.",
+      emptyFiltered: "Tidak ada panduan untuk filter ini. Coba ubah lokasi, durasi, atau kata kunci.",
       emptyHint: "Coba kata kunci lain atau hapus filter pencarian.",
       loadError: "Gagal memuat panduan.",
       resultsCount: "Menampilkan {shown} dari {total} panduan",
@@ -385,6 +387,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       priceUsd: "USD",
       empty: "No guides available yet.",
       emptySearch: "No guides match this search.",
+      emptyFiltered: "No guides match these filters. Try a different location, duration, or keyword.",
       emptyHint: "Try another keyword or clear the search.",
       loadError: "Failed to load guides.",
       resultsCount: "Showing {shown} of {total} guides",

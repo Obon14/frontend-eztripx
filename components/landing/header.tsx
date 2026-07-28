@@ -40,14 +40,15 @@ export function LandingHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-xl font-extrabold tracking-tight text-white"
+          className="flex items-center gap-0.5 text-xl font-extrabold tracking-tight text-white"
         >
           <Image
             src="/images/logo-eztripx.png"
             alt="EzTripx"
             width={40}
             height={40}
-            className="h-9 w-9 shrink-0 object-contain sm:h-10 sm:w-10"
+            unoptimized
+            className="h-9 w-9 shrink-0 bg-transparent object-contain sm:h-10 sm:w-10"
             priority
           />
           <span>

@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Map as LeafletMap, Marker } from "leaflet";
 import type { PublicMapPin } from "@/lib/document-guide/parse-map-pins";
+
+const LEAFLET_CSS =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+const LEAFLET_JS =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
 
 type AdventureMapProps = {
   pins: PublicMapPin[];
@@ -10,6 +14,50 @@ type AdventureMapProps = {
   guidesLabel: string;
   viewGuidesLabel: string;
 };
+
+/** Minimal Leaflet surface used by this map (CDN-loaded, no npm resolve at build). */
+type LeafletNs = {
+  map: (
+    el: HTMLElement,
+    opts?: { scrollWheelZoom?: boolean; worldCopyJump?: boolean },
+  ) => LeafletMapInstance;
+  tileLayer: (
+    url: string,
+    opts?: Record<string, unknown>,
+  ) => { addTo: (map: LeafletMapInstance) => unknown };
+  marker: (latlng: [number, number]) => LeafletMarker;
+  Icon: {
+    Default: {
+      prototype: Record<string, unknown>;
+      mergeOptions: (opts: Record<string, string>) => void;
+    };
+  };
+};
+
+type LeafletMapInstance = {
+  setView: (latlng: [number, number], zoom: number) => LeafletMapInstance;
+  fitBounds: (
+    bounds: [number, number][],
+    opts?: { padding?: [number, number]; maxZoom?: number },
+  ) => void;
+  invalidateSize: () => void;
+  remove: () => void;
+};
+
+type LeafletMarker = {
+  addTo: (map: LeafletMapInstance) => LeafletMarker;
+  bindPopup: (
+    html: string,
+    opts?: { maxWidth?: number; className?: string },
+  ) => LeafletMarker;
+  remove: () => void;
+};
+
+declare global {
+  interface Window {
+    L?: LeafletNs;
+  }
+}
 
 function escapeHtml(s: string): string {
   return s
@@ -55,6 +103,45 @@ function buildPopupHtml(
   `;
 }
 
+function ensureLeafletCss(): void {
+  if (document.querySelector(`link[href="${LEAFLET_CSS}"]`)) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = LEAFLET_CSS;
+  document.head.appendChild(link);
+}
+
+function loadLeafletScript(): Promise<LeafletNs> {
+  if (window.L) return Promise.resolve(window.L);
+
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${LEAFLET_JS}"]`,
+    );
+    if (existing) {
+      existing.addEventListener("load", () => {
+        if (window.L) resolve(window.L);
+        else reject(new Error("Leaflet failed to load"));
+      });
+      existing.addEventListener("error", () =>
+        reject(new Error("Leaflet script error")),
+      );
+      if (window.L) resolve(window.L);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS;
+    script.async = true;
+    script.onload = () => {
+      if (window.L) resolve(window.L);
+      else reject(new Error("Leaflet failed to load"));
+    };
+    script.onerror = () => reject(new Error("Leaflet script error"));
+    document.head.appendChild(script);
+  });
+}
+
 export function AdventureMap({
   pins,
   daysLabel,
@@ -62,8 +149,8 @@ export function AdventureMap({
   viewGuidesLabel,
 }: AdventureMapProps) {
   const hostRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
-  const markersRef = useRef<Marker[]>([]);
+  const mapRef = useRef<LeafletMapInstance | null>(null);
+  const markersRef = useRef<LeafletMarker[]>([]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -72,67 +159,68 @@ export function AdventureMap({
     let cancelled = false;
 
     void (async () => {
-      const leafletMod = await import("leaflet");
-      const L = (leafletMod.default ?? leafletMod) as typeof import("leaflet");
+      try {
+        ensureLeafletCss();
+        const L = await loadLeafletScript();
+        if (cancelled || !hostRef.current) return;
 
-      if (cancelled || !hostRef.current) return;
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+          iconUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+          shadowUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        });
 
-      // Fix default marker icons under bundlers
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-        iconUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-        shadowUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-      });
+        if (mapRef.current) {
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
 
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
+        const map = L.map(host, {
+          scrollWheelZoom: false,
+          worldCopyJump: true,
+        }).setView([20, 10], 2);
+
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+          subdomains: "abcd",
+          maxZoom: 18,
+        }).addTo(map);
+
+        mapRef.current = map;
+
+        for (const m of markersRef.current) {
+          m.remove();
+        }
+        markersRef.current = [];
+
+        const bounds: [number, number][] = [];
+        for (const pin of pins) {
+          const marker = L.marker([pin.lat, pin.lng]).addTo(map);
+          marker.bindPopup(
+            buildPopupHtml(pin, daysLabel, guidesLabel, viewGuidesLabel),
+            { maxWidth: 280, className: "ez-map-popup-wrap" },
+          );
+          markersRef.current.push(marker);
+          bounds.push([pin.lat, pin.lng]);
+        }
+
+        if (bounds.length === 1) {
+          map.setView(bounds[0], 5);
+        } else if (bounds.length > 1) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 5 });
+        }
+
+        window.setTimeout(() => {
+          map.invalidateSize();
+        }, 80);
+      } catch {
+        // Map stays empty; section already has empty/error states upstream.
       }
-
-      const map = L.map(host, {
-        scrollWheelZoom: false,
-        worldCopyJump: true,
-      }).setView([20, 10], 2);
-
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 18,
-      }).addTo(map);
-
-      mapRef.current = map;
-
-      for (const m of markersRef.current) {
-        m.remove();
-      }
-      markersRef.current = [];
-
-      const bounds: [number, number][] = [];
-      for (const pin of pins) {
-        const marker = L.marker([pin.lat, pin.lng]).addTo(map);
-        marker.bindPopup(
-          buildPopupHtml(pin, daysLabel, guidesLabel, viewGuidesLabel),
-          { maxWidth: 280, className: "ez-map-popup-wrap" },
-        );
-        markersRef.current.push(marker);
-        bounds.push([pin.lat, pin.lng]);
-      }
-
-      if (bounds.length === 1) {
-        map.setView(bounds[0], 5);
-      } else if (bounds.length > 1) {
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 5 });
-      }
-
-      window.setTimeout(() => {
-        map.invalidateSize();
-      }, 80);
     })();
 
     return () => {

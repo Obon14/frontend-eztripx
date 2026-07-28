@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { AuthModals } from "@/components/landing/auth-modals";
 import { CtaSection } from "@/components/landing/cta";
 import { DestinationsSection } from "@/components/landing/destinations";
@@ -8,27 +9,41 @@ import { HeroSection } from "@/components/landing/hero";
 import { LandingHeader } from "@/components/landing/header";
 import { LandingProvider } from "@/components/landing/language-provider";
 import { LandingSearchProvider } from "@/components/landing/landing-search-provider";
-import { MapSection } from "@/components/landing/map-section";
 import { StoriesSection } from "@/components/landing/stories";
 import { TestimonialsSection } from "@/components/landing/testimonials";
+
+const MapSection = dynamic(
+  () =>
+    import("@/components/landing/map-section").then((m) => m.MapSection),
+  {
+    ssr: false,
+    loading: () => (
+      <section className="bg-white py-16 sm:py-20 dark:bg-slate-950">
+        <div className="mx-auto flex aspect-[2/1] max-w-4xl items-center justify-center rounded-3xl bg-slate-900 text-sm text-slate-400">
+          …
+        </div>
+      </section>
+    ),
+  },
+);
 
 export function LandingPage() {
   return (
     <LandingProvider>
       <LandingSearchProvider>
-      <div className="min-h-screen bg-white dark:bg-slate-950">
-        <LandingHeader />
-        <main>
-          <HeroSection />
-          <DestinationsSection />
-          <StoriesSection />
-          <MapSection />
-          <TestimonialsSection />
-          <CtaSection />
-        </main>
-        <LandingFooter />
-        <AuthModals />
-      </div>
+        <div className="min-h-screen bg-white dark:bg-slate-950">
+          <LandingHeader />
+          <main>
+            <HeroSection />
+            <DestinationsSection />
+            <StoriesSection />
+            <MapSection />
+            <TestimonialsSection />
+            <CtaSection />
+          </main>
+          <LandingFooter />
+          <AuthModals />
+        </div>
       </LandingSearchProvider>
     </LandingProvider>
   );

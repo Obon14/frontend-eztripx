@@ -67,13 +67,13 @@ export function AdventureMap({
 
   useEffect(() => {
     const host = hostRef.current;
-    if (!host) return;
+    if (!host || typeof window === "undefined") return;
 
     let cancelled = false;
 
     void (async () => {
-      const L = await import("leaflet");
-      await import("leaflet/dist/leaflet.css");
+      const leafletMod = await import("leaflet");
+      const L = (leafletMod.default ?? leafletMod) as typeof import("leaflet");
 
       if (cancelled || !hostRef.current) return;
 
@@ -130,7 +130,6 @@ export function AdventureMap({
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 5 });
       }
 
-      // Leaflet needs a paint cycle when container was hidden/sized by CSS
       window.setTimeout(() => {
         map.invalidateSize();
       }, 80);

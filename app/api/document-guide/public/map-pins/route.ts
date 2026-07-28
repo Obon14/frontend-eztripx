@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { forwardIdListParams } from "@/lib/api/forward-query-ids";
-import { parseListQuery } from "@/lib/api/list-query";
 
 export async function GET(request: Request) {
   const base = process.env.API_BASE_URL;
@@ -12,19 +10,15 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const q = parseListQuery(searchParams);
-  const qs = new URLSearchParams({
-    page: String(q.page),
-    limit: String(q.limit),
-    search: q.search,
-  });
-
-  forwardIdListParams(searchParams, qs, "countryId", "countryIds");
-  forwardIdListParams(searchParams, qs, "regionId", "regionIds");
+  const qs = new URLSearchParams();
+  const locale = searchParams.get("locale");
+  if (locale === "id" || locale === "en") {
+    qs.set("locale", locale);
+  }
 
   try {
     const res = await fetch(
-      `${base.replace(/\/$/, "")}/geo/public/city?${qs.toString()}`,
+      `${base.replace(/\/$/, "")}/document-guide/public/map-pins?${qs.toString()}`,
       { headers: { Accept: "application/json" }, cache: "no-store" },
     );
     const text = await res.text();

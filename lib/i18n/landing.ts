@@ -106,6 +106,12 @@ export type LandingCopy = {
     titleHighlight: string;
     subtitle: string;
     featured: string;
+    loading: string;
+    loadError: string;
+    empty: string;
+    emptyHint: string;
+    guidesLabel: string;
+    viewGuides: string;
   };
   testimonials: {
     title: string;
@@ -264,8 +270,14 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       title: "MULAI PETUALANGAN BARU",
       titleHighlight: "DI SELURUH DUNIA",
       subtitle:
-        "Jelajahi peta interaktif kami dan temukan titik petualangan favorit dari komunitas EzTripx.",
+        "Jelajahi peta interaktif kami dan temukan destinasi panduan resmi EzTripx di seluruh dunia.",
       featured: "Grimari",
+      loading: "Memuat peta…",
+      loadError: "Gagal memuat peta. Coba refresh halaman.",
+      empty: "Belum ada pin destinasi.",
+      emptyHint: "Publish panduan dengan lokasi (negara/kota) agar muncul di peta.",
+      guidesLabel: "panduan",
+      viewGuides: "Lihat panduan",
     },
     testimonials: {
       title: "APA KATA",
@@ -423,8 +435,14 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       title: "START YOUR NEW ADVENTURE",
       titleHighlight: "AROUND THE WORLD",
       subtitle:
-        "Explore our adventure map and discover favorite spots from the EzTripx community.",
+        "Explore our interactive map and discover EzTripx official guide destinations worldwide.",
       featured: "Grimari",
+      loading: "Loading map…",
+      loadError: "Failed to load the map. Try refreshing the page.",
+      empty: "No destination pins yet.",
+      emptyHint: "Publish guides with a location (country/city) so they appear on the map.",
+      guidesLabel: "guides",
+      viewGuides: "View guides",
     },
     testimonials: {
       title: "WHAT ADVENTURERS SAY",

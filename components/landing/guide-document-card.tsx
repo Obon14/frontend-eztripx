@@ -204,8 +204,8 @@ export function GuideDocumentCard({
 
   return (
     <>
-      <article className="group overflow-hidden rounded-2xl border border-slate-100/80 bg-white shadow-sm ring-1 ring-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-landing-orange/20 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5">
-        <div className="relative">
+      <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100/80 bg-white shadow-sm ring-1 ring-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-landing-orange/20 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5">
+        <div className="relative shrink-0">
           <GuideCoverCarousel
             guideId={item.id}
             coverImages={item.coverImages}
@@ -217,14 +217,19 @@ export function GuideDocumentCard({
             </span>
           ) : null}
         </div>
-        <div className="p-4">
-          <h3 className="font-bold text-slate-900 dark:text-slate-100">{item.title}</h3>
+        <div className="flex flex-1 flex-col p-4">
+          <h3 className="line-clamp-2 font-bold text-slate-900 dark:text-slate-100">{item.title}</h3>
           {item.locationLabel ? (
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.locationLabel}</p>
           ) : null}
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          {item.description ? (
+            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              {item.description}
+            </p>
+          ) : null}
+          <div className="mt-auto space-y-3 pt-4">
             <p className="text-lg font-bold text-landing-orange">{displayPrice(item, locale)}</p>
-            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => void openPreview()}

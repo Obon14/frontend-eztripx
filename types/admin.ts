@@ -48,6 +48,8 @@ export type DocumentGuide = {
   id: string;
   titleId: string;
   titleEn: string | null;
+  /** Optional description for public cards */
+  description: string | null;
   /** Display title (titleId) for tables */
   title: string;
   tripDays: number | null;

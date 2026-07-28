@@ -83,14 +83,18 @@ export async function loadPublicCityOptionsPage(
   search: string,
   page: number,
   countryIds: number[],
+  regionIds: number[] = [],
 ): Promise<PagedSelectOptions> {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(MAX_LIMIT),
     search,
   });
+  // Explicit countries win; otherwise filter cities by countries in selected regions.
   if (countryIds.length > 0) {
     appendIdList(params, "countryIds", countryIds);
+  } else if (regionIds.length > 0) {
+    appendIdList(params, "regionIds", regionIds);
   }
   const res = await fetch(`/api/geo/public/city?${params}`);
   if (!res.ok) return { options: [], hasMore: false };

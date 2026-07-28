@@ -80,6 +80,13 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
   const titleEn =
     typeof raw.titleEn === "string" ? raw.titleEn : raw.titleEn === null ? null : null;
 
+  const description =
+    typeof raw.description === "string"
+      ? raw.description
+      : raw.description === null
+        ? null
+        : null;
+
   const nameDocument =
     typeof raw.nameDocument === "string"
       ? raw.nameDocument
@@ -156,6 +163,7 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
     id,
     titleId,
     titleEn,
+    description,
     title: titleId,
     tripDays,
     coverImages,

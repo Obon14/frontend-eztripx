@@ -23,6 +23,7 @@ import { publicGuideCoverSrc } from "@/lib/document-guide/parse-public-list";
 import { cn } from "@/lib/utils";
 import type { DocumentGuide } from "@/types/admin";
 import { PdfJsPreview } from "@/components/admin/pdf-js-preview";
+import { Textarea } from "@/components/ui/textarea";
 
 const formatIdr = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -155,6 +156,7 @@ function buildGeoLabelsFromRow(row: DocumentGuide): Record<string, string> {
 type GuideFormState = {
   titleId: string;
   titleEn: string;
+  description: string;
   tripDays: string;
   priceIdr: string;
   priceUsd: string;
@@ -195,6 +197,7 @@ export function DocumentGuideTablePage() {
   const [form, setForm] = useState<GuideFormState>({
     titleId: "",
     titleEn: "",
+    description: "",
     tripDays: "",
     priceIdr: "0",
     priceUsd: "0",
@@ -379,6 +382,7 @@ export function DocumentGuideTablePage() {
     setForm({
       titleId: row.titleId,
       titleEn: row.titleEn ?? "",
+      description: row.description ?? "",
       tripDays: row.tripDays ? String(row.tripDays) : "",
       priceIdr: idrFromNumber(row.priceIdr),
       priceUsd: usdFromNumber(row.priceUsd),
@@ -603,6 +607,7 @@ export function DocumentGuideTablePage() {
     setForm({
       titleId: "",
       titleEn: "",
+      description: "",
       tripDays: "",
       priceIdr: "",
       priceUsd: "",
@@ -714,11 +719,16 @@ export function DocumentGuideTablePage() {
     setCreateError(null);
     const titleId = form.titleId.trim();
     const titleEn = form.titleEn.trim();
+    const description = form.description.trim();
     const priceIdrStr = form.priceIdr.trim();
     const priceUsdStr = form.priceUsd.trim();
 
     if (!titleId) {
       setCreateError("Title (Indonesian) is required.");
+      return;
+    }
+    if (description.length > 2000) {
+      setCreateError("Description must be at most 2000 characters.");
       return;
     }
     if (!priceIdrStr || !priceUsdStr) {
@@ -791,6 +801,8 @@ export function DocumentGuideTablePage() {
       if (titleEn) {
         fd.append("titleEn", titleEn);
       }
+      // Always send so clear/empty on edit stores null.
+      fd.append("description", description);
       if (tripDaysStr) {
         fd.append("tripDays", tripDaysStr);
       }
@@ -851,6 +863,7 @@ export function DocumentGuideTablePage() {
     editingId,
     form.titleId,
     form.titleEn,
+    form.description,
     form.tripDays,
     form.priceIdr,
     form.priceUsd,
@@ -965,6 +978,22 @@ export function DocumentGuideTablePage() {
               placeholder="Optional"
               disabled={createSubmitting}
             />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Description
+            </label>
+            <Textarea
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Opsional. Ditampilkan di kartu panduan publik."
+              maxLength={2000}
+              disabled={createSubmitting}
+              rows={3}
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              Opsional. Maks. 2000 karakter. Kosongkan jika tidak ingin menampilkan deskripsi.
+            </p>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">

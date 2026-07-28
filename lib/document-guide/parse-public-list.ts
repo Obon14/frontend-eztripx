@@ -9,6 +9,7 @@ export type PublicCoverImage = {
 export type PublicDocumentGuideCard = {
   id: string;
   title: string;
+  description: string | null;
   tripDays: number | null;
   priceIdr: string | null;
   priceUsd: string | null;
@@ -87,6 +88,10 @@ export function parsePublicGuideItem(raw: unknown): PublicDocumentGuideCard | nu
   return {
     id,
     title: typeof raw.title === "string" ? raw.title : "",
+    description:
+      typeof raw.description === "string" && raw.description.trim()
+        ? raw.description.trim()
+        : null,
     tripDays,
     priceIdr: typeof raw.priceIdr === "string" ? raw.priceIdr : null,
     priceUsd: typeof raw.priceUsd === "string" ? raw.priceUsd : null,

@@ -2,6 +2,7 @@
 
 import { Calendar, ChevronLeft, ChevronRight, Compass, MapPin, Search } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { GuideDocumentCard } from "@/components/landing/guide-document-card";
 import {
   HeroLocationPicker,
@@ -52,14 +53,16 @@ function hasAnyFilter(f: AppliedFilters): boolean {
 
 export function GuideDocumentCatalog() {
   const { t, locale, currentUser } = useLanding();
+  const searchParams = useSearchParams();
+  const urlSearch = (searchParams.get("search") ?? "").trim();
   const [guides, setGuides] = useState<PublicDocumentGuideCard[]>([]);
   const [meta, setMeta] = useState<ListMeta | null>(null);
   const [page, setPage] = useState(1);
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState(urlSearch);
   const [location, setLocation] = useState<LocationSelection>(emptyLocation);
   const [tripDays, setTripDays] = useState("");
   const [applied, setApplied] = useState<AppliedFilters>({
-    search: "",
+    search: urlSearch,
     regionIds: [],
     countryIds: [],
     cityIds: [],
@@ -68,6 +71,13 @@ export function GuideDocumentCatalog() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const next = (searchParams.get("search") ?? "").trim();
+    setSearchInput(next);
+    setPage(1);
+    setApplied((prev) => ({ ...prev, search: next }));
+  }, [searchParams]);
 
   const loadOwned = useCallback(async () => {
     if (!currentUser) {

@@ -243,13 +243,20 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
       setLoadingCity(true);
       try {
         setCities(
-          (await loadPublicCityOptionsPage(q, 1, countryIdNums)).options,
+          (
+            await loadPublicCityOptionsPage(
+              q,
+              1,
+              countryIdNums,
+              regionIdNums,
+            )
+          ).options,
         );
       } finally {
         setLoadingCity(false);
       }
     },
-    [countryIdNums.join(",")],
+    [countryIdNums.join(","), regionIdNums.join(",")],
   );
 
   useEffect(() => {

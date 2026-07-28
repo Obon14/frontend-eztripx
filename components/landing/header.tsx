@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLanding } from "@/components/landing/language-provider";
@@ -37,8 +38,21 @@ export function LandingHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-landing-forest/90 shadow-sm shadow-black/10 backdrop-blur-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
-          <span className="text-landing-orange">Ez</span>Tripx
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 text-xl font-extrabold tracking-tight text-white"
+        >
+          <Image
+            src="/images/logo-eztripx.png"
+            alt="EzTripx"
+            width={40}
+            height={40}
+            className="h-9 w-9 shrink-0 object-contain sm:h-10 sm:w-10"
+            priority
+          />
+          <span>
+            <span className="text-landing-orange">Ez</span>Tripx
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex lg:gap-8">

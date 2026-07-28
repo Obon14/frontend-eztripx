@@ -1,9 +1,63 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import { useLanding } from "@/components/landing/language-provider";
+import {
+  parsePublicMapPinsResponse,
+  type PublicMapPin,
+} from "@/lib/document-guide/parse-map-pins";
+
+const AdventureMap = dynamic(
+  () =>
+    import("@/components/landing/adventure-map").then((m) => m.AdventureMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center text-sm text-slate-400">
+        …
+      </div>
+    ),
+  },
+);
 
 export function MapSection() {
-  const { t } = useLanding();
+  const { t, locale } = useLanding();
+  const [pins, setPins] = useState<PublicMapPin[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      setLoading(true);
+      setError(false);
+      try {
+        const res = await fetch(
+          `/api/document-guide/public/map-pins?locale=${locale}`,
+          { cache: "no-store" },
+        );
+        const body = await res.json().catch(() => null);
+        if (!active) return;
+        if (!res.ok) {
+          setPins([]);
+          setError(true);
+          return;
+        }
+        setPins(parsePublicMapPinsResponse(body));
+      } catch {
+        if (!active) return;
+        setPins([]);
+        setError(true);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
+  }, [locale]);
 
   return (
     <section id="community" className="bg-white py-16 sm:py-20 dark:bg-slate-950">
@@ -12,35 +66,32 @@ export function MapSection() {
           {t.map.title}{" "}
           <span className="text-landing-orange">{t.map.titleHighlight}</span>
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-300">{t.map.subtitle}</p>
+        <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-300">
+          {t.map.subtitle}
+        </p>
 
-        <div className="relative mx-auto mt-12 aspect-[2/1] max-w-4xl overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
-          <svg
-            viewBox="0 0 800 400"
-            className="h-full w-full text-slate-300"
-            aria-hidden
-          >
-            {Array.from({ length: 120 }).map((_, i) => {
-              const x = (i % 20) * 40 + 20;
-              const y = Math.floor(i / 20) * 36 + 20;
-              return <circle key={i} cx={x} cy={y} r="2" fill="currentColor" opacity={0.5} />;
-            })}
-          </svg>
-          <div
-            className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lg dark:border-slate-700 dark:bg-slate-800"
-          >
-            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{t.map.featured}</p>
-            <div className="mt-2 flex -space-x-2">
-              {[1, 2, 3].map((n) => (
-                <span
-                  key={n}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-landing-forest text-[10px] font-bold text-white"
-                >
-                  {n}
-                </span>
-              ))}
+        <div className="relative mx-auto mt-12 aspect-[2/1] max-w-4xl overflow-hidden rounded-3xl border border-slate-100 bg-slate-900 shadow-lg ring-1 ring-black/5 dark:border-slate-800">
+          {loading ? (
+            <div className="flex h-full items-center justify-center text-sm text-slate-400">
+              {t.map.loading}
             </div>
-          </div>
+          ) : error ? (
+            <div className="flex h-full items-center justify-center px-6 text-sm text-slate-400">
+              {t.map.loadError}
+            </div>
+          ) : pins.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center gap-2 px-6">
+              <p className="text-sm font-medium text-slate-300">{t.map.empty}</p>
+              <p className="text-xs text-slate-500">{t.map.emptyHint}</p>
+            </div>
+          ) : (
+            <AdventureMap
+              pins={pins}
+              daysLabel={t.destinations.days}
+              guidesLabel={t.map.guidesLabel}
+              viewGuidesLabel={t.map.viewGuides}
+            />
+          )}
         </div>
       </div>
     </section>

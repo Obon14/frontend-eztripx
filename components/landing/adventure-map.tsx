@@ -81,7 +81,10 @@ function buildPopupHtml(
           ? `<span class="ez-map-days">${g.tripDays} ${escapeHtml(daysLabel)}</span>`
           : "";
       const href = `/guide-document?search=${encodeURIComponent(g.title)}`;
-      return `<li><a href="${href}">${escapeHtml(g.title)}</a>${days}</li>`;
+      return `<li class="ez-map-item">
+        <a class="ez-map-item-title" href="${href}">${escapeHtml(g.title)}</a>
+        ${days}
+      </li>`;
     })
     .join("");
 
@@ -94,11 +97,15 @@ function buildPopupHtml(
 
   return `
     <div class="ez-map-popup">
-      <p class="ez-map-title">${escapeHtml(pin.label)}</p>
-      <p class="ez-map-count">${pin.guideCount} ${escapeHtml(guidesLabel)}</p>
+      <div class="ez-map-head">
+        <p class="ez-map-title">${escapeHtml(pin.label)}</p>
+        <p class="ez-map-count">${pin.guideCount} ${escapeHtml(guidesLabel)}</p>
+      </div>
       <ul class="ez-map-list">${guidesHtml}</ul>
       ${more}
-      <a class="ez-map-cta" href="${catalogHref}">${escapeHtml(viewGuidesLabel)}</a>
+      <div class="ez-map-foot">
+        <a class="ez-map-cta" href="${catalogHref}">${escapeHtml(viewGuidesLabel)}</a>
+      </div>
     </div>
   `;
 }
@@ -203,7 +210,7 @@ export function AdventureMap({
           const marker = L.marker([pin.lat, pin.lng]).addTo(map);
           marker.bindPopup(
             buildPopupHtml(pin, daysLabel, guidesLabel, viewGuidesLabel),
-            { maxWidth: 280, className: "ez-map-popup-wrap" },
+            { maxWidth: 300, className: "ez-map-popup-wrap" },
           );
           markersRef.current.push(marker);
           bounds.push([pin.lat, pin.lng]);

@@ -5,8 +5,12 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/table";
-import { parseDocumentGuideListResponse } from "@/lib/document-guide/parse-list-response";
-import type { DocumentGuide } from "@/types/admin";
+import type {
+  DashboardRecentOrder,
+  DashboardSummary,
+  DashboardTopGuide,
+} from "@/types/dashboard";
+import type { OrderStatusPayment } from "@/types/order";
 
 const formatIdr = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -21,159 +25,285 @@ const formatUsd = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
+const formatDateTime = new Intl.DateTimeFormat("id-ID", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+function guideTitle(g: { titleId: string; titleEn: string | null }) {
+  return g.titleEn?.trim() || g.titleId;
+}
+
+function formatMoney(price: string, currency: string) {
+  const n = Number(price);
+  if (!Number.isFinite(n)) return `${currency} ${price}`;
+  if (currency === "USD") return formatUsd.format(n);
+  if (currency === "IDR") return formatIdr.format(n);
+  return `${currency} ${n.toLocaleString("id-ID")}`;
+}
+
+function statusBadgeVariant(
+  status: OrderStatusPayment,
+): "accent" | "primary" | "danger" | "neutral" {
+  switch (status) {
+    case "PAID":
+      return "accent";
+    case "PENDING":
+      return "primary";
+    case "FAILED":
+    case "CANCELED":
+      return "danger";
+    default:
+      return "neutral";
+  }
+}
+
+function parseSummary(body: unknown): DashboardSummary | null {
+  if (typeof body !== "object" || body === null) return null;
+  if (!("kpis" in body) || !("recentOrders" in body)) return null;
+  return body as DashboardSummary;
+}
+
 export default function AdminDashboardPage() {
-  const [documentGuides, setDocumentGuides] = useState<DocumentGuide[]>([]);
-  const [stats, setStats] = useState({
-    totalDocuments: 0,
-    totalRegions: 0,
-    totalCountries: 0,
-    totalCities: 0,
-  });
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const ac = new AbortController();
 
-    async function loadDashboardData() {
+    async function load() {
       setLoading(true);
       setError(null);
       try {
-        const [docsRes, regionsRes, countriesRes, citiesRes] = await Promise.all([
-          fetch("/api/document-guide?page=1&limit=5", { credentials: "include", signal: ac.signal }),
-          fetch("/api/region?page=1&limit=1", { credentials: "include", signal: ac.signal }),
-          fetch("/api/country?page=1&limit=1", { credentials: "include", signal: ac.signal }),
-          fetch("/api/city?page=1&limit=1", { credentials: "include", signal: ac.signal }),
-        ]);
-
-        if (!docsRes.ok) {
-          throw new Error(`Gagal memuat dokumen (${docsRes.status}).`);
-        }
-
-        const docsBody: unknown = await docsRes.json().catch(() => null);
-        const { data: latestGuides, meta: docsMeta } = parseDocumentGuideListResponse(docsBody);
-        setDocumentGuides(latestGuides);
-
-        const [regionsBody, countriesBody, citiesBody]: unknown[] = await Promise.all([
-          regionsRes.json().catch(() => null),
-          countriesRes.json().catch(() => null),
-          citiesRes.json().catch(() => null),
-        ]);
-
-        const countFromBody = (body: unknown): number => {
-          if (
+        const res = await fetch("/api/dashboard/summary?days=7", {
+          credentials: "include",
+          signal: ac.signal,
+        });
+        const body: unknown = await res.json().catch(() => null);
+        if (!res.ok) {
+          const msg =
             typeof body === "object" &&
             body !== null &&
-            "meta" in body &&
-            typeof (body as { meta?: unknown }).meta === "object" &&
-            (body as { meta?: unknown }).meta !== null &&
-            "total" in ((body as { meta: { total?: unknown } }).meta)
-          ) {
-            const total = (body as { meta: { total?: unknown } }).meta.total;
-            return typeof total === "number" ? total : Number(total) || 0;
-          }
-          return 0;
-        };
-
-        setStats({
-          totalDocuments: docsMeta?.total ?? 0,
-          totalRegions: regionsRes.ok ? countFromBody(regionsBody) : 0,
-          totalCountries: countriesRes.ok ? countFromBody(countriesBody) : 0,
-          totalCities: citiesRes.ok ? countFromBody(citiesBody) : 0,
-        });
+            "message" in body &&
+            typeof (body as { message: unknown }).message === "string"
+              ? (body as { message: string }).message
+              : `Gagal memuat dashboard (${res.status}).`;
+          throw new Error(msg);
+        }
+        const parsed = parseSummary(body);
+        if (!parsed) throw new Error("Format respons dashboard tidak valid.");
+        setSummary(parsed);
       } catch (e) {
         if (e instanceof DOMException && e.name === "AbortError") return;
-        setError("Tidak dapat memuat ringkasan dashboard.");
-        setDocumentGuides([]);
-        setStats({
-          totalDocuments: 0,
-          totalRegions: 0,
-          totalCountries: 0,
-          totalCities: 0,
-        });
+        setError(
+          e instanceof Error ? e.message : "Tidak dapat memuat ringkasan dashboard.",
+        );
+        setSummary(null);
       } finally {
         setLoading(false);
       }
     }
 
-    void loadDashboardData();
+    void load();
     return () => ac.abort();
   }, []);
 
-  const columns = useMemo(
+  const recentColumns = useMemo(
     () => [
-      { key: "title", header: "Title", render: (row: DocumentGuide) => row.title },
       {
-        key: "priceIdr",
-        header: "Harga Rupiah",
-        render: (row: DocumentGuide) => formatIdr.format(row.priceIdr),
+        key: "buyer",
+        header: "Pembeli",
+        render: (row: DashboardRecentOrder) => row.user.email,
       },
       {
-        key: "priceUsd",
-        header: "Harga USD",
-        render: (row: DocumentGuide) => formatUsd.format(row.priceUsd),
+        key: "guide",
+        header: "Document Guide",
+        render: (row: DashboardRecentOrder) => guideTitle(row.documentGuide),
+      },
+      {
+        key: "amount",
+        header: "Nominal",
+        render: (row: DashboardRecentOrder) => formatMoney(row.price, row.currency),
       },
       {
         key: "status",
         header: "Status",
-        render: (row: DocumentGuide) => (
-          <Badge variant={row.status === "published" ? "accent" : "primary"}>{row.status}</Badge>
+        render: (row: DashboardRecentOrder) => (
+          <Badge variant={statusBadgeVariant(row.statusPayment)}>
+            {row.statusPayment}
+          </Badge>
         ),
       },
       {
-        key: "fileName",
-        header: "File",
-        render: (row: DocumentGuide) => row.fileName,
+        key: "createdAt",
+        header: "Waktu",
+        render: (row: DashboardRecentOrder) =>
+          formatDateTime.format(new Date(row.paidAt ?? row.createdAt)),
       },
     ],
     [],
   );
 
+  const topColumns = useMemo(
+    () => [
+      {
+        key: "title",
+        header: "Guide",
+        render: (row: DashboardTopGuide) => guideTitle(row),
+      },
+      {
+        key: "paidCount",
+        header: "Terjual",
+        render: (row: DashboardTopGuide) => (
+          <span className="font-semibold text-slate-900 dark:text-slate-100">
+            {row.paidCount}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const kpis = summary?.kpis;
+  const periodDays = summary?.periodDays ?? 7;
+  const attention = summary?.attention;
+  const hasAttention =
+    (attention?.unpaidEmail.length ?? 0) > 0 ||
+    (attention?.pendingCount ?? 0) > 0 ||
+    (attention?.draftCount ?? 0) > 0;
+
   return (
     <section className="space-y-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Home</h1>
-        <p className="text-sm text-slate-600 dark:text-slate-400">Ringkasan data admin panel document guide untuk traveler.</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Radar penjualan &amp; operasional {periodDays} hari terakhir.
+        </p>
       </div>
 
-      <Alert variant="success">
-        Dashboard terhubung ke API. Angka dan daftar dokumen mengikuti data backend terbaru.
-      </Alert>
+      {error ? <Alert variant="warning">{error}</Alert> : null}
 
-      {error ? (
-        <Alert variant="warning">
-          {error}
-        </Alert>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Card>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Revenue IDR ({periodDays}h)
+          </p>
+          <p className="mt-1 text-2xl font-bold text-admin-primary-700">
+            {loading ? "…" : formatIdr.format(Number(kpis?.revenueIdr ?? 0))}
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            USD:{" "}
+            {loading ? "…" : formatUsd.format(Number(kpis?.revenueUsd ?? 0))}
+          </p>
+        </Card>
+        <Card>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Order PAID ({periodDays}h)
+          </p>
+          <p className="mt-1 text-2xl font-bold text-admin-accent-700">
+            {loading ? "…" : (kpis?.paidOrders ?? 0)}
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Total PAID: {summary?.orderCounts.PAID ?? 0}
+          </p>
+        </Card>
+        <Card>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Pending bayar</p>
+          <p className="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400">
+            {loading ? "…" : (kpis?.pendingOrders ?? 0)}
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Failed/Cancel:{" "}
+            {(summary?.orderCounts.FAILED ?? 0) + (summary?.orderCounts.CANCELED ?? 0)}
+          </p>
+        </Card>
+        <Card>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            User baru ({periodDays}h)
+          </p>
+          <p className="mt-1 text-2xl font-bold text-slate-800 dark:text-slate-200">
+            {loading ? "…" : (kpis?.newUsers ?? 0)}
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Katalog: {summary?.catalog.published ?? 0} published ·{" "}
+            {summary?.catalog.draft ?? 0} draft
+          </p>
+        </Card>
+      </div>
+
+      {hasAttention && !loading ? (
+        <Card className="border-amber-200/80 dark:border-amber-500/30">
+          <h2 className="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Perlu perhatian
+          </h2>
+          <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            {(attention?.pendingCount ?? 0) > 0 ? (
+              <li>
+                <Badge variant="primary" className="mr-2">
+                  Pending
+                </Badge>
+                {attention?.pendingCount} order menunggu pembayaran.
+              </li>
+            ) : null}
+            {(attention?.draftCount ?? 0) > 0 ? (
+              <li>
+                <Badge variant="neutral" className="mr-2">
+                  Draft
+                </Badge>
+                {attention?.draftCount} document guide masih draft.
+              </li>
+            ) : null}
+            {(attention?.unpaidEmail.length ?? 0) > 0 ? (
+              <li className="space-y-2">
+                <div>
+                  <Badge variant="danger" className="mr-2">
+                    Email
+                  </Badge>
+                  {attention?.unpaidEmail.length} order PAID belum terkirim PDF.
+                </div>
+                <ul className="ml-1 space-y-1 border-l-2 border-amber-200 pl-3 dark:border-amber-500/40">
+                  {attention?.unpaidEmail.map((o) => (
+                    <li key={o.id} className="text-xs text-slate-600 dark:text-slate-400">
+                      {o.userEmail} · {guideTitle(o.documentGuide)}
+                      {o.paidAt
+                        ? ` · ${formatDateTime.format(new Date(o.paidAt))}`
+                        : ""}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : null}
+          </ul>
+        </Card>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Total Document</p>
-          <p className="mt-1 text-2xl font-bold text-admin-primary-700">{stats.totalDocuments}</p>
+      <div className="grid gap-4 xl:grid-cols-5">
+        <Card className="xl:col-span-3">
+          <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Transaksi terbaru
+          </h2>
+          <DataTable
+            data={summary?.recentOrders ?? []}
+            getRowKey={(row) => row.id}
+            columns={recentColumns}
+            emptyMessage={loading ? "Memuat data..." : "Belum ada transaksi."}
+            className="border-0 shadow-none dark:shadow-none"
+          />
         </Card>
-        <Card>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Total Region</p>
-          <p className="mt-1 text-2xl font-bold text-admin-accent-700">{stats.totalRegions}</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Total Country</p>
-          <p className="mt-1 text-2xl font-bold text-slate-800 dark:text-slate-200">{stats.totalCountries}</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Total City</p>
-          <p className="mt-1 text-2xl font-bold text-slate-800 dark:text-slate-200">{stats.totalCities}</p>
+        <Card className="xl:col-span-2">
+          <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Guide terlaris
+          </h2>
+          <DataTable
+            data={summary?.topGuides ?? []}
+            getRowKey={(row) => row.id}
+            columns={topColumns}
+            emptyMessage={loading ? "Memuat data..." : "Belum ada penjualan."}
+            className="border-0 shadow-none dark:shadow-none"
+          />
         </Card>
       </div>
-
-      <Card>
-        <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">Latest Document Guides</h2>
-        <DataTable
-          data={documentGuides}
-          getRowKey={(row) => row.id}
-          columns={columns}
-          emptyMessage={loading ? "Memuat data..." : "Belum ada document guide."}
-        />
-      </Card>
     </section>
   );
 }

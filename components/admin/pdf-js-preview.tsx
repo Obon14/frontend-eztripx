@@ -57,7 +57,9 @@ export function PdfJsPreview({ url, className }: PdfJsPreviewProps) {
           const page = await pdf.getPage(p);
           const viewport = page.getViewport({ scale });
           const canvas = document.createElement("canvas");
-          canvas.className = "mx-auto mb-6 block max-w-full rounded border border-slate-200/80 bg-white shadow-sm";
+          canvas.className =
+            "pointer-events-none mx-auto mb-6 block max-w-full rounded border border-slate-200/80 bg-white shadow-sm";
+          canvas.setAttribute("draggable", "false");
           const ctx = canvas.getContext("2d");
           if (!ctx) continue;
 
@@ -89,9 +91,11 @@ export function PdfJsPreview({ url, className }: PdfJsPreviewProps) {
   return (
     <div
       className={cn(
-        "relative max-h-[min(78vh,860px)] min-h-[320px] overflow-y-auto rounded-lg border border-slate-200 bg-slate-100/90 p-3",
+        "relative max-h-[min(78vh,860px)] min-h-[320px] select-none overflow-y-auto rounded-lg border border-slate-200 bg-slate-100/90 p-3",
         className,
       )}
+      onContextMenu={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
     >
       {status === "loading" ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-slate-100/85">
@@ -101,7 +105,16 @@ export function PdfJsPreview({ url, className }: PdfJsPreviewProps) {
       {status === "error" ? (
         <p className="py-12 text-center text-sm text-red-600">Tidak dapat menampilkan PDF.</p>
       ) : null}
-      <div ref={hostRef} />
+      <div className="relative">
+        <div ref={hostRef} />
+        {status !== "error" ? (
+          <div
+            className="absolute inset-0 z-[1]"
+            aria-hidden
+            onContextMenu={(e) => e.preventDefault()}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

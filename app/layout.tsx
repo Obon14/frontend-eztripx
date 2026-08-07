@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getSiteUrl } from "@/lib/seo/site-url";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +13,53 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
-  title: "EzTripx — Live Your Adventure",
-  description: "Discover destinations and travel document guides with EzTripx",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "EzTripx — Live Your Adventure",
+    template: "%s | EzTripx",
+  },
+  description:
+    "Discover destinations and buy travel document guides with EzTripx. Plan trips with curated PDF guides for travelers.",
+  applicationName: "EzTripx",
+  keywords: [
+    "EzTripx",
+    "travel guide",
+    "document guide",
+    "travel PDF",
+    "destinasi wisata",
+    "panduan travel",
+  ],
+  authors: [{ name: "EzTripx" }],
+  creator: "EzTripx",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: siteUrl,
+    siteName: "EzTripx",
+    title: "EzTripx — Live Your Adventure",
+    description:
+      "Discover destinations and buy travel document guides with EzTripx.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EzTripx — Live Your Adventure",
+    description:
+      "Discover destinations and buy travel document guides with EzTripx.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: "/images/logo-eztripx.png",
+    apple: "/images/logo-eztripx.png",
+  },
 };
 
 export default function RootLayout({

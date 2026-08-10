@@ -70,7 +70,7 @@ export function MapSection() {
           {t.map.subtitle}
         </p>
 
-        <div className="relative mx-auto mt-12 aspect-[2/1] max-w-4xl overflow-hidden rounded-3xl border border-slate-100 bg-slate-900 shadow-lg ring-1 ring-black/5 dark:border-slate-800">
+        <div className="relative z-0 isolate mx-auto mt-12 aspect-[2/1] max-w-4xl overflow-hidden rounded-3xl border border-slate-100 bg-slate-900 shadow-lg ring-1 ring-black/5 dark:border-slate-800">
           {loading ? (
             <div className="flex h-full items-center justify-center text-sm text-slate-400">
               {t.map.loading}

@@ -45,12 +45,21 @@ export const metadata: Metadata = {
     title: "EzTripx — Live Your Adventure",
     description:
       "Discover destinations and buy travel document guides with EzTripx.",
+    images: [
+      {
+        url: "/images/logo-eztripx.png",
+        width: 512,
+        height: 512,
+        alt: "EzTripx",
+      },
+    ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "EzTripx — Live Your Adventure",
     description:
       "Discover destinations and buy travel document guides with EzTripx.",
+    images: ["/images/logo-eztripx.png"],
   },
   robots: {
     index: true,

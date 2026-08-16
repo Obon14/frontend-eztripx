@@ -116,12 +116,12 @@ export function OrdersList() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t.orders.searchPlaceholder}
-          className="h-11 min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50/80 px-3 text-sm text-slate-900 outline-none focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          className="h-11 min-w-0 flex-1 appearance-none rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 outline-none scheme-light placeholder:text-slate-400 focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:scheme-dark dark:placeholder:text-slate-500 dark:focus:bg-slate-800 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
         />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value as StatusFilter)}
-          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 scheme-light dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:scheme-dark"
         >
           <option value="ALL">{t.orders.filterAll}</option>
           <option value="PENDING">{t.orders.filterPending}</option>
@@ -136,7 +136,7 @@ export function OrdersList() {
               setSearch("");
               setStatus("ALL");
             }}
-            className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-medium text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:text-slate-300"
+            className="h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300"
           >
             {t.orders.reset}
           </button>

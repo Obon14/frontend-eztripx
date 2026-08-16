@@ -48,6 +48,14 @@ export type LandingCopy = {
     subtitle: string;
     email: string;
     role: string;
+    name: string;
+    namePlaceholder: string;
+    photo: string;
+    changePhoto: string;
+    save: string;
+    saving: string;
+    saved: string;
+    photoHint: string;
     loginRequired: string;
     loginCta: string;
   };
@@ -348,6 +356,14 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       subtitle: "Informasi akun EzTripx kamu.",
       email: "Email",
       role: "Peran",
+      name: "Nama",
+      namePlaceholder: "Nama tampilan",
+      photo: "Foto profil",
+      changePhoto: "Ganti foto",
+      save: "Simpan",
+      saving: "Menyimpan…",
+      saved: "Profil tersimpan.",
+      photoHint: "JPG, PNG, atau WebP. Maks. 2 MB.",
       loginRequired: "Masuk untuk melihat profil.",
       loginCta: "Masuk",
     },
@@ -586,6 +602,14 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       subtitle: "Your EzTripx account details.",
       email: "Email",
       role: "Role",
+      name: "Name",
+      namePlaceholder: "Display name",
+      photo: "Profile photo",
+      changePhoto: "Change photo",
+      save: "Save",
+      saving: "Saving…",
+      saved: "Profile saved.",
+      photoHint: "JPG, PNG, or WebP. Max 2 MB.",
       loginRequired: "Sign in to see your profile.",
       loginCta: "Sign in",
     },

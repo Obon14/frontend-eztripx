@@ -16,6 +16,8 @@ type LandingUser = {
   id: string;
   email: string;
   role: string;
+  displayName: string | null;
+  hasAvatar: boolean;
 };
 
 type LandingContextValue = {
@@ -55,14 +57,22 @@ export function LandingProvider({ children }: { children: ReactNode }) {
       setCurrentUser(null);
       return;
     }
-    const body = (await res.json().catch(() => null)) as
-      | { id?: string; email?: string; role?: string }
-      | null;
-    if (body?.id && body?.email && body?.role) {
+    const raw = (await res.json().catch(() => null)) as unknown;
+    const body =
+      raw && typeof raw === "object" && "data" in raw && (raw as { data: unknown }).data
+        && typeof (raw as { data: unknown }).data === "object"
+        ? ((raw as { data: Record<string, unknown> }).data)
+        : (raw as Record<string, unknown> | null);
+    const id = typeof body?.id === "string" ? body.id : null;
+    const email = typeof body?.email === "string" ? body.email : null;
+    const role = typeof body?.role === "string" ? body.role : null;
+    if (id && email && role) {
       setCurrentUser({
-        id: body.id,
-        email: body.email,
-        role: body.role,
+        id,
+        email,
+        role,
+        displayName: typeof body?.displayName === "string" ? body.displayName : null,
+        hasAvatar: body?.hasAvatar === true,
       });
       return;
     }

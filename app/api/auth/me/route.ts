@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { beAuthenticatedFetch } from "@/lib/api/be-authenticated-fetch";
+import { beAuthenticatedFormDataFetch } from "@/lib/api/be-authenticated-form-data";
 import { parseBeErrorMessage } from "@/lib/auth/parse-be-error";
 
 type MeResponse = {
   id: string;
   email: string;
   role: string;
+  displayName?: string | null;
+  hasAvatar?: boolean;
 };
 
 export async function GET() {
@@ -27,6 +30,30 @@ export async function GET() {
     }
 
     return NextResponse.json(body, { status: 200 });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Server error";
+    if (msg.includes("API_BASE_URL")) {
+      return NextResponse.json(
+        { message: "Server misconfiguration: API_BASE_URL is not set." },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({ message: msg }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const incoming = await request.formData();
+    const res = await beAuthenticatedFormDataFetch("/auth/me", incoming, "PATCH");
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      return NextResponse.json(
+        { message: parseBeErrorMessage(data, "Failed to update profile.") },
+        { status: res.status },
+      );
+    }
+    return NextResponse.json(data, { status: res.status });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";
     if (msg.includes("API_BASE_URL")) {

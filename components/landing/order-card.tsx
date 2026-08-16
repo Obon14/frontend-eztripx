@@ -194,34 +194,32 @@ export function OrderCard({
 
   return (
     <>
-      <article className="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
-              {order.documentGuide.title || "—"}
-            </h2>
-            <span
-              className={cn(
-                "rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                STATUS_CLASS[order.statusPayment],
-              )}
-            >
-              {statusLabel}
-            </span>
-          </div>
-          <p className="mt-1 text-sm font-semibold text-landing-orange">
+      <article className="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base font-bold leading-snug text-slate-900 dark:text-slate-100">
+            {order.documentGuide.title || "—"}
+          </h2>
+          <span
+            className={cn(
+              "mt-2 inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
+              STATUS_CLASS[order.statusPayment],
+            )}
+          >
+            {statusLabel}
+          </span>
+          <p className="mt-2 text-sm font-semibold text-landing-orange">
             {formatPrice(order.price, order.currency)}
           </p>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {t.orders.dateLabel}: {orderedAt}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 flex-row flex-wrap items-center gap-2 sm:justify-end">
           {canPreview ? (
             <button
               type="button"
               onClick={() => void openPreview()}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-landing-orange hover:text-landing-orange dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-landing-orange hover:text-landing-orange dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
             >
               {t.orders.preview}
             </button>
@@ -230,7 +228,7 @@ export function OrderCard({
             <button
               type="button"
               onClick={handleContinuePay}
-              className="rounded-lg bg-landing-orange px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830]"
+              className="inline-flex h-9 items-center justify-center rounded-lg bg-landing-orange px-3 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830]"
             >
               {t.orders.continuePay}
             </button>
@@ -239,7 +237,7 @@ export function OrderCard({
             <a
               href={`/api/document-guide/${encodeURIComponent(order.documentGuide.id)}/download`}
               download={pdfDownloadName(`${order.documentGuide.title}.pdf`)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-landing-orange px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830]"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-landing-orange px-3 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830]"
             >
               <Download className="h-3.5 w-3.5" aria-hidden />
               {t.orders.download}
@@ -249,13 +247,13 @@ export function OrderCard({
             <button
               type="button"
               onClick={() => setReviewOpen(true)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-landing-orange hover:text-landing-orange dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-landing-orange hover:text-landing-orange dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
             >
               {t.review.write}
             </button>
           ) : null}
           {paid && order.hasReview ? (
-            <span className="self-center text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span className="inline-flex h-9 items-center text-xs font-medium text-slate-500 dark:text-slate-400">
               {t.review.pendingNote}
             </span>
           ) : null}
@@ -264,7 +262,7 @@ export function OrderCard({
               type="button"
               disabled={busy}
               onClick={() => void handleBuyAgain()}
-              className="rounded-lg bg-landing-orange px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] disabled:opacity-50"
+              className="inline-flex h-9 items-center justify-center rounded-lg bg-landing-orange px-3 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] disabled:opacity-50"
             >
               {busy ? t.destinations.processing : t.orders.buyAgain}
             </button>

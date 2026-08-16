@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { beApiUrl } from "@/lib/api/be-api-url";
 import { parseBeErrorMessage } from "@/lib/auth/parse-be-error";
 
 /** Public registration — backend always assigns role USER (never ADMIN). */
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Email and password are required." }, { status: 400 });
   }
 
-  const beRes = await fetch(`${base.replace(/\/$/, "")}/auth/register`, {
+  const beRes = await fetch(beApiUrl(base, "/auth/register"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),

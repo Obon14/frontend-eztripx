@@ -19,4 +19,5 @@ export type OrderItem = {
   createdAt: string;
   updatedAt: string;
   documentGuide: OrderDocumentGuide;
+  hasReview: boolean;
 };

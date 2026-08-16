@@ -1,4 +1,4 @@
-import { BookOpen, Globe2, Home, Map, MapPinned, Users } from "lucide-react";
+import { BookOpen, Globe2, Home, Map, MapPinned, MessageSquare, Users } from "lucide-react";
 
 export const adminMenu = [
   { label: "Home", href: "/admin/home", icon: Home },
@@ -6,5 +6,6 @@ export const adminMenu = [
   { label: "Country", href: "/admin/country", icon: Map },
   { label: "City", href: "/admin/city", icon: MapPinned },
   { label: "Document Guide", href: "/admin/document-guide", icon: BookOpen },
+  { label: "Review", href: "/admin/review", icon: MessageSquare },
   { label: "User", href: "/admin/user", icon: Users },
 ];

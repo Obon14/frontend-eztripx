@@ -25,7 +25,7 @@ export type AdminUser = {
   status: "active" | "inactive";
 };
 
-/** Nested geo on each tag row from GET /document-guide (BE). */
+/** Nested geo on each tag row from GET /api/document-guide (BE). */
 export type DocumentGuideGeoRef = {
   id: number;
   name: string;

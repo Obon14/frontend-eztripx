@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { beApiUrl } from "@/lib/api/be-api-url";
 import { forwardIdListParams } from "@/lib/api/forward-query-ids";
 import { parseListQuery } from "@/lib/api/list-query";
 
@@ -24,7 +25,7 @@ export async function GET(request: Request) {
 
   try {
     const res = await fetch(
-      `${base.replace(/\/$/, "")}/geo/public/city?${qs.toString()}`,
+      beApiUrl(base, `/geo/public/city?${qs.toString()}`),
       { headers: { Accept: "application/json" }, cache: "no-store" },
     );
     const text = await res.text();

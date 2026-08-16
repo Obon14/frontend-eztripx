@@ -1,3 +1,4 @@
+import { beApiUrl } from "@/lib/api/be-api-url";
 import { verifyAccessToken } from "@/lib/auth/verify-access-token";
 
 function readRoleFromMeBody(body: unknown): string | null {
@@ -12,7 +13,7 @@ function readRoleFromMeBody(body: unknown): string | null {
 }
 
 /**
- * Resolves role from access token: JWT verify first, then GET /auth/me fallback.
+ * Resolves role from access token: JWT verify first, then GET /api/auth/me fallback.
  */
 export async function resolveUserRole(
   apiBase: string,
@@ -22,7 +23,7 @@ export async function resolveUserRole(
   if (fromJwt?.role) return fromJwt.role;
 
   try {
-    const res = await fetch(`${apiBase.replace(/\/$/, "")}/auth/me`, {
+    const res = await fetch(beApiUrl(apiBase, "/auth/me"), {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",

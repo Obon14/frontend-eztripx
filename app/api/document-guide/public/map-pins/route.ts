@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { beApiUrl } from "@/lib/api/be-api-url";
 
 export async function GET(request: Request) {
   const base = process.env.API_BASE_URL;
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
 
   try {
     const res = await fetch(
-      `${base.replace(/\/$/, "")}/document-guide/public/map-pins?${qs.toString()}`,
+      beApiUrl(base, `/document-guide/public/map-pins?${qs.toString()}`),
       { headers: { Accept: "application/json" }, cache: "no-store" },
     );
     const text = await res.text();

@@ -10,6 +10,46 @@ export type LandingCopy = {
     login: string;
     register: string;
     logout: string;
+    orders: string;
+    profile: string;
+    accountMenu: string;
+  };
+  orders: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    filterAll: string;
+    filterPending: string;
+    filterPaid: string;
+    filterFailed: string;
+    filterCanceled: string;
+    reset: string;
+    loading: string;
+    loadError: string;
+    empty: string;
+    emptyHint: string;
+    emptyFiltered: string;
+    loginRequired: string;
+    loginCta: string;
+    continuePay: string;
+    buyAgain: string;
+    preview: string;
+    download: string;
+    previewLoading: string;
+    previewError: string;
+    previewPaidHint: string;
+    previewUnpaidHint: string;
+    noPaymentUrl: string;
+    dateLabel: string;
+    resultsCount: string;
+  };
+  profile: {
+    title: string;
+    subtitle: string;
+    email: string;
+    role: string;
+    loginRequired: string;
+    loginCta: string;
   };
   hero: {
     titleLine1: string;
@@ -117,8 +157,27 @@ export type LandingCopy = {
     title: string;
     titleHighlight: string;
     intro: string;
-    quote: string;
+    prev: string;
+    next: string;
+    items: Array<{
+      name: string;
+      role: string;
+      quote: string;
+    }>;
+  };
+  review: {
+    write: string;
+    title: string;
+    comment: string;
+    commentPlaceholder: string;
+    name: string;
     role: string;
+    rolePlaceholder: string;
+    submit: string;
+    submitting: string;
+    thanks: string;
+    pendingNote: string;
+    validation: string;
   };
   cta: {
     title: string;
@@ -171,6 +230,9 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       login: "Masuk",
       register: "Daftar",
       logout: "Keluar",
+      orders: "Pesanan",
+      profile: "Profil",
+      accountMenu: "Menu akun",
     },
     hero: {
       titleLine1: "JALANI",
@@ -252,6 +314,43 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       backHome: "Kembali ke beranda",
       viewGuide: "Lihat panduan (perlu login)",
     },
+    orders: {
+      title: "Pesanan saya",
+      subtitle: "Riwayat pembelian panduan dokumen. Lanjut bayar, pratinjau, atau unduh PDF.",
+      searchPlaceholder: "Cari nama panduan…",
+      filterAll: "Semua",
+      filterPending: "Menunggu bayar",
+      filterPaid: "Selesai",
+      filterFailed: "Gagal",
+      filterCanceled: "Dibatalkan",
+      reset: "Reset",
+      loading: "Memuat pesanan…",
+      loadError: "Gagal memuat pesanan.",
+      empty: "Belum ada pesanan.",
+      emptyHint: "Beli panduan di halaman Guide Document.",
+      emptyFiltered: "Tidak ada pesanan yang cocok.",
+      loginRequired: "Masuk untuk melihat pesananmu.",
+      loginCta: "Masuk",
+      continuePay: "Lanjut bayar",
+      buyAgain: "Beli lagi",
+      preview: "Pratinjau",
+      download: "Unduh",
+      previewLoading: "Memuat PDF…",
+      previewError: "Pratinjau tidak bisa dimuat.",
+      previewPaidHint: "Pratinjau dokumen lengkap.",
+      previewUnpaidHint: "Pratinjau terbatas. Bayar untuk akses penuh dan unduh.",
+      noPaymentUrl: "Tautan pembayaran tidak tersedia. Buat pesanan baru dari katalog.",
+      dateLabel: "Dipesan",
+      resultsCount: "Menampilkan {shown} dari {total} pesanan",
+    },
+    profile: {
+      title: "Profil",
+      subtitle: "Informasi akun EzTripx kamu.",
+      email: "Email",
+      role: "Peran",
+      loginRequired: "Masuk untuk melihat profil.",
+      loginCta: "Masuk",
+    },
     stories: {
       title: "CERITA KAMI BERSAMA",
       titleHighlight: "PETUALANG",
@@ -283,9 +382,42 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       title: "APA KATA",
       titleHighlight: "PETUALANG",
       intro: "Pengalaman nyata dari traveler yang mempercayai EzTripx untuk perjalanan mereka.",
-      quote:
-        "Panduan dokumen perjalanan dari EzTripx sangat membantu. Perjalanan saya jadi lebih tenang dan terorganisir.",
-      role: "Backpacker",
+      prev: "Sebelumnya",
+      next: "Berikutnya",
+      items: [
+        {
+          name: "Alice Agusta",
+          role: "Backpacker",
+          quote:
+            "Panduan dokumen perjalanan dari EzTripx sangat membantu. Perjalanan saya jadi lebih tenang dan terorganisir.",
+        },
+        {
+          name: "Raka Pratama",
+          role: "Family traveler",
+          quote:
+            "Checklist visanya jelas. Saya tidak perlu menebak dokumen mana yang wajib dibawa untuk trip keluarga.",
+        },
+        {
+          name: "Mei Lin",
+          role: "Couple traveler",
+          quote:
+            "PDF-nya rapi dan langsung bisa dipakai. Hemat waktu riset sebelum berangkat ke Taiwan.",
+        },
+      ],
+    },
+    review: {
+      write: "Tulis ulasan",
+      title: "Ulas panduan ini",
+      comment: "Cerita singkat",
+      commentPlaceholder: "Bagaimana panduan ini membantumu?",
+      name: "Nama tampilan",
+      role: "Jenis traveler (opsional)",
+      rolePlaceholder: "Contoh: Backpacker",
+      submit: "Kirim ulasan",
+      submitting: "Mengirim…",
+      thanks: "Terima kasih. Ulasanmu menunggu persetujuan admin.",
+      pendingNote: "Ulasan menunggu persetujuan.",
+      validation: "Isi nama, rating, dan komentar minimal 10 karakter.",
     },
     cta: {
       title: "MULAI BERSAMA",
@@ -336,6 +468,9 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       login: "Login",
       register: "Register",
       logout: "Logout",
+      orders: "Orders",
+      profile: "Profile",
+      accountMenu: "Account menu",
     },
     hero: {
       titleLine1: "LIVE YOUR",
@@ -417,6 +552,43 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       backHome: "Back to home",
       viewGuide: "View guides (sign in required)",
     },
+    orders: {
+      title: "My orders",
+      subtitle: "Your guide purchases. Continue payment, preview, or download the PDF.",
+      searchPlaceholder: "Search guide titles…",
+      filterAll: "All",
+      filterPending: "Awaiting payment",
+      filterPaid: "Paid",
+      filterFailed: "Failed",
+      filterCanceled: "Canceled",
+      reset: "Reset",
+      loading: "Loading orders…",
+      loadError: "Failed to load orders.",
+      empty: "No orders yet.",
+      emptyHint: "Buy a guide from the Guide Document page.",
+      emptyFiltered: "No orders match these filters.",
+      loginRequired: "Sign in to see your orders.",
+      loginCta: "Sign in",
+      continuePay: "Continue payment",
+      buyAgain: "Buy again",
+      preview: "Preview",
+      download: "Download",
+      previewLoading: "Loading PDF…",
+      previewError: "Could not load preview.",
+      previewPaidHint: "Full document preview.",
+      previewUnpaidHint: "Limited preview. Pay for full access and download.",
+      noPaymentUrl: "Payment link is unavailable. Create a new order from the catalog.",
+      dateLabel: "Ordered",
+      resultsCount: "Showing {shown} of {total} orders",
+    },
+    profile: {
+      title: "Profile",
+      subtitle: "Your EzTripx account details.",
+      email: "Email",
+      role: "Role",
+      loginRequired: "Sign in to see your profile.",
+      loginCta: "Sign in",
+    },
     stories: {
       title: "OUR STORIES WITH",
       titleHighlight: "ADVENTURERS",
@@ -448,9 +620,42 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       title: "WHAT ADVENTURERS SAY",
       titleHighlight: "ABOUT US",
       intro: "Real experiences from travelers who trust EzTripx for their journeys.",
-      quote:
-        "EzTripx travel document guides were incredibly helpful. My trip felt calmer and well organized.",
-      role: "Backpacker",
+      prev: "Previous",
+      next: "Next",
+      items: [
+        {
+          name: "Alice Agusta",
+          role: "Backpacker",
+          quote:
+            "EzTripx travel document guides were incredibly helpful. My trip felt calmer and well organized.",
+        },
+        {
+          name: "Raka Pratama",
+          role: "Family traveler",
+          quote:
+            "The visa checklist was clear. I didn’t have to guess which documents to pack for a family trip.",
+        },
+        {
+          name: "Mei Lin",
+          role: "Couple traveler",
+          quote:
+            "The PDF was tidy and ready to use. It saved hours of research before our Taiwan trip.",
+        },
+      ],
+    },
+    review: {
+      write: "Write a review",
+      title: "Review this guide",
+      comment: "Short story",
+      commentPlaceholder: "How did this guide help you?",
+      name: "Display name",
+      role: "Traveler type (optional)",
+      rolePlaceholder: "e.g. Backpacker",
+      submit: "Submit review",
+      submitting: "Sending…",
+      thanks: "Thanks. Your review is waiting for admin approval.",
+      pendingNote: "Review awaiting approval.",
+      validation: "Enter a name, rating, and at least 10 characters.",
     },
     cta: {
       title: "GET STARTED WITH",

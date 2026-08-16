@@ -1,16 +1,18 @@
+import { beApiUrl } from "@/lib/api/be-api-url";
+
 export type TokenPair = { accessToken: string; refreshToken: string };
 
 type BeRefreshResponse = { accessToken?: unknown; refreshToken?: unknown };
 
 /**
- * POST /auth/refresh with { refreshToken }.
+ * POST /api/auth/refresh with { refreshToken }.
  * If BE only returns accessToken, the previous refresh token is reused for the cookie.
  */
 export async function fetchRefreshedTokens(
   apiBase: string,
   refreshToken: string,
 ): Promise<TokenPair | null> {
-  const res = await fetch(`${apiBase.replace(/\/$/, "")}/auth/refresh`, {
+  const res = await fetch(beApiUrl(apiBase, "/auth/refresh"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refreshToken }),

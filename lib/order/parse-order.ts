@@ -46,6 +46,7 @@ export function parseOrderItem(raw: unknown): OrderItem | null {
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : "",
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : "",
     documentGuide,
+    hasReview: raw.hasReview === true,
   };
 }
 

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLanding } from "@/components/landing/language-provider";
+import { AccountMenu } from "@/components/landing/account-menu";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { Locale } from "@/lib/i18n/landing";
 
@@ -24,7 +25,6 @@ export function LandingHeader() {
     openRegister,
     currentUser,
     isCheckingAuth,
-    logout,
   } = useLanding();
 
   const navLabels = {
@@ -71,23 +71,7 @@ export function LandingHeader() {
         <div className="flex items-center gap-2 sm:gap-3">
           <LanguageToggle locale={locale} onChange={setLocale} />
           {!isCheckingAuth && currentUser ? (
-            <>
-              <span
-                className="hidden max-w-[170px] truncate text-sm font-medium text-white/90 sm:inline"
-                title={currentUser.email}
-              >
-                {currentUser.email}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  void logout();
-                }}
-                className="rounded-lg border border-white/25 px-3 py-1.5 text-sm font-medium text-white/90 transition hover:border-landing-orange hover:text-landing-orange"
-              >
-                {t.nav.logout}
-              </button>
-            </>
+            <AccountMenu />
           ) : (
             <>
               <button

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { beApiUrl } from "@/lib/api/be-api-url";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/auth/cookie-names";
 import { fetchRefreshedTokens } from "@/lib/auth/refresh-backend";
 import {
@@ -40,8 +41,7 @@ export async function beAuthenticatedFormDataFetch(
   }
 
   const normalizedBase = base.replace(/\/$/, "");
-  const path = pathAndQuery.startsWith("/") ? pathAndQuery : `/${pathAndQuery}`;
-  const url = `${normalizedBase}${path}`;
+  const url = beApiUrl(normalizedBase, pathAndQuery);
 
   const cookieStore = await cookies();
   const isProd = process.env.NODE_ENV === "production";

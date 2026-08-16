@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { beApiUrl } from "@/lib/api/be-api-url";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/auth/cookie-names";
 
 export async function POST() {
@@ -9,7 +10,7 @@ export async function POST() {
 
   if (base && accessToken) {
     try {
-      await fetch(`${base.replace(/\/$/, "")}/auth/logout`, {
+      await fetch(beApiUrl(base, "/auth/logout"), {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,

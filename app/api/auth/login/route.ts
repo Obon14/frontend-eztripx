@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { beApiUrl } from "@/lib/api/be-api-url";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/auth/cookie-names";
 import { parseBeErrorMessage } from "@/lib/auth/parse-be-error";
 import {
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Email and password are required." }, { status: 400 });
   }
 
-  const beRes = await fetch(`${base.replace(/\/$/, "")}/auth/login`, {
+  const beRes = await fetch(beApiUrl(base, "/auth/login"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),

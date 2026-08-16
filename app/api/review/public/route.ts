@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { beApiUrl } from "@/lib/api/be-api-url";
-import { forwardIdListParams } from "@/lib/api/forward-query-ids";
-import { parseListQuery } from "@/lib/api/list-query";
 
-export async function GET(request: Request) {
+export async function GET() {
   const base = process.env.API_BASE_URL;
   if (!base) {
     return NextResponse.json(
@@ -11,22 +9,11 @@ export async function GET(request: Request) {
       { status: 500 },
     );
   }
-
-  const { searchParams } = new URL(request.url);
-  const q = parseListQuery(searchParams);
-  const qs = new URLSearchParams({
-    page: String(q.page),
-    limit: String(q.limit),
-    search: q.search,
-  });
-
-  forwardIdListParams(searchParams, qs, "regionId", "regionIds");
-
   try {
-    const res = await fetch(
-      beApiUrl(base, `/geo/public/country?${qs.toString()}`),
-      { headers: { Accept: "application/json" }, cache: "no-store" },
-    );
+    const res = await fetch(beApiUrl(base, "/review/public"), {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
     const text = await res.text();
     let body: unknown;
     try {

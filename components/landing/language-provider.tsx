@@ -18,6 +18,7 @@ type LandingUser = {
   role: string;
   displayName: string | null;
   hasAvatar: boolean;
+  avatarRev: number;
 };
 
 type LandingContextValue = {
@@ -73,6 +74,7 @@ export function LandingProvider({ children }: { children: ReactNode }) {
         role,
         displayName: typeof body?.displayName === "string" ? body.displayName : null,
         hasAvatar: body?.hasAvatar === true,
+        avatarRev: Date.now(),
       });
       return;
     }

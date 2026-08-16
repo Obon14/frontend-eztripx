@@ -42,9 +42,21 @@ export function AccountMenu() {
         aria-controls={menuId}
         aria-label={t.nav.accountMenu}
         onClick={() => setOpen((v) => !v)}
-        className="flex max-w-[220px] items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-white/90 transition hover:bg-white/10"
+        className="flex max-w-[260px] items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-white/90 transition hover:bg-white/10"
       >
-        <span className="truncate" title={currentUser.email}>
+        {currentUser.hasAvatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/api/auth/me/avatar?v=${currentUser.avatarRev}`}
+            alt=""
+            className="h-7 w-7 shrink-0 rounded-full object-cover ring-1 ring-white/30"
+          />
+        ) : (
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/15 text-xs font-bold text-white">
+            {(currentUser.displayName || currentUser.email).trim().slice(0, 1).toUpperCase()}
+          </span>
+        )}
+        <span className="hidden truncate sm:inline" title={currentUser.email}>
           {currentUser.email}
         </span>
         <ChevronDown

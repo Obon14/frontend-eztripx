@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const status = searchParams.get("status")?.trim();
     if (status) qs.set("status", status);
 
-    const res = await beAuthenticatedFetch(`/order/admin?${qs.toString()}`);
+    const res = await beAuthenticatedFetch(`/admin/order?${qs.toString()}`);
     const text = await res.text();
     let body: unknown;
     try {

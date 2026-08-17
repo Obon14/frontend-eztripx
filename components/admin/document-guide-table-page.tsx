@@ -14,8 +14,10 @@ import { DataTable } from "@/components/ui/table";
 import { Select } from "@/components/ui/select";
 import {
   LocationTagsCell,
+  GuideTitleCell,
   resolveGuideDisplayTitle,
 } from "@/components/admin/location-tags-cell";
+import { GuideCoverCarousel } from "@/components/landing/guide-cover-carousel";
 import { buildDocumentGuideTags } from "@/lib/geo/document-guide-tags";
 import { resolveTripleFromCityId, resolveTripleFromCountryId } from "@/lib/geo/document-guide-resolve";
 import {
@@ -215,6 +217,21 @@ export function DocumentGuideTablePage() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const previewAbortRef = useRef<AbortController | null>(null);
+
+  const [coverPreview, setCoverPreview] = useState<{
+    guideId: string;
+    title: string;
+    coverImages: DocumentGuide["coverImages"];
+  } | null>(null);
+
+  const openCoverPreview = useCallback((row: DocumentGuide) => {
+    const { primary } = resolveGuideDisplayTitle(row.titleId, row.titleEn);
+    setCoverPreview({
+      guideId: row.id,
+      title: primary,
+      coverImages: row.coverImages,
+    });
+  }, []);
 
   const loadRows = useCallback(
     async (searchQuery: string, pageNum: number, pageLimit: number, signal?: AbortSignal) => {
@@ -473,34 +490,35 @@ export function DocumentGuideTablePage() {
       {
         key: "title",
         header: "Title",
-        render: (row: DocumentGuide) => {
-          const { primary, secondary } = resolveGuideDisplayTitle(row.titleId, row.titleEn);
-          return (
-            <div>
-              <div className="font-medium">{primary}</div>
-              {secondary ? (
-                <div className="text-xs text-slate-500">{secondary}</div>
-              ) : null}
-            </div>
-          );
-        },
+        className: "max-w-[240px] align-top",
+        render: (row: DocumentGuide) => (
+          <GuideTitleCell titleId={row.titleId} titleEn={row.titleEn} />
+        ),
       },
       {
         key: "cover",
         header: "Cover",
+        className: "w-[72px]",
         render: (row: DocumentGuide) => (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={publicGuideCoverSrc(
-              row.id,
-              row.coverImages[0]?.id ?? "legacy",
-            )}
-            alt=""
-            className="h-10 w-14 rounded object-cover"
-            onError={(e) => {
-              e.currentTarget.src = DEFAULT_COVER;
-            }}
-          />
+          <button
+            type="button"
+            className="group relative block cursor-zoom-in overflow-hidden rounded ring-offset-2 transition hover:ring-2 hover:ring-admin-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-admin-primary"
+            aria-label={`Preview cover ${resolveGuideDisplayTitle(row.titleId, row.titleEn).primary}`}
+            onClick={() => openCoverPreview(row)}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={publicGuideCoverSrc(
+                row.id,
+                row.coverImages[0]?.id ?? "legacy",
+              )}
+              alt=""
+              className="h-10 w-14 object-cover transition group-hover:brightness-95"
+              onError={(e) => {
+                e.currentTarget.src = DEFAULT_COVER;
+              }}
+            />
+          </button>
         ),
       },
       {
@@ -573,7 +591,7 @@ export function DocumentGuideTablePage() {
         ),
       },
     ],
-    [openDocumentPreview, openDeleteDialog, openEdit, updateStatus],
+    [openCoverPreview, openDocumentPreview, openDeleteDialog, openEdit, updateStatus],
   );
 
   function openCreate() {
@@ -1291,6 +1309,25 @@ export function DocumentGuideTablePage() {
             )}
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        open={coverPreview !== null}
+        onClose={() => setCoverPreview(null)}
+        title={coverPreview ? `Cover · ${coverPreview.title}` : "Cover preview"}
+        panelClassName="w-full max-w-lg"
+      >
+        {coverPreview ? (
+          <GuideCoverCarousel
+            guideId={coverPreview.guideId}
+            coverImages={coverPreview.coverImages.map((c) => ({
+              id: c.id,
+              url: c.url,
+              sortOrder: c.sortOrder,
+            }))}
+            alt={coverPreview.title}
+          />
+        ) : null}
       </Modal>
 
       <Modal

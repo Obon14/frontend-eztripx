@@ -8,7 +8,7 @@ export async function POST(_request: Request, { params }: Params) {
   try {
     const { id } = await params;
     const res = await beAuthenticatedFetch(
-      `/order/admin/${encodeURIComponent(id)}/sync-status`,
+      `/admin/order/${encodeURIComponent(id)}/sync-status`,
       { method: "POST" },
     );
     const text = await res.text();

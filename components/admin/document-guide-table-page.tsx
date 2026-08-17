@@ -11,6 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { DataTable } from "@/components/ui/table";
+import { Select } from "@/components/ui/select";
+import {
+  LocationTagsCell,
+  resolveGuideDisplayTitle,
+} from "@/components/admin/location-tags-cell";
 import { buildDocumentGuideTags } from "@/lib/geo/document-guide-tags";
 import { resolveTripleFromCityId, resolveTripleFromCountryId } from "@/lib/geo/document-guide-resolve";
 import {
@@ -20,8 +25,15 @@ import {
 } from "@/lib/geo/select-options";
 import { parseDocumentGuideListResponse } from "@/lib/document-guide/parse-list-response";
 import { publicGuideCoverSrc } from "@/lib/document-guide/parse-public-list";
+import {
+  clampLimit,
+  DEFAULT_LIMIT,
+  MAX_LIMIT,
+  MIN_LIMIT,
+} from "@/lib/api/list-query";
 import { cn } from "@/lib/utils";
 import type { DocumentGuide } from "@/types/admin";
+import type { ListMeta } from "@/types/geo-api";
 import { PdfJsPreview } from "@/components/admin/pdf-js-preview";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -104,43 +116,6 @@ function pdfDownloadName(fileName: string): string {
   return /\.pdf$/i.test(t) ? t : `${t}.pdf`;
 }
 
-function namesFromIds(ids: string[]) {
-  if (ids.length === 0) return "—";
-  return ids.join(", ");
-}
-
-function getTagDisplayLines(row: DocumentGuide): { region: string; country: string; city: string }[] {
-  if (row.structuredTags && row.structuredTags.length > 0) {
-    return row.structuredTags.map((t) => ({
-      region: t.region?.name ?? "—",
-      country: t.country?.name ?? "—",
-      city: t.city?.name ?? "—",
-    }));
-  }
-  return [
-    {
-      region: namesFromIds(row.regionIds),
-      country: namesFromIds(row.countryIds),
-      city: namesFromIds(row.cityIds),
-    },
-  ];
-}
-
-function GeoStack({ lines }: { lines: string[] }) {
-  return (
-    <div className="space-y-1 text-left text-xs leading-snug text-slate-700 dark:text-slate-300">
-      {lines.map((line, i) => (
-        <div
-          key={i}
-          className="border-b border-slate-100 py-1 last:border-b-0 last:pb-0 first:pt-0 dark:border-slate-800"
-        >
-          {line}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function buildGeoLabelsFromRow(row: DocumentGuide): Record<string, string> {
   const out: Record<string, string> = {};
   if (row.structuredTags) {
@@ -157,6 +132,7 @@ type GuideFormState = {
   titleId: string;
   titleEn: string;
   description: string;
+  descriptionEn: string;
   tripDays: string;
   priceIdr: string;
   priceUsd: string;
@@ -182,10 +158,14 @@ function isCoverImageFile(file: File): boolean {
 }
 
 const DEFAULT_COVER = "/images/default-guide-cover.svg";
+const LIMIT_OPTIONS = [10, 25, 50, 100] as const;
 
 export function DocumentGuideTablePage() {
   const router = useRouter();
   const [rows, setRows] = useState<DocumentGuide[]>([]);
+  const [meta, setMeta] = useState<ListMeta | null>(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const [listLoading, setListLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -198,6 +178,7 @@ export function DocumentGuideTablePage() {
     titleId: "",
     titleEn: "",
     description: "",
+    descriptionEn: "",
     tripDays: "",
     priceIdr: "0",
     priceUsd: "0",
@@ -236,13 +217,13 @@ export function DocumentGuideTablePage() {
   const previewAbortRef = useRef<AbortController | null>(null);
 
   const loadRows = useCallback(
-    async (searchQuery: string, signal?: AbortSignal) => {
+    async (searchQuery: string, pageNum: number, pageLimit: number, signal?: AbortSignal) => {
       setListLoading(true);
       setListError(null);
       try {
         const params = new URLSearchParams({
-          page: "1",
-          limit: "50",
+          page: String(pageNum),
+          limit: String(clampLimit(pageLimit)),
           search: searchQuery,
         });
         const res = await fetch(`/api/document-guide?${params}`, {
@@ -265,14 +246,17 @@ export function DocumentGuideTablePage() {
               : `Gagal memuat daftar (${res.status}).`;
           setListError(msg);
           setRows([]);
+          setMeta(null);
           return;
         }
-        const { data } = parseDocumentGuideListResponse(body);
+        const { data, meta: listMeta } = parseDocumentGuideListResponse(body);
         setRows(data);
+        setMeta(listMeta);
       } catch (e) {
         if (e instanceof DOMException && e.name === "AbortError") return;
         setListError("Tidak dapat memuat daftar document guide.");
         setRows([]);
+        setMeta(null);
       } finally {
         setListLoading(false);
       }
@@ -284,12 +268,15 @@ export function DocumentGuideTablePage() {
     const controller = new AbortController();
     const q = search.trim();
     const delay = q === "" ? 0 : 300;
-    const t = window.setTimeout(() => void loadRows(q, controller.signal), delay);
+    const t = window.setTimeout(
+      () => void loadRows(q, page, limit, controller.signal),
+      delay,
+    );
     return () => {
       controller.abort();
       window.clearTimeout(t);
     };
-  }, [search, loadRows]);
+  }, [search, page, limit, loadRows]);
 
   const closePreviewModal = useCallback(() => {
     previewAbortRef.current?.abort();
@@ -383,6 +370,7 @@ export function DocumentGuideTablePage() {
       titleId: row.titleId,
       titleEn: row.titleEn ?? "",
       description: row.description ?? "",
+      descriptionEn: row.descriptionEn ?? "",
       tripDays: row.tripDays ? String(row.tripDays) : "",
       priceIdr: idrFromNumber(row.priceIdr),
       priceUsd: usdFromNumber(row.priceUsd),
@@ -435,12 +423,12 @@ export function DocumentGuideTablePage() {
           return;
         }
         setListError(null);
-        await loadRows(search.trim());
+        await loadRows(search.trim(), page, limit);
       } catch {
         setListError("Tidak dapat mengubah status. Periksa koneksi lalu coba lagi.");
       }
     },
-    [router, loadRows, search],
+    [router, loadRows, search, page, limit],
   );
 
   const performDelete = useCallback(async () => {
@@ -471,28 +459,31 @@ export function DocumentGuideTablePage() {
         setDeleteDialogError(msg);
         return;
       }
-      await loadRows(search.trim());
+      await loadRows(search.trim(), page, limit);
       setDeleteTarget(null);
     } catch {
       setDeleteDialogError("Tidak dapat menghubungi server. Periksa koneksi lalu coba lagi.");
     } finally {
       setDeleteSubmitting(false);
     }
-  }, [deleteTarget, router, loadRows, search]);
+  }, [deleteTarget, router, loadRows, search, page, limit]);
 
   const columns = useMemo(
     () => [
       {
         key: "title",
         header: "Title",
-        render: (row: DocumentGuide) => (
-          <div>
-            <div className="font-medium">{row.titleId}</div>
-            {row.titleEn ? (
-              <div className="text-xs text-slate-500">{row.titleEn}</div>
-            ) : null}
-          </div>
-        ),
+        render: (row: DocumentGuide) => {
+          const { primary, secondary } = resolveGuideDisplayTitle(row.titleId, row.titleEn);
+          return (
+            <div>
+              <div className="font-medium">{primary}</div>
+              {secondary ? (
+                <div className="text-xs text-slate-500">{secondary}</div>
+              ) : null}
+            </div>
+          );
+        },
       },
       {
         key: "cover",
@@ -518,27 +509,11 @@ export function DocumentGuideTablePage() {
         render: (row: DocumentGuide) => (row.tripDays ? `${row.tripDays} hari` : "—"),
       },
       {
-        key: "region",
-        header: "Region",
-        className: "min-w-[100px] max-w-[140px] align-top",
+        key: "location",
+        header: "Lokasi",
+        className: "min-w-[140px] max-w-[240px] align-top",
         render: (row: DocumentGuide) => (
-          <GeoStack lines={getTagDisplayLines(row).map((l) => l.region)} />
-        ),
-      },
-      {
-        key: "country",
-        header: "Country",
-        className: "min-w-[110px] max-w-[160px] align-top",
-        render: (row: DocumentGuide) => (
-          <GeoStack lines={getTagDisplayLines(row).map((l) => l.country)} />
-        ),
-      },
-      {
-        key: "city",
-        header: "City",
-        className: "min-w-[110px] max-w-[160px] align-top",
-        render: (row: DocumentGuide) => (
-          <GeoStack lines={getTagDisplayLines(row).map((l) => l.city)} />
+          <LocationTagsCell tags={row.structuredTags ?? []} />
         ),
       },
       {
@@ -560,7 +535,6 @@ export function DocumentGuideTablePage() {
           </Badge>
         ),
       },
-      { key: "fileName", header: "File", render: (row: DocumentGuide) => row.fileName },
       {
         key: "action",
         header: "Action",
@@ -608,6 +582,7 @@ export function DocumentGuideTablePage() {
       titleId: "",
       titleEn: "",
       description: "",
+      descriptionEn: "",
       tripDays: "",
       priceIdr: "",
       priceUsd: "",
@@ -720,6 +695,7 @@ export function DocumentGuideTablePage() {
     const titleId = form.titleId.trim();
     const titleEn = form.titleEn.trim();
     const description = form.description.trim();
+    const descriptionEn = form.descriptionEn.trim();
     const priceIdrStr = form.priceIdr.trim();
     const priceUsdStr = form.priceUsd.trim();
 
@@ -728,7 +704,11 @@ export function DocumentGuideTablePage() {
       return;
     }
     if (description.length > 2000) {
-      setCreateError("Description must be at most 2000 characters.");
+      setCreateError("Description (Indonesian) must be at most 2000 characters.");
+      return;
+    }
+    if (descriptionEn.length > 2000) {
+      setCreateError("Description (English) must be at most 2000 characters.");
       return;
     }
     if (!priceIdrStr || !priceUsdStr) {
@@ -803,6 +783,7 @@ export function DocumentGuideTablePage() {
       }
       // Always send so clear/empty on edit stores null.
       fd.append("description", description);
+      fd.append("descriptionEn", descriptionEn);
       if (tripDaysStr) {
         fd.append("tripDays", tripDaysStr);
       }
@@ -852,7 +833,7 @@ export function DocumentGuideTablePage() {
         return;
       }
 
-      await loadRows(search.trim());
+      await loadRows(search.trim(), page, limit);
       handleModalClose();
     } catch {
       setCreateError("Could not reach the server.");
@@ -864,6 +845,7 @@ export function DocumentGuideTablePage() {
     form.titleId,
     form.titleEn,
     form.description,
+    form.descriptionEn,
     form.tripDays,
     form.priceIdr,
     form.priceUsd,
@@ -878,6 +860,8 @@ export function DocumentGuideTablePage() {
     existingCovers,
     router,
     search,
+    page,
+    limit,
     loadRows,
   ]);
 
@@ -901,7 +885,10 @@ export function DocumentGuideTablePage() {
               placeholder="Cari judul / dokumen / lokasi (ke server)…"
               className="pl-9"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               aria-label="Search document guides"
             />
           </div>
@@ -915,12 +902,69 @@ export function DocumentGuideTablePage() {
           {listLoading && rows.length === 0 ? (
             <p className="py-10 text-center text-sm text-slate-500">Memuat daftar…</p>
           ) : (
-            <DataTable
-              columns={columns}
-              data={rows}
-              emptyMessage="No document guides"
-              getRowKey={(row) => row.id}
-            />
+            <>
+              <DataTable
+                columns={columns}
+                data={rows}
+                emptyMessage="No document guides"
+                getRowKey={(row) => row.id}
+              />
+              {meta && !listLoading ? (
+                <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-400">
+                  <p className="min-w-0 flex-1">
+                    {meta.total === 0
+                      ? "Tidak ada data."
+                      : `Menampilkan ${(meta.page - 1) * meta.limit + 1}–${Math.min(meta.page * meta.limit, meta.total)} dari ${meta.total} (halaman ${meta.page} / ${meta.totalPages})`}
+                  </p>
+                  <div className="flex flex-wrap items-end gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label
+                        className="text-xs font-medium text-slate-600 dark:text-slate-400"
+                        htmlFor="guide-page-size"
+                      >
+                        Baris per halaman ({MIN_LIMIT}–{MAX_LIMIT})
+                      </label>
+                      <Select
+                        id="guide-page-size"
+                        className="h-9 w-24 min-w-0 text-sm"
+                        value={String(clampLimit(limit))}
+                        disabled={listLoading}
+                        onChange={(e) => {
+                          setLimit(clampLimit(Number(e.target.value)));
+                          setPage(1);
+                        }}
+                      >
+                        {LIMIT_OPTIONS.map((n) => (
+                          <option key={n} value={n}>
+                            {n}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2 pb-0.5">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={listLoading || meta.page <= 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={listLoading || meta.page >= meta.totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+            </>
           )}
         </div>
       </Card>
@@ -981,18 +1025,34 @@ export function DocumentGuideTablePage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Description
+              Description (Indonesian)
             </label>
             <Textarea
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              placeholder="Opsional. Ditampilkan di kartu panduan publik."
+              placeholder="Opsional. Ditampilkan di kartu panduan publik (locale ID)."
               maxLength={2000}
               disabled={createSubmitting}
               rows={3}
             />
             <p className="mt-1 text-xs text-slate-500">
-              Opsional. Maks. 2000 karakter. Kosongkan jika tidak ingin menampilkan deskripsi.
+              Opsional. Maks. 2000 karakter.
+            </p>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Description (English)
+            </label>
+            <Textarea
+              value={form.descriptionEn}
+              onChange={(e) => setForm((f) => ({ ...f, descriptionEn: e.target.value }))}
+              placeholder="Optional. Shown on public cards when locale is EN."
+              maxLength={2000}
+              disabled={createSubmitting}
+              rows={3}
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              Optional. Max 2000 characters. Falls back to Indonesian if empty.
             </p>
           </div>
           <div>

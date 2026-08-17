@@ -48,8 +48,10 @@ export type DocumentGuide = {
   id: string;
   titleId: string;
   titleEn: string | null;
-  /** Optional description for public cards */
+  /** Optional description for public cards (Indonesian) */
   description: string | null;
+  /** Optional English description for public cards */
+  descriptionEn: string | null;
   /** Display title (titleId) for tables */
   title: string;
   tripDays: number | null;

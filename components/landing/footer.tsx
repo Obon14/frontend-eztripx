@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useLanding } from "@/components/landing/language-provider";
 
 export function LandingFooter() {
@@ -18,12 +19,12 @@ export function LandingFooter() {
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 text-sm text-slate-500 sm:flex-row dark:border-slate-800 dark:text-slate-400">
           <p>{t.footer.copyright}</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-landing-orange">
+            <Link href="/terms" className="hover:text-landing-orange">
               {t.footer.terms}
-            </a>
-            <a href="#" className="hover:text-landing-orange">
+            </Link>
+            <Link href="/privacy" className="hover:text-landing-orange">
               {t.footer.privacy}
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -13,6 +13,8 @@ export type LandingCopy = {
     orders: string;
     profile: string;
     accountMenu: string;
+    openMenu: string;
+    closeMenu: string;
   };
   orders: {
     title: string;
@@ -224,6 +226,8 @@ export type LandingCopy = {
     validationEmail: string;
     validationPasswordMatch: string;
     networkError: string;
+    registerLegal: string;
+    registerLegalAnd: string;
   };
 };
 
@@ -241,6 +245,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       orders: "Pesanan",
       profile: "Profil",
       accountMenu: "Menu akun",
+      openMenu: "Buka menu",
+      closeMenu: "Tutup menu",
     },
     hero: {
       titleLine1: "JALANI",
@@ -472,6 +478,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       validationRequired: "Semua field wajib diisi.",
       validationEmail: "Format email belum valid.",
       validationPasswordMatch: "Konfirmasi kata sandi tidak cocok.",
+      registerLegal: "Dengan mendaftar, Anda menyetujui",
+      registerLegalAnd: "dan",
     },
   },
   en: {
@@ -487,6 +495,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       orders: "Orders",
       profile: "Profile",
       accountMenu: "Account menu",
+      openMenu: "Open menu",
+      closeMenu: "Close menu",
     },
     hero: {
       titleLine1: "LIVE YOUR",
@@ -718,6 +728,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       validationRequired: "All fields are required.",
       validationEmail: "Please enter a valid email.",
       validationPasswordMatch: "Passwords do not match.",
+      registerLegal: "By registering, you agree to the",
+      registerLegalAnd: "and",
     },
   },
 };

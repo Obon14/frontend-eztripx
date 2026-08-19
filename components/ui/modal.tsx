@@ -32,14 +32,14 @@ export function Modal({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 dark:bg-black/60",
+        "fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-3 sm:p-4 dark:bg-black/60",
         rootClassName,
       )}
     >
       <div className="absolute inset-0" onClick={onClose} />
       <div
         className={cn(
-          "relative z-10 flex max-h-[calc(100vh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900",
+          "relative z-10 flex max-h-[calc(100dvh-1.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl sm:max-h-[calc(100dvh-2rem)] dark:border-slate-800 dark:bg-slate-900",
           panelClassName,
         )}
       >

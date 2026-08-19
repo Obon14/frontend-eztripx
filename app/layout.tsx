@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getSiteUrl } from "@/lib/seo/site-url";
 import "./globals.css";
@@ -14,6 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = getSiteUrl();
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -97,7 +103,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground transition-colors">
+      <body className="flex min-h-full flex-col overflow-x-clip bg-background text-foreground transition-colors">
         {children}
       </body>
     </html>

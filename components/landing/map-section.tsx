@@ -60,17 +60,17 @@ export function MapSection() {
   }, [locale]);
 
   return (
-    <section id="community" className="bg-white py-16 sm:py-20 dark:bg-slate-950">
+    <section id="community" className="bg-white py-12 sm:py-20 dark:bg-slate-950">
       <div className="mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+        <h2 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
           {t.map.title}{" "}
           <span className="text-landing-orange">{t.map.titleHighlight}</span>
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-300">
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-600 sm:text-base dark:text-slate-300">
           {t.map.subtitle}
         </p>
 
-        <div className="relative z-0 isolate mx-auto mt-12 aspect-[2/1] max-w-4xl overflow-hidden rounded-3xl border border-slate-100 bg-slate-900 shadow-lg ring-1 ring-black/5 dark:border-slate-800">
+        <div className="relative z-0 isolate mx-auto mt-8 aspect-[3/4] max-w-4xl overflow-hidden rounded-2xl border border-slate-100 bg-slate-900 shadow-lg ring-1 ring-black/5 sm:mt-12 sm:aspect-[3/2] sm:rounded-3xl lg:aspect-[2/1] dark:border-slate-800">
           {loading ? (
             <div className="flex h-full items-center justify-center text-sm text-slate-400">
               {t.map.loading}

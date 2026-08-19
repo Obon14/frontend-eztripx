@@ -84,11 +84,11 @@ function PaymentReturnContent() {
     : statusMessage(order?.statusPayment, t.payment);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-dvh bg-white dark:bg-slate-950">
       <LandingHeader />
-      <main className="mx-auto flex max-w-lg flex-col items-center px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t.payment.title}</h1>
-        <p className="mt-4 text-slate-600 dark:text-slate-300">{message}</p>
+      <main className="mx-auto flex max-w-lg flex-col items-center px-4 py-14 text-center sm:py-20">
+        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">{t.payment.title}</h1>
+        <p className="mt-4 text-sm text-slate-600 sm:text-base dark:text-slate-300">{message}</p>
         {order?.documentGuide?.title ? (
           <p className="mt-2 text-sm font-medium text-landing-orange">{order.documentGuide.title}</p>
         ) : null}
@@ -97,16 +97,16 @@ function PaymentReturnContent() {
             {t.payment.paid}
           </Alert>
         ) : null}
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <div className="mt-8 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
           <Link
             href="/"
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-admin-primary px-4 text-sm font-medium text-white hover:bg-admin-primary-600"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-admin-primary px-4 text-sm font-medium text-white hover:bg-admin-primary-600"
           >
             {t.payment.backHome}
           </Link>
           <Link
             href="/#services"
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             {t.payment.viewGuide}
           </Link>
@@ -144,7 +144,7 @@ function statusMessage(
 export default function PaymentReturnPage() {
   return (
     <LandingProvider>
-      <Suspense fallback={<div className="min-h-screen bg-white dark:bg-slate-950" />}>
+      <Suspense fallback={<div className="min-h-dvh bg-white dark:bg-slate-950" />}>
         <PaymentReturnContent />
       </Suspense>
     </LandingProvider>

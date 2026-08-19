@@ -115,9 +115,12 @@ export function DestinationsSection() {
     void loadGuides();
   }, [loadGuides, searchVersion]);
 
-  const visible = guides.slice(index, index + 3);
-  const canPrev = index > 0;
-  const canNext = index + 3 < guides.length;
+  const perView = useCardsPerView();
+  const maxIndex = Math.max(0, guides.length - perView);
+  const start = Math.min(index, maxIndex);
+  const visible = guides.slice(start, start + perView);
+  const canPrev = start > 0;
+  const canNext = start < maxIndex;
 
   function daysLabel(days: number | null): string {
     if (!days || days < 1) return "";
@@ -125,14 +128,14 @@ export function DestinationsSection() {
   }
 
   return (
-    <section id="services" className="bg-gradient-to-b from-slate-50/80 to-white py-16 sm:py-20 dark:from-slate-900 dark:to-slate-950">
+    <section id="services" className="bg-gradient-to-b from-slate-50/80 to-white py-12 sm:py-20 dark:from-slate-900 dark:to-slate-950">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-          <div>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
+          <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-widest text-landing-orange">
               {locale === "id" ? "Panduan perjalanan" : "Travel guides"}
             </p>
-            <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+            <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
               {hasFilters ? (
                 <>
                   {t.destinations.titleFiltered}{" "}
@@ -146,16 +149,14 @@ export function DestinationsSection() {
               )}
             </h2>
           </div>
-          {guides.length > 3 ? (
-            <div className="flex gap-2">
-              <CarouselBtn disabled={!canPrev} onClick={() => setIndex((i) => Math.max(0, i - 1))}>
+          {guides.length > perView ? (
+            <div className="flex shrink-0 gap-2">
+              <CarouselBtn disabled={!canPrev} onClick={() => setIndex(Math.max(0, start - 1))}>
                 <ChevronLeft className="h-4 w-4" />
               </CarouselBtn>
               <CarouselBtn
                 disabled={!canNext}
-                onClick={() =>
-                  setIndex((i) => Math.min(Math.max(0, guides.length - 3), i + 1))
-                }
+                onClick={() => setIndex(Math.min(maxIndex, start + 1))}
               >
                 <ChevronRight className="h-4 w-4" />
               </CarouselBtn>
@@ -221,6 +222,26 @@ export function DestinationsSection() {
       </div>
     </section>
   );
+}
+
+/** Cards shown per carousel page, matching the `sm`/`lg` grid breakpoints. */
+function useCardsPerView(): number {
+  const [perView, setPerView] = useState(3);
+
+  useEffect(() => {
+    const small = window.matchMedia("(min-width: 640px)");
+    const large = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setPerView(large.matches ? 3 : small.matches ? 2 : 1);
+    sync();
+    small.addEventListener("change", sync);
+    large.addEventListener("change", sync);
+    return () => {
+      small.removeEventListener("change", sync);
+      large.removeEventListener("change", sync);
+    };
+  }, []);
+
+  return perView;
 }
 
 function CarouselBtn({

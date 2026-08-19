@@ -886,18 +886,20 @@ export function DocumentGuideTablePage() {
   return (
     <section>
       <Card className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5 dark:border-slate-800">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Document Guide</h1>
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 p-4 sm:gap-4 sm:p-5 dark:border-slate-800">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">Document Guide</h1>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Kelola e-book panduan liburan: lokasi, harga, file, dan status publikasi.
             </p>
           </div>
-          <Button onClick={openCreate}>Add Document Guide</Button>
+          <Button onClick={openCreate} className="w-full sm:w-auto">
+            Add Document Guide
+          </Button>
         </div>
 
-        <div className="p-5">
-          <div className="relative mb-4 max-w-xs sm:max-w-sm">
+        <div className="p-4 sm:p-5">
+          <div className="relative mb-4 w-full sm:max-w-sm">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               placeholder="Cari judul / dokumen / lokasi (ke server)…"
@@ -1145,7 +1147,7 @@ export function DocumentGuideTablePage() {
               </p>
             )}
           </div>
-          <div className="grid grid-cols-2 items-end gap-4">
+          <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2">
             <div className="min-w-0">
               <label className="mb-1 block truncate text-sm font-medium text-slate-700 dark:text-slate-300">
                 Harga Rupiah (IDR)

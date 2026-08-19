@@ -56,8 +56,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-admin-primary-50 via-white to-admin-accent-50 p-6 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <div className="w-full max-w-md rounded-2xl border border-orange-100 bg-white p-8 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-admin-primary-50 via-white to-admin-accent-50 p-4 sm:p-6 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="w-full max-w-md rounded-2xl border border-orange-100 bg-white p-6 shadow-lg sm:p-8 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
         <p className="text-sm font-semibold uppercase tracking-wide text-admin-accent-700">EzTripx Admin</p>
         <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">Login</h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Masuk untuk mengelola data document guide traveler.</p>

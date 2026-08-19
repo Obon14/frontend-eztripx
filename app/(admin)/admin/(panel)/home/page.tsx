@@ -176,7 +176,7 @@ export default function AdminDashboardPage() {
   return (
     <section className="space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Home</h1>
+        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">Home</h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Radar penjualan &amp; operasional {periodDays} hari terakhir.
         </p>
@@ -279,7 +279,7 @@ export default function AdminDashboardPage() {
       ) : null}
 
       <div className="grid gap-4 xl:grid-cols-5">
-        <Card className="xl:col-span-3">
+        <Card className="min-w-0 xl:col-span-3">
           <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
             Transaksi terbaru
           </h2>
@@ -291,7 +291,7 @@ export default function AdminDashboardPage() {
             className="border-0 shadow-none dark:shadow-none"
           />
         </Card>
-        <Card className="xl:col-span-2">
+        <Card className="min-w-0 xl:col-span-2">
           <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
             Guide terlaris
           </h2>

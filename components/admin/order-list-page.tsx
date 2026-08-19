@@ -213,16 +213,16 @@ export function OrderListPage() {
 
   return (
     <Card className="overflow-hidden p-0">
-      <div className="border-b border-slate-200 p-5 dark:border-slate-800">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Order</h1>
+      <div className="border-b border-slate-200 p-4 sm:p-5 dark:border-slate-800">
+        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">Order</h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Daftar transaksi pembelian document guide dari seluruh pengguna.
         </p>
       </div>
 
-      <div className="p-5">
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <div className="relative max-w-xs flex-1 sm:max-w-sm">
+      <div className="p-4 sm:p-5">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="relative w-full sm:max-w-sm sm:flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               placeholder="Cari email, judul guide, order id…"
@@ -235,7 +235,7 @@ export function OrderListPage() {
             />
           </div>
           <Select
-            className="h-10 w-40"
+            className="h-10 w-full sm:w-40"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value as "" | OrderStatusPayment);

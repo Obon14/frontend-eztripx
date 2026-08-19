@@ -100,12 +100,12 @@ export function ProfilePanel() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+      <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl dark:text-slate-100">
         {t.profile.title}
       </h1>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{t.profile.subtitle}</p>
 
-      <div className="mt-8 flex flex-col gap-6 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-start">
+      <div className="mt-6 flex flex-col gap-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:mt-8 sm:flex-row sm:items-start sm:p-5 dark:border-slate-800 dark:bg-slate-900">
         <div className="flex shrink-0 flex-col items-center gap-3 sm:w-40">
           <button
             type="button"

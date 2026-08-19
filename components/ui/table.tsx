@@ -30,14 +30,14 @@ export function DataTable<T>({
         className,
       )}
     >
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="w-full overflow-x-auto overscroll-x-contain">
+        <table className="w-full min-w-max text-sm">
           <thead className="bg-slate-50 dark:bg-slate-800/60">
             <tr>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className={`px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300 ${column.className ?? ""}`}
+                  className={`whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300 ${column.className ?? ""}`}
                 >
                   {column.header}
                 </th>

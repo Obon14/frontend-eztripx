@@ -108,15 +108,17 @@ export function EntityTablePage({ title, description, entities }: EntityTablePag
   return (
     <section>
       <Card className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5 dark:border-slate-800">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{title}</h1>
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 p-4 sm:gap-4 sm:p-5 dark:border-slate-800">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">{title}</h1>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{description}</p>
           </div>
-          <Button onClick={openCreate}>Add {title}</Button>
+          <Button onClick={openCreate} className="w-full sm:w-auto">
+            Add {title}
+          </Button>
         </div>
 
-        <div className="p-5">
+        <div className="p-4 sm:p-5">
           <div className="relative mb-4 max-w-md">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input

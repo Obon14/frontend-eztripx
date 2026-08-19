@@ -7,9 +7,45 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { landingCopy, type LandingCopy, type Locale } from "@/lib/i18n/landing";
+
+const LOCALE_STORAGE_KEY = "eztripx-locale";
+const localeListeners = new Set<() => void>();
+
+function isLocale(value: string | null): value is Locale {
+  return value === "id" || value === "en";
+}
+
+function readStoredLocale(): Locale {
+  try {
+    const saved = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    if (isLocale(saved)) return saved;
+  } catch {
+    // private mode / blocked storage
+  }
+  return "id";
+}
+
+function subscribeLocale(onStoreChange: () => void) {
+  localeListeners.add(onStoreChange);
+  window.addEventListener("storage", onStoreChange);
+  return () => {
+    localeListeners.delete(onStoreChange);
+    window.removeEventListener("storage", onStoreChange);
+  };
+}
+
+function persistLocale(next: Locale) {
+  try {
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, next);
+  } catch {
+    // ignore write failures
+  }
+  localeListeners.forEach((listener) => listener());
+}
 
 type AuthModal = "login" | "register" | null;
 type LandingUser = {
@@ -40,10 +76,18 @@ type LandingContextValue = {
 const LandingContext = createContext<LandingContextValue | null>(null);
 
 export function LandingProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("id");
+  const locale = useSyncExternalStore(subscribeLocale, readStoredLocale, () => "id");
   const [authModal, setAuthModal] = useState<AuthModal>(null);
   const [currentUser, setCurrentUser] = useState<LandingUser | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  const setLocale = useCallback((next: Locale) => {
+    persistLocale(next);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const t = landingCopy[locale];
 
@@ -124,6 +168,7 @@ export function LandingProvider({ children }: { children: ReactNode }) {
     }),
     [
       locale,
+      setLocale,
       t,
       authModal,
       openLogin,

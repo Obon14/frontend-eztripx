@@ -44,7 +44,7 @@ export function HeroSection() {
   return (
     <section
       id="discover"
-      className="relative overflow-x-hidden bg-landing-forest pb-20 pt-12 sm:pb-24 sm:pt-16"
+      className="relative overflow-x-hidden bg-landing-forest pb-14 pt-10 sm:pb-24 sm:pt-16"
     >
       <div
         className="pointer-events-none absolute inset-0"
@@ -60,19 +60,19 @@ export function HeroSection() {
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center lg:max-w-4xl">
-          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.25rem]">
+          <h1 className="text-[1.75rem] font-extrabold leading-[1.15] tracking-tight text-white sm:text-5xl lg:text-[3.25rem]">
             {t.hero.titleLine1}{" "}
             <span className="bg-gradient-to-r from-landing-orange to-[#ffb347] bg-clip-text text-transparent">
               {t.hero.titleHighlight}
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/75 sm:mt-5 sm:text-lg">
             {t.hero.subtitle}
           </p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-4xl">
-          <div className="rounded-2xl bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
+        <div className="mx-auto mt-8 max-w-4xl sm:mt-10">
+          <div className="overflow-hidden rounded-2xl bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
             <div className="flex flex-col lg:flex-row lg:items-stretch">
               <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r">
                 <div className="mb-2 flex items-center gap-2">

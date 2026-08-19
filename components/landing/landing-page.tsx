@@ -18,8 +18,8 @@ const MapSection = dynamic(
   {
     ssr: false,
     loading: () => (
-      <section className="bg-white py-16 sm:py-20 dark:bg-slate-950">
-        <div className="mx-auto flex aspect-[2/1] max-w-4xl items-center justify-center rounded-3xl bg-slate-900 text-sm text-slate-400">
+      <section className="bg-white py-12 sm:py-20 dark:bg-slate-950">
+        <div className="mx-auto mt-8 flex aspect-[3/4] max-w-4xl items-center justify-center rounded-2xl bg-slate-900 text-sm text-slate-400 sm:mt-12 sm:aspect-[3/2] sm:rounded-3xl lg:aspect-[2/1]">
           …
         </div>
       </section>
@@ -31,9 +31,9 @@ export function LandingPage() {
   return (
     <LandingProvider>
       <LandingSearchProvider>
-        <div className="min-h-screen bg-white dark:bg-slate-950">
+        <div className="flex min-h-dvh flex-col bg-white dark:bg-slate-950">
           <LandingHeader />
-          <main>
+          <main className="flex-1">
             <HeroSection />
             <DestinationsSection />
             <StoriesSection />

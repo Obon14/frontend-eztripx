@@ -9,9 +9,9 @@ import { LandingProvider } from "@/components/landing/language-provider";
 export function LandingShell({ children }: { children: ReactNode }) {
   return (
     <LandingProvider>
-      <div className="min-h-screen bg-white dark:bg-slate-950">
+      <div className="flex min-h-dvh flex-col bg-white dark:bg-slate-950">
         <LandingHeader />
-        <main>{children}</main>
+        <main className="flex-1">{children}</main>
         <LandingFooter />
         <AuthModals />
       </div>

@@ -205,12 +205,13 @@ export function AdventureMap({
         }
         markersRef.current = [];
 
+        const popupMaxWidth = Math.max(180, Math.min(300, host.clientWidth - 48));
         const bounds: [number, number][] = [];
         for (const pin of pins) {
           const marker = L.marker([pin.lat, pin.lng]).addTo(map);
           marker.bindPopup(
             buildPopupHtml(pin, daysLabel, guidesLabel, viewGuidesLabel),
-            { maxWidth: 300, className: "ez-map-popup-wrap" },
+            { maxWidth: popupMaxWidth, className: "ez-map-popup-wrap" },
           );
           markersRef.current.push(marker);
           bounds.push([pin.lat, pin.lng]);

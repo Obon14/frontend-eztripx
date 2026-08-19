@@ -74,8 +74,8 @@ body {
 }
 .ez-map-popup-wrap .leaflet-popup-content {
   margin: 0;
-  min-width: 220px;
-  max-width: 280px;
+  min-width: 0;
+  max-width: 100%;
   width: 260px;
 }
 .ez-map-popup-wrap .leaflet-popup-tip {

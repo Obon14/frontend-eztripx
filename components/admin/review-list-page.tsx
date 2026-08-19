@@ -78,9 +78,9 @@ export function ReviewListPage() {
   }
 
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Reviews</h1>
           <p className="mt-1 text-sm text-slate-500">
             Approve traveler reviews before they appear on the landing page.
@@ -93,7 +93,7 @@ export function ReviewListPage() {
             setPage(1);
           }}
           placeholder="Search comment, name, email…"
-          className="max-w-xs"
+          className="w-full sm:max-w-xs"
         />
       </div>
       {error ? <p className="mb-3 text-sm text-red-600">{error}</p> : null}

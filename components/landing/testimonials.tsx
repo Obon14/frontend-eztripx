@@ -71,17 +71,17 @@ export function TestimonialsSection() {
   if (!current) return null;
 
   return (
-    <section className="bg-slate-50 py-16 sm:py-20 dark:bg-slate-900">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-        <div>
-          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+    <section className="bg-slate-50 py-12 sm:py-20 dark:bg-slate-900">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:px-8">
+        <div className="min-w-0">
+          <h2 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
             {t.testimonials.title}{" "}
             <span className="text-landing-orange">{t.testimonials.titleHighlight}</span>
           </h2>
-          <p className="mt-4 text-slate-600 dark:text-slate-300">{t.testimonials.intro}</p>
+          <p className="mt-4 text-sm text-slate-600 sm:text-base dark:text-slate-300">{t.testimonials.intro}</p>
 
-          <div className="mt-8 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-            <p className="text-slate-700 leading-relaxed dark:text-slate-200">
+          <div className="mt-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:mt-8 sm:p-6 dark:border-slate-800 dark:bg-slate-950">
+            <p className="text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-200">
               &ldquo;{current.quote}&rdquo;
             </p>
             <div className="mt-4 flex gap-0.5" aria-label={`${current.rating} / 5`}>
@@ -100,7 +100,7 @@ export function TestimonialsSection() {
             {current.role ? (
               <p className="text-sm text-slate-500 dark:text-slate-400">{current.role}</p>
             ) : null}
-            <div className="mt-4 flex items-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               {slides.map((slide, i) => (
                 <button
                   key={slide.id}

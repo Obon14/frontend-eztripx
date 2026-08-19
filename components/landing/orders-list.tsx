@@ -105,7 +105,7 @@ export function OrdersList() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+      <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl dark:text-slate-100">
         {t.orders.title}
       </h1>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{t.orders.subtitle}</p>

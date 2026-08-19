@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -228,6 +229,25 @@ export function AuthModals() {
           <Button type="submit" className="w-full" disabled={loading}>
             {t.auth.submitRegister}
           </Button>
+          <p className="text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            {t.auth.registerLegal}{" "}
+            <Link
+              href="/terms"
+              className="font-semibold text-landing-orange hover:underline"
+              onClick={handleClose}
+            >
+              {t.footer.terms}
+            </Link>{" "}
+            {t.auth.registerLegalAnd}{" "}
+            <Link
+              href="/privacy"
+              className="font-semibold text-landing-orange hover:underline"
+              onClick={handleClose}
+            >
+              {t.footer.privacy}
+            </Link>
+            .
+          </p>
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
             {t.auth.hasAccount}{" "}
             <button

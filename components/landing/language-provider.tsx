@@ -10,6 +10,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { landingCopy, type LandingCopy, type Locale } from "@/lib/i18n/landing";
 
 const LOCALE_STORAGE_KEY = "eztripx-locale";
@@ -192,7 +193,12 @@ export function LandingProvider({ children }: { children: ReactNode }) {
     ],
   );
 
-  return <LandingContext.Provider value={value}>{children}</LandingContext.Provider>;
+  return (
+    <LandingContext.Provider value={value}>
+      <GoogleAnalytics />
+      {children}
+    </LandingContext.Provider>
+  );
 }
 
 export function useLanding() {

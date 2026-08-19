@@ -29,12 +29,17 @@ function readStoredLocale(): Locale {
   return "id";
 }
 
+function getServerLocale(): Locale {
+  return "id";
+}
+
 function subscribeLocale(onStoreChange: () => void) {
   localeListeners.add(onStoreChange);
-  window.addEventListener("storage", onStoreChange);
+  const onStorage = () => onStoreChange();
+  window.addEventListener("storage", onStorage);
   return () => {
     localeListeners.delete(onStoreChange);
-    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener("storage", onStorage);
   };
 }
 
@@ -76,7 +81,11 @@ type LandingContextValue = {
 const LandingContext = createContext<LandingContextValue | null>(null);
 
 export function LandingProvider({ children }: { children: ReactNode }) {
-  const locale = useSyncExternalStore(subscribeLocale, readStoredLocale, () => "id");
+  const locale = useSyncExternalStore<Locale>(
+    subscribeLocale,
+    readStoredLocale,
+    getServerLocale,
+  );
   const [authModal, setAuthModal] = useState<AuthModal>(null);
   const [currentUser, setCurrentUser] = useState<LandingUser | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);

@@ -189,6 +189,10 @@ export function GuideDocumentCard({
         window.location.href = order.paymentUrl;
         return;
       }
+      if (order?.statusPayment === "PAID") {
+        window.location.href = `/payment/return?orderId=${encodeURIComponent(order.id)}`;
+        return;
+      }
       onError(networkErrorLabel);
     } catch {
       onError(networkErrorLabel);

@@ -33,6 +33,36 @@ type HeroLocationPickerProps = {
 
 type PanelRect = { top: number; left: number; width: number };
 
+type LocationTabKey = "region" | "country" | "city";
+
+type LocationColumnConfig = {
+  key: LocationTabKey;
+  label: string;
+  count: number;
+  query: string;
+  setQuery: (v: string) => void;
+  placeholder: string;
+  options: SearchableSelectOption[];
+  loading: boolean;
+  selectedIds: Set<string>;
+  onToggle: (opt: SearchableSelectOption) => void;
+};
+
+/** Mobile gets a bottom sheet; `sm` and up keeps the anchored dropdown. */
+function useIsMobileViewport(): boolean {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  return isMobile;
+}
+
 function usePanelPosition(
   anchorRef: RefObject<HTMLElement | null>,
   open: boolean,
@@ -111,7 +141,7 @@ function MultiOptionList({
               type="button"
               onClick={() => onToggle(opt)}
               className={cn(
-                "flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition",
+                "flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm transition sm:py-2",
                 selected
                   ? "bg-landing-orange/10 font-medium text-slate-900"
                   : "text-slate-700 hover:bg-slate-50",
@@ -167,9 +197,49 @@ function ColumnSearch({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-8 w-full rounded-md border-0 bg-slate-50 pl-8 pr-2 text-sm text-slate-900 outline-none ring-1 ring-slate-200/80 focus:bg-white focus:ring-landing-orange/30"
+        className="h-10 w-full rounded-md border-0 bg-slate-50 pl-8 pr-2 text-base text-slate-900 outline-none ring-1 ring-slate-200/80 focus:bg-white focus:ring-landing-orange/30 sm:h-8 sm:text-sm"
       />
     </div>
+  );
+}
+
+function LocationColumnBody({
+  column,
+  fill = false,
+}: {
+  column: LocationColumnConfig;
+  fill?: boolean;
+}) {
+  return (
+    <LocationColumn className={fill ? "min-h-0 flex-1" : undefined}>
+      {fill ? null : (
+        <p className="shrink-0 px-3 pt-2 text-[11px] font-semibold uppercase text-slate-400">
+          {column.label}
+          {column.count > 0 ? (
+            <span className="ml-1 text-landing-orange">({column.count})</span>
+          ) : null}
+        </p>
+      )}
+      <ColumnSearch
+        value={column.query}
+        onChange={column.setQuery}
+        placeholder={column.placeholder}
+      />
+      <div
+        className={cn(
+          "min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]",
+          fill ? null : "max-h-[200px] sm:max-h-none",
+        )}
+      >
+        <MultiOptionList
+          options={column.options}
+          loading={column.loading}
+          selectedIds={column.selectedIds}
+          emptyHint={column.placeholder}
+          onToggle={column.onToggle}
+        />
+      </div>
+    </LocationColumn>
   );
 }
 
@@ -183,7 +253,9 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
   const [mounted, setMounted] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const panelPos = usePanelPosition(anchorRef, open);
+  const isMobile = useIsMobileViewport();
+  const [mobileTab, setMobileTab] = useState<LocationTabKey>("region");
+  const panelPos = usePanelPosition(anchorRef, open && !isMobile);
 
   const [regionQuery, setRegionQuery] = useState("");
   const [countryQuery, setCountryQuery] = useState("");
@@ -296,6 +368,15 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open || !isMobile) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open, isMobile]);
+
   function buildSummary(): string {
     const { regions, countries, cities } = value;
     const total = regions.length + countries.length + cities.length;
@@ -343,7 +424,147 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
     setCityQuery("");
   }
 
-  const panel =
+  const columns: LocationColumnConfig[] = [
+    {
+      key: "region",
+      label: t.hero.region,
+      count: value.regions.length,
+      query: regionQuery,
+      setQuery: setRegionQuery,
+      placeholder: t.hero.allRegions,
+      options: regions,
+      loading: loadingR,
+      selectedIds: regionIdSet,
+      onToggle: (opt) => {
+        onChange({ ...value, regions: toggleInList(value.regions, opt) });
+      },
+    },
+    {
+      key: "country",
+      label: t.hero.country,
+      count: value.countries.length,
+      query: countryQuery,
+      setQuery: setCountryQuery,
+      placeholder: t.hero.allCountries,
+      options: countries,
+      loading: loadingC,
+      selectedIds: countryIdSet,
+      onToggle: (opt) => {
+        onChange({ ...value, countries: toggleInList(value.countries, opt) });
+      },
+    },
+    {
+      key: "city",
+      label: t.hero.city,
+      count: value.cities.length,
+      query: cityQuery,
+      setQuery: setCityQuery,
+      placeholder: t.hero.allCities,
+      options: cities,
+      loading: loadingCity,
+      selectedIds: cityIdSet,
+      onToggle: (opt) => {
+        onChange({ ...value, cities: toggleInList(value.cities, opt) });
+      },
+    },
+  ];
+
+  const panelHeader = (
+    <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/90 px-3 py-2">
+      <div>
+        <span className="text-xs font-bold uppercase tracking-wide text-slate-500">
+          {t.hero.location}
+        </span>
+        <p className="text-[10px] text-slate-400">{t.hero.multiSelectHint}</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => setOpen(false)}
+        className="rounded-md p-1 text-slate-500 hover:bg-slate-200/60"
+        aria-label="Close"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
+
+  const panelFooter = (
+    <div className="flex shrink-0 items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 px-3 py-2">
+      <button
+        type="button"
+        onClick={clearAll}
+        className="rounded-lg px-1 py-2 text-xs font-medium text-slate-500 hover:text-landing-orange sm:py-0"
+      >
+        {t.hero.clearLocation}
+      </button>
+      <button
+        type="button"
+        onClick={() => setOpen(false)}
+        className="rounded-lg bg-landing-orange px-5 py-2.5 text-xs font-semibold text-white hover:bg-[#e07830] sm:px-4 sm:py-1.5"
+      >
+        {t.hero.locationDone}
+      </button>
+    </div>
+  );
+
+  const activeColumn =
+    columns.find((column) => column.key === mobileTab) ?? columns[0];
+
+  const mobilePanel = open && mounted ? (
+    <div className="fixed inset-0 z-[200] flex flex-col justify-end">
+      <div
+        className="absolute inset-0 bg-slate-900/45"
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
+      <div
+        ref={panelRef}
+        className="relative flex max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-2xl border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-slate-900/25"
+      >
+        {panelHeader}
+
+        <div className="flex shrink-0 gap-1.5 border-b border-slate-100 px-3 py-2">
+          {columns.map((column) => {
+            const active = column.key === activeColumn.key;
+            return (
+              <button
+                key={column.key}
+                type="button"
+                onClick={() => setMobileTab(column.key)}
+                aria-pressed={active}
+                className={cn(
+                  "flex h-9 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg text-xs font-semibold transition",
+                  active
+                    ? "bg-landing-orange text-white"
+                    : "bg-slate-100 text-slate-600",
+                )}
+              >
+                <span className="truncate">{column.label}</span>
+                {column.count > 0 ? (
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full px-1.5 text-[10px] font-bold",
+                      active ? "bg-white/25 text-white" : "bg-white text-landing-orange",
+                    )}
+                  >
+                    {column.count}
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex min-h-[45dvh] flex-1 flex-col overflow-hidden">
+          <LocationColumnBody column={activeColumn} fill />
+        </div>
+
+        {panelFooter}
+      </div>
+    </div>
+  ) : null;
+
+  const desktopPanel =
     open && panelPos && mounted ? (
       <div
         ref={panelRef}
@@ -354,129 +575,19 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
           width: panelPos.width,
         }}
       >
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/90 px-3 py-2">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wide text-slate-500">
-              {t.hero.location}
-            </span>
-            <p className="text-[10px] text-slate-400">{t.hero.multiSelectHint}</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="rounded-md p-1 text-slate-500 hover:bg-slate-200/60"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+        {panelHeader}
 
         <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-slate-100 sm:h-[260px] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          <LocationColumn>
-            <p className="shrink-0 px-3 pt-2 text-[11px] font-semibold uppercase text-slate-400">
-              {t.hero.region}
-              {value.regions.length > 0 ? (
-                <span className="ml-1 text-landing-orange">({value.regions.length})</span>
-              ) : null}
-            </p>
-            <ColumnSearch
-              value={regionQuery}
-              onChange={setRegionQuery}
-              placeholder={t.hero.allRegions}
-            />
-            <div className="max-h-[200px] min-h-0 flex-1 overflow-y-auto overscroll-y-contain sm:max-h-none [-webkit-overflow-scrolling:touch]">
-              <MultiOptionList
-                options={regions}
-                loading={loadingR}
-                selectedIds={regionIdSet}
-                emptyHint={t.hero.allRegions}
-                onToggle={(opt) => {
-                  onChange({
-                    ...value,
-                    regions: toggleInList(value.regions, opt),
-                  });
-                }}
-              />
-            </div>
-          </LocationColumn>
-
-          <LocationColumn>
-            <p className="shrink-0 px-3 pt-2 text-[11px] font-semibold uppercase text-slate-400">
-              {t.hero.country}
-              {value.countries.length > 0 ? (
-                <span className="ml-1 text-landing-orange">
-                  ({value.countries.length})
-                </span>
-              ) : null}
-            </p>
-            <ColumnSearch
-              value={countryQuery}
-              onChange={setCountryQuery}
-              placeholder={t.hero.allCountries}
-            />
-            <div className="max-h-[200px] min-h-0 flex-1 overflow-y-auto overscroll-y-contain sm:max-h-none [-webkit-overflow-scrolling:touch]">
-              <MultiOptionList
-                options={countries}
-                loading={loadingC}
-                selectedIds={countryIdSet}
-                emptyHint={t.hero.allCountries}
-                onToggle={(opt) => {
-                  onChange({
-                    ...value,
-                    countries: toggleInList(value.countries, opt),
-                  });
-                }}
-              />
-            </div>
-          </LocationColumn>
-
-          <LocationColumn>
-            <p className="shrink-0 px-3 pt-2 text-[11px] font-semibold uppercase text-slate-400">
-              {t.hero.city}
-              {value.cities.length > 0 ? (
-                <span className="ml-1 text-landing-orange">({value.cities.length})</span>
-              ) : null}
-            </p>
-            <ColumnSearch
-              value={cityQuery}
-              onChange={setCityQuery}
-              placeholder={t.hero.allCities}
-            />
-            <div className="max-h-[200px] min-h-0 flex-1 overflow-y-auto overscroll-y-contain sm:max-h-none [-webkit-overflow-scrolling:touch]">
-              <MultiOptionList
-                options={cities}
-                loading={loadingCity}
-                selectedIds={cityIdSet}
-                emptyHint={t.hero.allCities}
-                onToggle={(opt) => {
-                  onChange({
-                    ...value,
-                    cities: toggleInList(value.cities, opt),
-                  });
-                }}
-              />
-            </div>
-          </LocationColumn>
+          {columns.map((column) => (
+            <LocationColumnBody key={column.key} column={column} />
+          ))}
         </div>
 
-        <div className="flex shrink-0 items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 px-3 py-2">
-          <button
-            type="button"
-            onClick={clearAll}
-            className="text-xs font-medium text-slate-500 hover:text-landing-orange"
-          >
-            {t.hero.clearLocation}
-          </button>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="rounded-lg bg-landing-orange px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#e07830]"
-          >
-            {t.hero.locationDone}
-          </button>
-        </div>
+        {panelFooter}
       </div>
     ) : null;
+
+  const panel = isMobile ? mobilePanel : desktopPanel;
 
   const hasSelection =
     value.regions.length > 0 ||

@@ -158,7 +158,7 @@ export function OrderCard({
     setBusy(true);
     onError("");
     try {
-      const currency = order.currency === "USD" ? "USD" : "IDR";
+      const currency = "IDR";
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

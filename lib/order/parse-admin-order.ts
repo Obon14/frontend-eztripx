@@ -53,7 +53,7 @@ export function parseAdminOrderItem(raw: unknown): AdminOrderRow | null {
     price: typeof raw.price === "string" ? raw.price : String(raw.price ?? ""),
     currency: typeof raw.currency === "string" ? raw.currency : "IDR",
     statusPayment,
-    paymentProvider: typeof raw.paymentProvider === "string" ? raw.paymentProvider : "XENDIT",
+    paymentProvider: typeof raw.paymentProvider === "string" ? raw.paymentProvider : "MIDTRANS",
     paymentUrl: typeof raw.paymentUrl === "string" ? raw.paymentUrl : null,
     gatewayTransactionId:
       typeof raw.gatewayTransactionId === "string" ? raw.gatewayTransactionId : null,

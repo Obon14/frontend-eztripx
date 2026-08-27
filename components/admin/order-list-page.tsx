@@ -198,7 +198,7 @@ export function OrderListPage() {
               disabled={syncingId === row.id}
               onClick={() => void syncStatus(row.id)}
             >
-              {syncingId === row.id ? "Sync…" : "Sync Xendit"}
+              {syncingId === row.id ? "Sync…" : "Sync Midtrans"}
             </Button>
           ) : (
             "—"

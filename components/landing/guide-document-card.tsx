@@ -78,7 +78,7 @@ export function GuideDocumentCard({
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const previewAbortRef = useRef<AbortController | null>(null);
-  const currency: OrderCurrency = locale === "id" ? "IDR" : "USD";
+  const currency: OrderCurrency = "IDR";
 
   const closePreview = useCallback(() => {
     previewAbortRef.current?.abort();
@@ -150,7 +150,7 @@ export function GuideDocumentCard({
   }
 
   async function handleBuy() {
-    const price = currency === "IDR" ? item.priceIdr : item.priceUsd;
+    const price = item.priceIdr;
     if (!price || Number(price) <= 0) {
       onError(priceUnavailableLabel);
       return;

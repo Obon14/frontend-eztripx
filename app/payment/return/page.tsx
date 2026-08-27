@@ -14,7 +14,10 @@ const SYNC_RETRY_DELAY_MS = 2000;
 
 function PaymentReturnContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId")?.trim() ?? "";
+  const orderId =
+    searchParams.get("orderId")?.trim() ||
+    searchParams.get("order_id")?.trim() ||
+    "";
   const { t } = useLanding();
   const [order, setOrder] = useState<OrderItem | null>(null);
   const [loading, setLoading] = useState(true);

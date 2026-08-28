@@ -108,10 +108,10 @@ function PaymentReturnContent() {
             {t.payment.backHome}
           </Link>
           <Link
-            href="/#services"
+            href="/orders"
             className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
-            {t.payment.viewGuide}
+            {t.payment.viewOrders}
           </Link>
         </div>
       </main>

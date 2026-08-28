@@ -137,7 +137,7 @@ export type LandingCopy = {
     failed: string;
     canceled: string;
     backHome: string;
-    viewGuide: string;
+    viewOrders: string;
   };
   stories: {
     title: string;
@@ -186,7 +186,7 @@ export type LandingCopy = {
     submit: string;
     submitting: string;
     thanks: string;
-    pendingNote: string;
+    submittedNote: string;
     validation: string;
   };
   cta: {
@@ -326,7 +326,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       failed: "Pembayaran gagal. Silakan buat pesanan baru.",
       canceled: "Pembayaran dibatalkan atau kedaluwarsa.",
       backHome: "Kembali ke beranda",
-      viewGuide: "Lihat panduan (perlu login)",
+      viewOrders: "Lihat pesanan saya",
     },
     orders: {
       title: "Pesanan saya",
@@ -437,8 +437,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       rolePlaceholder: "Contoh: Backpacker",
       submit: "Kirim ulasan",
       submitting: "Mengirim…",
-      thanks: "Terima kasih. Ulasanmu menunggu persetujuan admin.",
-      pendingNote: "Ulasan menunggu persetujuan.",
+      thanks: "Terima kasih. Ulasanmu sudah dipublikasikan.",
+      submittedNote: "Ulasan terkirim.",
       validation: "Isi nama, rating, dan komentar minimal 10 karakter.",
     },
     cta: {
@@ -576,7 +576,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       failed: "Payment failed. Please create a new order.",
       canceled: "Payment was canceled or expired.",
       backHome: "Back to home",
-      viewGuide: "View guides (sign in required)",
+      viewOrders: "View my orders",
     },
     orders: {
       title: "My orders",
@@ -687,8 +687,8 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       rolePlaceholder: "e.g. Backpacker",
       submit: "Submit review",
       submitting: "Sending…",
-      thanks: "Thanks. Your review is waiting for admin approval.",
-      pendingNote: "Review awaiting approval.",
+      thanks: "Thanks. Your review has been published.",
+      submittedNote: "Review submitted.",
       validation: "Enter a name, rating, and at least 10 characters.",
     },
     cta: {

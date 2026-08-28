@@ -254,7 +254,7 @@ export function OrderCard({
           ) : null}
           {paid && order.hasReview ? (
             <span className="inline-flex h-9 items-center text-xs font-medium text-slate-500 dark:text-slate-400">
-              {t.review.pendingNote}
+              {t.review.submittedNote}
             </span>
           ) : null}
           {order.statusPayment === "FAILED" || order.statusPayment === "CANCELED" ? (

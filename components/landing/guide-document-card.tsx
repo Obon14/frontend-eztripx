@@ -71,7 +71,7 @@ export function GuideDocumentCard({
   owned: boolean;
   onError: (message: string) => void;
 }) {
-  const { locale, openRegister } = useLanding();
+  const { locale, openRegister, currentUser } = useLanding();
   const [buying, setBuying] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -170,7 +170,7 @@ export function GuideDocumentCard({
       });
       const body = await res.json().catch(() => null);
 
-      if (res.status === 401) {
+      if (res.status === 401 && !currentUser) {
         openRegister();
         return;
       }

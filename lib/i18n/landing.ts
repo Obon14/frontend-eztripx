@@ -299,7 +299,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       subtitle:
         "Jelajahi seluruh panduan dokumen perjalanan yang sudah dipublikasikan. Cari judul, lalu beli PDF resmi yang kamu butuhkan.",
       search: "Cari",
-      searchPlaceholder: "Cari judul panduan…",
+      searchPlaceholder: "Cari tujuan atau durasi, misal: 'Singapura 3 hari', 'Jepang 7 hari'…",
       clearSearch: "Reset",
       loginToBuy: "Masuk untuk membeli",
       buy: "Beli panduan",
@@ -549,7 +549,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       subtitle:
         "Browse every published travel document guide. Search by title and purchase the official PDF you need.",
       search: "Search",
-      searchPlaceholder: "Search guide titles…",
+      searchPlaceholder: "Search destination or duration, e.g. 'Singapore 3 days', 'Japan 7 days'…",
       clearSearch: "Clear",
       loginToBuy: "Sign in to purchase",
       buy: "Buy guide",

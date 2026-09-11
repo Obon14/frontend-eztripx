@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Tag } from "lucide-react";
 import { GuideCoverCarousel } from "@/components/landing/guide-cover-carousel";
 import { useLanding } from "@/components/landing/language-provider";
 import { PdfJsPreview } from "@/components/admin/pdf-js-preview";
@@ -206,6 +206,13 @@ export function GuideDocumentCard({
       ? previewFullHint
       : previewLimitedHint.replace("{n}", String(item.previewPageCount));
 
+  const discountPercent = item.newUserDiscountPercent ?? 0;
+  const hasDiscount = discountPercent > 0;
+  const rawIdr = item.priceIdr ? Number(item.priceIdr) : 0;
+  const rawUsd = item.priceUsd ? Number(item.priceUsd) : 0;
+  const discountedIdr = Math.round(rawIdr * (1 - discountPercent / 100));
+  const discountedUsd = rawUsd * (1 - discountPercent / 100);
+
   return (
     <>
       <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100/80 bg-white shadow-sm ring-1 ring-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-landing-orange/20 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5">
@@ -215,6 +222,12 @@ export function GuideDocumentCard({
             coverImages={item.coverImages}
             alt={item.title}
           />
+          {hasDiscount ? (
+            <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-xs font-bold text-white shadow-md ring-1 ring-white/20">
+              <Tag className="h-3 w-3" />
+              {discountPercent}% OFF
+            </span>
+          ) : null}
           {item.tripDays ? (
             <span className="absolute right-3 top-3 z-10 rounded-full bg-landing-orange px-2.5 py-1 text-xs font-bold text-white">
               {daysLabel}
@@ -232,7 +245,23 @@ export function GuideDocumentCard({
             </p>
           ) : null}
           <div className="mt-auto space-y-3 pt-4">
-            <p className="text-lg font-bold text-landing-orange">{displayPrice(item, locale)}</p>
+            {hasDiscount && (rawIdr > 0 || rawUsd > 0) ? (
+              <div className="flex flex-col">
+                <div className="flex flex-wrap items-baseline gap-2">
+                  <p className="text-lg font-bold text-landing-orange">
+                    {locale === "id" ? formatIdr.format(discountedIdr) : formatUsd.format(discountedUsd)}
+                  </p>
+                  <span className="text-xs text-slate-400 line-through">
+                    {displayPrice(item, locale)}
+                  </span>
+                </div>
+                <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  {locale === "en" ? "Special new user promo" : "Khusus pengguna baru"}
+                </span>
+              </div>
+            ) : (
+              <p className="text-lg font-bold text-landing-orange">{displayPrice(item, locale)}</p>
+            )}
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"

@@ -178,6 +178,7 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
     coverImageUrl,
     priceIdr: parsePrice(raw.priceIdr),
     priceUsd: parsePrice(raw.priceUsd),
+    newUserDiscountPercent: num(raw.newUserDiscountPercent) ?? 0,
     regionIds,
     countryIds,
     cityIds,

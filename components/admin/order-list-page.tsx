@@ -166,7 +166,23 @@ export function OrderListPage() {
       {
         key: "amount",
         header: "Nominal",
-        render: (row: AdminOrderRow) => formatMoney(row.price, row.currency),
+        render: (row: AdminOrderRow) => (
+          <div className="flex flex-col gap-0.5">
+            <span className="font-medium text-slate-900 dark:text-slate-100">
+              {formatMoney(row.price, row.currency)}
+            </span>
+            {row.discountPercent && row.discountPercent > 0 ? (
+              <span className="inline-flex flex-wrap items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400">
+                <span>Disc {row.discountPercent}%</span>
+                {row.originalPrice && Number(row.originalPrice) > Number(row.price) ? (
+                  <span className="text-slate-400 line-through">
+                    {formatMoney(row.originalPrice, row.currency)}
+                  </span>
+                ) : null}
+              </span>
+            ) : null}
+          </div>
+        ),
       },
       {
         key: "status",

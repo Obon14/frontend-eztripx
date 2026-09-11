@@ -2,6 +2,9 @@ import type { OrderStatusPayment } from "@/types/order";
 
 export type AdminOrderRow = {
   id: string;
+  originalPrice?: string;
+  discountPercent?: number;
+  discountAmount?: string;
   price: string;
   currency: string;
   statusPayment: OrderStatusPayment;

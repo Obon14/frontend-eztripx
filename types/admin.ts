@@ -61,6 +61,8 @@ export type DocumentGuide = {
   priceIdr: number;
   /** Harga dalam Dolar AS (USD) */
   priceUsd: number;
+  /** Diskon Pengguna Baru (% 0-100) */
+  newUserDiscountPercent?: number | null;
   /** Satu atau lebih benua (multi-select / derived from API tags) */
   regionIds: string[];
   /** Satu atau lebih negara (multi-select / derived from API tags) */
@@ -71,6 +73,8 @@ export type DocumentGuide = {
   tags: string[];
   /** Nama file dokumen (BE: `nameDocument`) */
   fileName: string;
+  /** Nama file dokumen Bahasa Inggris (BE: `nameDocumentEn`) */
+  fileNameEn?: string | null;
   status: "draft" | "published";
   /** Public preview: hide = limited pages; show = full PDF */
   previewMode: "hide" | "show";

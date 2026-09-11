@@ -207,9 +207,25 @@ export function OrderCard({
           >
             {statusLabel}
           </span>
-          <p className="mt-2 text-sm font-semibold text-landing-orange">
-            {formatPrice(order.price, order.currency)}
-          </p>
+          {order.discountPercent && order.discountPercent > 0 ? (
+            <div className="mt-2 flex flex-wrap items-baseline gap-2">
+              <p className="text-sm font-semibold text-landing-orange">
+                {formatPrice(order.price, order.currency)}
+              </p>
+              {order.originalPrice && Number(order.originalPrice) > Number(order.price) ? (
+                <span className="text-xs text-slate-400 line-through">
+                  {formatPrice(order.originalPrice, order.currency)}
+                </span>
+              ) : null}
+              <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+                Promo {order.discountPercent}% User Baru
+              </span>
+            </div>
+          ) : (
+            <p className="mt-2 text-sm font-semibold text-landing-orange">
+              {formatPrice(order.price, order.currency)}
+            </p>
+          )}
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {t.orders.dateLabel}: {orderedAt}
           </p>

@@ -138,6 +138,7 @@ type GuideFormState = {
   tripDays: string;
   priceIdr: string;
   priceUsd: string;
+  newUserDiscountPercent: string;
   fileName: string;
   status: DocumentGuide["status"];
   previewMode: DocumentGuide["previewMode"];
@@ -184,6 +185,7 @@ export function DocumentGuideTablePage() {
     tripDays: "",
     priceIdr: "0",
     priceUsd: "0",
+    newUserDiscountPercent: "0",
     fileName: "",
     status: "draft",
     previewMode: "hide",
@@ -391,6 +393,7 @@ export function DocumentGuideTablePage() {
       tripDays: row.tripDays ? String(row.tripDays) : "",
       priceIdr: idrFromNumber(row.priceIdr),
       priceUsd: usdFromNumber(row.priceUsd),
+      newUserDiscountPercent: row.newUserDiscountPercent != null ? String(row.newUserDiscountPercent) : "0",
       fileName: row.fileName,
       status: row.status,
       previewMode: row.previewMode ?? "hide",
@@ -537,7 +540,16 @@ export function DocumentGuideTablePage() {
       {
         key: "priceIdr",
         header: "Harga Rupiah",
-        render: (row: DocumentGuide) => formatIdr.format(row.priceIdr),
+        render: (row: DocumentGuide) => (
+          <div className="flex flex-col gap-0.5">
+            <span>{formatIdr.format(row.priceIdr)}</span>
+            {row.newUserDiscountPercent && row.newUserDiscountPercent > 0 ? (
+              <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+                Promo {row.newUserDiscountPercent}% User Baru
+              </span>
+            ) : null}
+          </div>
+        ),
       },
       {
         key: "priceUsd",
@@ -604,6 +616,7 @@ export function DocumentGuideTablePage() {
       tripDays: "",
       priceIdr: "",
       priceUsd: "",
+      newUserDiscountPercent: "0",
       fileName: "",
       status: "draft",
       previewMode: "hide",
@@ -740,6 +753,16 @@ export function DocumentGuideTablePage() {
       return;
     }
 
+    const discountStr = form.newUserDiscountPercent.trim();
+    let discountNum = 0;
+    if (discountStr) {
+      discountNum = Number(discountStr);
+      if (!Number.isInteger(discountNum) || discountNum < 0 || discountNum > 100) {
+        setCreateError("Diskon pengguna baru harus berupa angka bulat antara 0 dan 100.");
+        return;
+      }
+    }
+
     const tagsPayload = await buildDocumentGuideTags(
       createRegionIds,
       createCountryIds,
@@ -807,6 +830,7 @@ export function DocumentGuideTablePage() {
       }
       fd.append("priceIdr", String(Math.round(priceIdrNum)));
       fd.append("priceUsd", String(priceUsdNum));
+      fd.append("newUserDiscountPercent", String(discountNum));
       fd.append("previewMode", previewMode);
       if (previewMode === "hide") {
         fd.append("previewPageCount", String(previewPageCount));
@@ -867,6 +891,7 @@ export function DocumentGuideTablePage() {
     form.tripDays,
     form.priceIdr,
     form.priceUsd,
+    form.newUserDiscountPercent,
     form.previewMode,
     form.previewPageCount,
     createRegionIds,
@@ -1180,6 +1205,44 @@ export function DocumentGuideTablePage() {
                 disabled={createSubmitting}
               />
             </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3.5 space-y-2 dark:border-slate-800 dark:bg-slate-800/40">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                Diskon Pengguna Baru (%)
+              </label>
+              <span className="text-xs text-slate-500">Khusus pembeli pertama</span>
+            </div>
+            <div className="max-w-xs">
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                step={1}
+                value={form.newUserDiscountPercent}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, newUserDiscountPercent: e.target.value }))
+                }
+                placeholder="Contoh: 50 (0 = tanpa diskon)"
+                disabled={createSubmitting}
+              />
+            </div>
+            <p className="text-xs text-slate-500">
+              Kosongkan atau isi 0 jika panduan ini tidak memiliki promo pengguna baru.
+            </p>
+            {Number(form.newUserDiscountPercent) > 0 && parseIdrInput(form.priceIdr) > 0 ? (
+              <div className="mt-1.5 flex flex-wrap gap-3 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                <span>
+                  Harga Promo IDR: {formatIdr.format(Math.round(parseIdrInput(form.priceIdr) * (1 - Number(form.newUserDiscountPercent) / 100)))}
+                </span>
+                {parseUsdInput(form.priceUsd) > 0 ? (
+                  <span>
+                    USD: {formatUsd.format(parseUsdInput(form.priceUsd) * (1 - Number(form.newUserDiscountPercent) / 100))}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <div>

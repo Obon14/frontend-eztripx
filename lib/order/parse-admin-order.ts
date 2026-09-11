@@ -50,6 +50,22 @@ export function parseAdminOrderItem(raw: unknown): AdminOrderRow | null {
 
   return {
     id,
+    originalPrice:
+      typeof raw.originalPrice === "string"
+        ? raw.originalPrice
+        : typeof raw.price === "string"
+          ? raw.price
+          : String(raw.price ?? ""),
+    discountPercent:
+      typeof raw.discountPercent === "number"
+        ? raw.discountPercent
+        : typeof raw.discountPercent === "string"
+          ? Number(raw.discountPercent)
+          : 0,
+    discountAmount:
+      typeof raw.discountAmount === "string"
+        ? raw.discountAmount
+        : String(raw.discountAmount ?? "0"),
     price: typeof raw.price === "string" ? raw.price : String(raw.price ?? ""),
     currency: typeof raw.currency === "string" ? raw.currency : "IDR",
     statusPayment,

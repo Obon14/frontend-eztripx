@@ -1052,6 +1052,7 @@ export function DocumentGuideTablePage() {
             ? "Perbarui di server (PATCH). Form sama seperti buat baru; PDF baru opsional jika hanya mengubah judul, harga, atau lokasi."
             : "Upload PDF ke server. Region / negara / kota bisa multi-select; pilih negara atau kota akan menambah region ke daftar. Country & city boleh kosong di payload (null). Hapus item lewat silang pada chip."
         }
+        panelClassName="w-full max-w-xl sm:max-w-2xl"
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={handleModalClose} disabled={createSubmitting}>
@@ -1364,7 +1365,7 @@ export function DocumentGuideTablePage() {
             </p>
 
             {/* Dokumen Bahasa Indonesia (Wajib) */}
-            <div className="rounded-lg border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="min-w-0 overflow-hidden rounded-lg border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <div className="mb-2 flex items-center justify-between">
                 <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   <span className="inline-flex items-center justify-center rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700 dark:bg-red-950/60 dark:text-red-300">
@@ -1384,22 +1385,28 @@ export function DocumentGuideTablePage() {
                 }}
               />
               {pdfFile ? (
-                <p className="mt-1.5 text-xs font-medium text-admin-primary-600 dark:text-admin-primary-400">
-                  ✓ File baru dipilih: {pdfFile.name}
+                <p className="mt-2 break-all text-xs font-medium text-admin-primary-600 dark:text-admin-primary-400">
+                  ✓ File baru dipilih: <span className="font-mono text-[11px]">{pdfFile.name}</span>
                 </p>
               ) : editingId ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-                  Berkas saat ini: <span className="font-medium text-slate-700 dark:text-slate-300">{form.fileName || "—"}</span>. Pilih PDF baru jika ingin mengganti.
-                </p>
+                <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                  <span className="block text-[11px] text-slate-400 dark:text-slate-500">Berkas saat ini:</span>
+                  <p className="mt-0.5 break-all font-mono text-xs font-medium text-slate-700 dark:text-slate-300">
+                    {form.fileName || "—"}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                    Pilih PDF baru di atas jika ingin mengganti berkas ini.
+                  </p>
+                </div>
               ) : (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                   Wajib dipilih untuk membuat document guide baru.
                 </p>
               )}
             </div>
 
             {/* Dokumen Bahasa Inggris (Opsional) */}
-            <div className="rounded-lg border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="min-w-0 overflow-hidden rounded-lg border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <div className="mb-2 flex items-center justify-between">
                 <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   <span className="inline-flex items-center justify-center rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
@@ -1441,21 +1448,24 @@ export function DocumentGuideTablePage() {
                 }}
               />
               {pdfEnFile ? (
-                <p className="mt-1.5 text-xs font-medium text-blue-600 dark:text-blue-400">
-                  ✓ File baru dipilih: {pdfEnFile.name}
+                <p className="mt-2 break-all text-xs font-medium text-blue-600 dark:text-blue-400">
+                  ✓ File baru dipilih: <span className="font-mono text-[11px]">{pdfEnFile.name}</span>
                 </p>
               ) : editingId ? (
                 removeDocumentEn ? (
-                  <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400">
-                    ⚠️ Dokumen EN ({form.fileNameEn}) akan dihapus saat disimpan.
+                  <p className="mt-2 break-all text-xs font-semibold text-red-600 dark:text-red-400">
+                    ⚠️ Dokumen EN (<span className="font-mono text-[11px]">{form.fileNameEn}</span>) akan dihapus saat disimpan.
                   </p>
                 ) : (
-                  <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-                    Berkas saat ini: <span className="font-medium text-slate-700 dark:text-slate-300">{form.fileNameEn || "Belum ada (opsional)"}</span>.
-                  </p>
+                  <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="block text-[11px] text-slate-400 dark:text-slate-500">Berkas saat ini:</span>
+                    <p className="mt-0.5 break-all font-mono text-xs font-medium text-slate-700 dark:text-slate-300">
+                      {form.fileNameEn || "Belum ada (opsional)"}
+                    </p>
+                  </div>
                 )
               ) : (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                   Opsional. Jika kosong, user berbahasa Inggris akan mengunduh dokumen ID.
                 </p>
               )}

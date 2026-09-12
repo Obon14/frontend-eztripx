@@ -14,6 +14,9 @@ export type PublicDocumentGuideCard = {
   priceIdr: string | null;
   priceUsd: string | null;
   newUserDiscountPercent: number | null;
+  promoDiscountPercent?: number | null;
+  promoName?: string | null;
+  promoEndDate?: string | null;
   coverImages: PublicCoverImage[];
   locationLabel: string;
   previewMode: "hide" | "show";
@@ -103,6 +106,15 @@ export function parsePublicGuideItem(raw: unknown): PublicDocumentGuideCard | nu
             /^\d+$/.test(raw.newUserDiscountPercent)
           ? Number(raw.newUserDiscountPercent)
           : null,
+    promoDiscountPercent:
+      typeof raw.promoDiscountPercent === "number"
+        ? raw.promoDiscountPercent
+        : typeof raw.promoDiscountPercent === "string" &&
+            /^\d+$/.test(raw.promoDiscountPercent)
+          ? Number(raw.promoDiscountPercent)
+          : 0,
+    promoName: typeof raw.promoName === "string" ? raw.promoName : null,
+    promoEndDate: typeof raw.promoEndDate === "string" ? raw.promoEndDate : null,
     coverImages,
     locationLabel:
       typeof raw.locationLabel === "string" ? raw.locationLabel : "",

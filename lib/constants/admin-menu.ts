@@ -1,4 +1,4 @@
-import { BookOpen, FileText, Globe2, Home, Map, MapPinned, MessageSquare, ShoppingCart, Users } from "lucide-react";
+import { BookOpen, FileText, Globe2, Home, Map, MapPinned, MessageSquare, ShoppingCart, Tag, Users } from "lucide-react";
 
 export const adminMenu = [
   { label: "Home", href: "/admin/home", icon: Home },
@@ -6,6 +6,7 @@ export const adminMenu = [
   { label: "Country", href: "/admin/country", icon: Map },
   { label: "City", href: "/admin/city", icon: MapPinned },
   { label: "Document Guide", href: "/admin/document-guide", icon: BookOpen },
+  { label: "Promo", href: "/admin/promo", icon: Tag },
   { label: "Order", href: "/admin/order", icon: ShoppingCart },
   { label: "Review", href: "/admin/review", icon: MessageSquare },
   { label: "Legal", href: "/admin/legal", icon: FileText },

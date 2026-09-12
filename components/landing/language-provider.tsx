@@ -60,6 +60,7 @@ type LandingUser = {
   role: string;
   displayName: string | null;
   hasAvatar: boolean;
+  isFirstPurchase?: boolean;
   avatarRev: number;
 };
 
@@ -121,6 +122,7 @@ export function LandingProvider({ children }: { children: ReactNode }) {
     const id = typeof body?.id === "string" ? body.id : null;
     const email = typeof body?.email === "string" ? body.email : null;
     const role = typeof body?.role === "string" ? body.role : null;
+    const isFirstPurchase = body?.isFirstPurchase !== false;
     if (id && email && role) {
       setCurrentUser({
         id,
@@ -128,6 +130,7 @@ export function LandingProvider({ children }: { children: ReactNode }) {
         role,
         displayName: typeof body?.displayName === "string" ? body.displayName : null,
         hasAvatar: body?.hasAvatar === true,
+        isFirstPurchase,
         avatarRev: Date.now(),
       });
       return;

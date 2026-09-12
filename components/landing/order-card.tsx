@@ -218,7 +218,7 @@ export function OrderCard({
                 </span>
               ) : null}
               <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
-                Promo {order.discountPercent}% User Baru
+                Diskon {order.discountPercent}% OFF
               </span>
             </div>
           ) : (

@@ -206,12 +206,28 @@ export function GuideDocumentCard({
       ? previewFullHint
       : previewLimitedHint.replace("{n}", String(item.previewPageCount));
 
-  const discountPercent = item.newUserDiscountPercent ?? 0;
+  const promoPercent = item.promoDiscountPercent ?? 0;
+  const isFirstBuyer = currentUser ? currentUser.isFirstPurchase !== false : true;
+  const discountPercent = isFirstBuyer
+    ? Math.max(50, promoPercent)
+    : promoPercent;
+
   const hasDiscount = discountPercent > 0;
   const rawIdr = item.priceIdr ? Number(item.priceIdr) : 0;
   const rawUsd = item.priceUsd ? Number(item.priceUsd) : 0;
   const discountedIdr = Math.round(rawIdr * (1 - discountPercent / 100));
   const discountedUsd = rawUsd * (1 - discountPercent / 100);
+
+  const promoLabel =
+    isFirstBuyer && discountPercent === 50
+      ? locale === "en"
+        ? "Special new user promo (50% OFF)"
+        : "Diskon 50% Pengguna Baru"
+      : item.promoName
+        ? `${item.promoName} (${discountPercent}% OFF)`
+        : locale === "en"
+          ? "Special Promo"
+          : "Promo Spesial";
 
   return (
     <>
@@ -256,7 +272,7 @@ export function GuideDocumentCard({
                   </span>
                 </div>
                 <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                  {locale === "en" ? "Special new user promo" : "Khusus pengguna baru"}
+                  {promoLabel}
                 </span>
               </div>
             ) : (

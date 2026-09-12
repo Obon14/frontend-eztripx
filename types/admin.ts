@@ -84,3 +84,42 @@ export type DocumentGuide = {
   structuredTags?: DocumentGuideStructuredTag[];
   createdAt?: string;
 };
+
+export type PromoStatus = "active" | "scheduled" | "expired" | "inactive";
+
+export type PromoDocumentItem = {
+  id: string;
+  titleId: string;
+  titleEn: string | null;
+  priceIdr: string | null;
+  priceUsd: string | null;
+  status: string;
+};
+
+export type Promo = {
+  id: string;
+  name: string;
+  discountPercent: number;
+  startDate: string | null;
+  endDate: string | null;
+  isActive: boolean;
+  status: PromoStatus;
+  documentCount: number;
+  documents?: PromoDocumentItem[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DocumentAvailability = {
+  id: string;
+  titleId: string;
+  titleEn: string | null;
+  priceIdr: string | null;
+  priceUsd: string | null;
+  tripDays: number | null;
+  locationLabel: string;
+  isAvailable: boolean;
+  conflictPromoId: string | null;
+  conflictPromoName: string | null;
+};
+

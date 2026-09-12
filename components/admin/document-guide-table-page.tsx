@@ -540,16 +540,7 @@ export function DocumentGuideTablePage() {
       {
         key: "priceIdr",
         header: "Harga Rupiah",
-        render: (row: DocumentGuide) => (
-          <div className="flex flex-col gap-0.5">
-            <span>{formatIdr.format(row.priceIdr)}</span>
-            {row.newUserDiscountPercent && row.newUserDiscountPercent > 0 ? (
-              <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
-                Promo {row.newUserDiscountPercent}% User Baru
-              </span>
-            ) : null}
-          </div>
-        ),
+        render: (row: DocumentGuide) => formatIdr.format(row.priceIdr),
       },
       {
         key: "priceUsd",
@@ -1207,42 +1198,14 @@ export function DocumentGuideTablePage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3.5 space-y-2 dark:border-slate-800 dark:bg-slate-800/40">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Diskon Pengguna Baru (%)
-              </label>
-              <span className="text-xs text-slate-500">Khusus pembeli pertama</span>
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 p-3.5 text-xs text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:text-emerald-300">
+            <div className="flex items-center gap-2 font-semibold">
+              <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              Manajemen Promo & Diskon Terpusat
             </div>
-            <div className="max-w-xs">
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                step={1}
-                value={form.newUserDiscountPercent}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, newUserDiscountPercent: e.target.value }))
-                }
-                placeholder="Contoh: 50 (0 = tanpa diskon)"
-                disabled={createSubmitting}
-              />
-            </div>
-            <p className="text-xs text-slate-500">
-              Kosongkan atau isi 0 jika panduan ini tidak memiliki promo pengguna baru.
+            <p className="mt-1 text-emerald-800/80 dark:text-emerald-400">
+              Diskon pengguna baru (otomatis 50%) dan alokasi promo berkala/event kini diatur secara fleksibel dan terpusat melalui menu <strong>Promo</strong>.
             </p>
-            {Number(form.newUserDiscountPercent) > 0 && parseIdrInput(form.priceIdr) > 0 ? (
-              <div className="mt-1.5 flex flex-wrap gap-3 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                <span>
-                  Harga Promo IDR: {formatIdr.format(Math.round(parseIdrInput(form.priceIdr) * (1 - Number(form.newUserDiscountPercent) / 100)))}
-                </span>
-                {parseUsdInput(form.priceUsd) > 0 ? (
-                  <span>
-                    USD: {formatUsd.format(parseUsdInput(form.priceUsd) * (1 - Number(form.newUserDiscountPercent) / 100))}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
           </div>
 
           <div>

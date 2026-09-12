@@ -126,10 +126,10 @@ function MultiOptionList({
   onToggle: (opt: SearchableSelectOption) => void;
 }) {
   if (loading) {
-    return <p className="px-3 py-6 text-center text-sm text-slate-500">…</p>;
+    return <p className="px-3 py-6 text-center text-sm text-slate-500 dark:text-slate-400">…</p>;
   }
   if (options.length === 0) {
-    return <p className="px-3 py-6 text-center text-sm text-slate-500">{emptyHint}</p>;
+    return <p className="px-3 py-6 text-center text-sm text-slate-500 dark:text-slate-400">{emptyHint}</p>;
   }
   return (
     <ul className="py-1">
@@ -143,15 +143,15 @@ function MultiOptionList({
               className={cn(
                 "flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm transition sm:py-2",
                 selected
-                  ? "bg-landing-orange/10 font-medium text-slate-900"
-                  : "text-slate-700 hover:bg-slate-50",
+                  ? "bg-landing-orange/15 font-semibold text-landing-orange dark:bg-landing-orange/25 dark:text-orange-300"
+                  : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/80",
               )}
             >
               <span className="truncate">{opt.label}</span>
               {selected ? (
                 <Check className="h-4 w-4 shrink-0 text-landing-orange" />
               ) : (
-                <span className="h-4 w-4 shrink-0 rounded border border-slate-300" />
+                <span className="h-4 w-4 shrink-0 rounded border border-slate-300 dark:border-slate-600" />
               )}
             </button>
           </li>
@@ -190,14 +190,14 @@ function ColumnSearch({
   placeholder: string;
 }) {
   return (
-    <div className="relative shrink-0 border-b border-slate-100 px-2 py-2">
-      <Search className="pointer-events-none absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+    <div className="relative shrink-0 border-b border-slate-100 px-2 py-2 dark:border-slate-800">
+      <Search className="pointer-events-none absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
       <input
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-10 w-full rounded-md border-0 bg-slate-50 pl-8 pr-2 text-base text-slate-900 outline-none ring-1 ring-slate-200/80 focus:bg-white focus:ring-landing-orange/30 sm:h-8 sm:text-sm"
+        className="h-10 w-full rounded-md border-0 bg-slate-50 pl-8 pr-2 text-base text-slate-900 outline-none ring-1 ring-slate-200/80 focus:bg-white focus:ring-landing-orange/30 sm:h-8 sm:text-sm dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:ring-slate-700 dark:focus:bg-slate-800 dark:focus:ring-landing-orange/40"
       />
     </div>
   );
@@ -213,7 +213,7 @@ function LocationColumnBody({
   return (
     <LocationColumn className={fill ? "min-h-0 flex-1" : undefined}>
       {fill ? null : (
-        <p className="shrink-0 px-3 pt-2 text-[11px] font-semibold uppercase text-slate-400">
+        <p className="shrink-0 px-3 pt-2 text-[11px] font-semibold uppercase text-slate-400 dark:text-slate-500">
           {column.label}
           {column.count > 0 ? (
             <span className="ml-1 text-landing-orange">({column.count})</span>
@@ -470,17 +470,17 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
   ];
 
   const panelHeader = (
-    <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/90 px-3 py-2">
+    <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/90 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/80">
       <div>
-        <span className="text-xs font-bold uppercase tracking-wide text-slate-500">
+        <span className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           {t.hero.location}
         </span>
-        <p className="text-[10px] text-slate-400">{t.hero.multiSelectHint}</p>
+        <p className="text-[10px] text-slate-400 dark:text-slate-500">{t.hero.multiSelectHint}</p>
       </div>
       <button
         type="button"
         onClick={() => setOpen(false)}
-        className="rounded-md p-1 text-slate-500 hover:bg-slate-200/60"
+        className="rounded-md p-1 text-slate-500 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:bg-slate-700"
         aria-label="Close"
       >
         <X className="h-4 w-4" />
@@ -489,11 +489,11 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
   );
 
   const panelFooter = (
-    <div className="flex shrink-0 items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 px-3 py-2">
+    <div className="flex shrink-0 items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
       <button
         type="button"
         onClick={clearAll}
-        className="rounded-lg px-1 py-2 text-xs font-medium text-slate-500 hover:text-landing-orange sm:py-0"
+        className="rounded-lg px-1 py-2 text-xs font-medium text-slate-500 hover:text-landing-orange sm:py-0 dark:text-slate-400 dark:hover:text-landing-orange"
       >
         {t.hero.clearLocation}
       </button>
@@ -513,17 +513,17 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
   const mobilePanel = open && mounted ? (
     <div className="fixed inset-0 z-[200] flex flex-col justify-end">
       <div
-        className="absolute inset-0 bg-slate-900/45"
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
         onClick={() => setOpen(false)}
         aria-hidden
       />
       <div
         ref={panelRef}
-        className="relative flex max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-2xl border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-slate-900/25"
+        className="relative flex max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-2xl border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-slate-900/25 dark:border-slate-800 dark:bg-slate-900"
       >
         {panelHeader}
 
-        <div className="flex shrink-0 gap-1.5 border-b border-slate-100 px-3 py-2">
+        <div className="flex shrink-0 gap-1.5 border-b border-slate-100 px-3 py-2 dark:border-slate-800">
           {columns.map((column) => {
             const active = column.key === activeColumn.key;
             return (
@@ -536,7 +536,7 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
                   "flex h-9 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg text-xs font-semibold transition",
                   active
                     ? "bg-landing-orange text-white"
-                    : "bg-slate-100 text-slate-600",
+                    : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
                 )}
               >
                 <span className="truncate">{column.label}</span>
@@ -544,7 +544,7 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
                   <span
                     className={cn(
                       "shrink-0 rounded-full px-1.5 text-[10px] font-bold",
-                      active ? "bg-white/25 text-white" : "bg-white text-landing-orange",
+                      active ? "bg-white/25 text-white" : "bg-white text-landing-orange dark:bg-slate-700 dark:text-orange-400",
                     )}
                   >
                     {column.count}
@@ -568,7 +568,7 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
     open && panelPos && mounted ? (
       <div
         ref={panelRef}
-        className="fixed z-[200] flex max-h-[min(400px,calc(100vh-24px))] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5"
+        className="fixed z-[200] flex max-h-[min(400px,calc(100vh-24px))] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10"
         style={{
           top: panelPos.top,
           left: panelPos.left,
@@ -577,7 +577,7 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
       >
         {panelHeader}
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-slate-100 sm:h-[260px] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-slate-100 sm:h-[260px] sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-slate-800">
           {columns.map((column) => (
             <LocationColumnBody key={column.key} column={column} />
           ))}
@@ -601,24 +601,24 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         className={cn(
-          "flex h-11 w-full items-center gap-2 rounded-xl border bg-slate-50/80 px-3 text-left transition",
+          "flex h-11 w-full items-center gap-2 rounded-xl border px-3 text-left transition outline-none",
           open
-            ? "border-landing-orange bg-white ring-2 ring-landing-orange/15"
-            : "border-slate-200/90 hover:border-slate-300 hover:bg-white",
+            ? "border-landing-orange bg-white ring-2 ring-landing-orange/15 dark:border-landing-orange dark:bg-slate-800 dark:ring-landing-orange/20"
+            : "border-slate-200/90 bg-slate-50/80 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-slate-600 dark:hover:bg-slate-800",
         )}
       >
         <MapPin className="h-4 w-4 shrink-0 text-landing-orange" />
         <span
           className={cn(
             "min-w-0 flex-1 truncate text-sm",
-            hasSelection ? "font-semibold text-slate-900" : "text-slate-500",
+            hasSelection ? "font-semibold text-slate-900 dark:text-slate-100" : "text-slate-500 dark:text-slate-400",
           )}
         >
           {buildSummary()}
         </span>
         <ChevronDown
           className={cn(
-            "h-4 w-4 shrink-0 text-slate-400 transition",
+            "h-4 w-4 shrink-0 text-slate-400 transition dark:text-slate-500",
             open && "rotate-180",
           )}
         />

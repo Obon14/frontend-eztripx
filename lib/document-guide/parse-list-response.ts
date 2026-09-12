@@ -101,6 +101,13 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
         ? raw.fileName
         : "";
 
+  const nameDocumentEn =
+    typeof raw.nameDocumentEn === "string"
+      ? raw.nameDocumentEn
+      : typeof raw.fileNameEn === "string"
+        ? raw.fileNameEn
+        : null;
+
   const structuredTags: DocumentGuideStructuredTag[] = [];
   if (Array.isArray(raw.tags)) {
     for (const t of raw.tags) {
@@ -132,6 +139,9 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
   ];
 
   const tags: string[] = [titleId, titleEn ?? "", nameDocument];
+  if (nameDocumentEn) {
+    tags.push(nameDocumentEn);
+  }
   for (const t of structuredTags) {
     if (t.region?.name) tags.push(t.region.name);
     if (t.country?.name) tags.push(t.country.name);
@@ -184,6 +194,7 @@ export function parseDocumentGuideListItem(raw: unknown): DocumentGuide | null {
     cityIds,
     tags,
     fileName: nameDocument,
+    fileNameEn: nameDocumentEn,
     status,
     previewMode,
     previewPageCount,

@@ -241,7 +241,7 @@ export function GuideDocumentCatalog() {
 
         <form
           onSubmit={submitSearch}
-          className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900"
+          className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-slate-950/50"
         >
           <div className="flex flex-col lg:flex-row lg:items-stretch">
             <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r dark:border-slate-800">
@@ -249,7 +249,7 @@ export function GuideDocumentCatalog() {
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
                   <MapPin className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
                 </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {t.hero.location}
                 </span>
               </div>
@@ -262,7 +262,7 @@ export function GuideDocumentCatalog() {
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
                     <Calendar className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {t.hero.duration}
                   </span>
                 </div>
@@ -273,7 +273,7 @@ export function GuideDocumentCatalog() {
                   placeholder={t.hero.durationPlaceholder}
                   value={tripDays}
                   onChange={(e) => setTripDays(e.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                  className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 scheme-light focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:scheme-dark dark:placeholder:text-slate-500 dark:focus:border-landing-orange dark:focus:bg-slate-800 dark:focus:ring-landing-orange/25"
                 />
               </div>
             </div>
@@ -283,7 +283,7 @@ export function GuideDocumentCatalog() {
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
                   <Search className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
                 </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {t.guides.search}
                 </span>
               </div>
@@ -292,7 +292,7 @@ export function GuideDocumentCatalog() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t.guides.searchPlaceholder}
-                className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 scheme-light focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:scheme-dark dark:placeholder:text-slate-500 dark:focus:border-landing-orange dark:focus:bg-slate-800 dark:focus:ring-landing-orange/25"
               />
             </div>
 
@@ -306,14 +306,14 @@ export function GuideDocumentCatalog() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-600 dark:text-slate-300 lg:min-w-[6.5rem]"
+                  className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100 lg:min-w-[6.5rem]"
                 >
                   {t.guides.clearSearch}
                 </button>
               ) : null}
               <button
                 type="submit"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-landing-orange px-5 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] lg:min-w-[6.5rem]"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-landing-orange px-5 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] active:scale-[0.99] lg:min-w-[6.5rem]"
               >
                 <Search className="h-4 w-4" aria-hidden />
                 {t.guides.search}

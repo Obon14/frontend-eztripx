@@ -72,14 +72,14 @@ export function HeroSection() {
         </div>
 
         <div className="mx-auto mt-8 max-w-4xl sm:mt-10">
-          <div className="overflow-hidden rounded-2xl bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
+          <div className="overflow-hidden rounded-2xl bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] ring-1 ring-white/10 dark:border dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-slate-950/60 dark:ring-0">
             <div className="flex flex-col lg:flex-row lg:items-stretch">
-              <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r">
+              <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r dark:border-slate-800">
                 <div className="mb-2 flex items-center gap-2">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
                     <MapPin className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {t.hero.location}
                   </span>
                 </div>
@@ -89,13 +89,13 @@ export function HeroSection() {
                 />
               </div>
 
-              <div className="flex border-b border-slate-100 lg:w-36 lg:flex-col lg:border-b-0 lg:border-r xl:w-40">
+              <div className="flex border-b border-slate-100 lg:w-36 lg:flex-col lg:border-b-0 lg:border-r dark:border-slate-800 xl:w-40">
                 <div className="flex flex-1 flex-col justify-center px-4 py-4 sm:px-5">
                   <div className="mb-2 flex items-center gap-2">
                     <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
                       <Calendar className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
                     </span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       {t.hero.duration}
                     </span>
                   </div>
@@ -107,7 +107,7 @@ export function HeroSection() {
                     placeholder={t.hero.durationPlaceholder}
                     value={tripDays}
                     onChange={(e) => setTripDays(e.target.value)}
-                    className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15"
+                    className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 scheme-light focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:scheme-dark dark:placeholder:text-slate-500 dark:focus:border-landing-orange dark:focus:bg-slate-800 dark:focus:ring-landing-orange/25"
                   />
                 </div>
               </div>
@@ -116,7 +116,7 @@ export function HeroSection() {
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-landing-orange text-sm font-bold text-white shadow-md shadow-landing-orange/25 transition hover:bg-[#e07830] lg:h-full lg:min-w-[7rem] lg:rounded-none lg:rounded-r-2xl lg:px-6"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-landing-orange text-sm font-bold text-white shadow-md shadow-landing-orange/25 transition hover:bg-[#e07830] active:scale-[0.99] lg:h-full lg:min-w-[7rem] lg:rounded-none lg:rounded-r-2xl lg:px-6"
                 >
                   <Search className="h-4 w-4" strokeWidth={2.5} />
                   {t.hero.search}

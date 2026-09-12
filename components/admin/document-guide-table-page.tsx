@@ -140,6 +140,7 @@ type GuideFormState = {
   priceUsd: string;
   newUserDiscountPercent: string;
   fileName: string;
+  fileNameEn: string;
   status: DocumentGuide["status"];
   previewMode: DocumentGuide["previewMode"];
   previewPageCount: string;
@@ -187,6 +188,7 @@ export function DocumentGuideTablePage() {
     priceUsd: "0",
     newUserDiscountPercent: "0",
     fileName: "",
+    fileNameEn: "",
     status: "draft",
     previewMode: "hide",
     previewPageCount: "3",
@@ -203,6 +205,8 @@ export function DocumentGuideTablePage() {
   const createCityIdsRef = useRef(createCityIds);
   createCityIdsRef.current = createCityIds;
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfEnFile, setPdfEnFile] = useState<File | null>(null);
+  const [removeDocumentEn, setRemoveDocumentEn] = useState(false);
   const [coverFiles, setCoverFiles] = useState<File[]>([]);
   const [removeCoverIds, setRemoveCoverIds] = useState<string[]>([]);
   const [existingCovers, setExistingCovers] = useState<
@@ -216,6 +220,7 @@ export function DocumentGuideTablePage() {
   const [previewDocumentId, setPreviewDocumentId] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewFileName, setPreviewFileName] = useState("");
+  const [previewLocale, setPreviewLocale] = useState<"id" | "en">("id");
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const previewAbortRef = useRef<AbortController | null>(null);
@@ -313,13 +318,15 @@ export function DocumentGuideTablePage() {
   }, []);
 
   const openDocumentPreview = useCallback(
-    async (row: DocumentGuide) => {
+    async (row: DocumentGuide, locale: "id" | "en" = "id") => {
       previewAbortRef.current?.abort();
       const ac = new AbortController();
       previewAbortRef.current = ac;
 
-      setPreviewTitle(row.title);
-      setPreviewFileName(row.fileName);
+      const isEn = locale === "en" && Boolean(row.fileNameEn);
+      setPreviewLocale(isEn ? "en" : "id");
+      setPreviewTitle(isEn && row.titleEn ? `${row.titleEn} (EN)` : row.title);
+      setPreviewFileName(isEn && row.fileNameEn ? row.fileNameEn : row.fileName);
       setPreviewDocumentId(row.id);
       setPreviewError(null);
       setPreviewUrl((u) => {
@@ -330,7 +337,8 @@ export function DocumentGuideTablePage() {
       setPreviewLoading(true);
 
       try {
-        const res = await fetch(`/api/document-guide/${encodeURIComponent(row.id)}/preview`, {
+        const query = isEn ? "?locale=en" : "";
+        const res = await fetch(`/api/document-guide/${encodeURIComponent(row.id)}/preview${query}`, {
           credentials: "include",
           signal: ac.signal,
         });
@@ -395,6 +403,7 @@ export function DocumentGuideTablePage() {
       priceUsd: usdFromNumber(row.priceUsd),
       newUserDiscountPercent: row.newUserDiscountPercent != null ? String(row.newUserDiscountPercent) : "0",
       fileName: row.fileName,
+      fileNameEn: row.fileNameEn ?? "",
       status: row.status,
       previewMode: row.previewMode ?? "hide",
       previewPageCount: String(row.previewPageCount ?? 3),
@@ -407,6 +416,8 @@ export function DocumentGuideTablePage() {
     setCreateCityIds([...row.cityIds]);
     setCreateGeoLabels(buildGeoLabelsFromRow(row));
     setPdfFile(null);
+    setPdfEnFile(null);
+    setRemoveDocumentEn(false);
     setCoverFiles([]);
     setRemoveCoverIds([]);
     setExistingCovers(row.coverImages.map((c) => ({ id: c.id, url: c.url })));
@@ -571,9 +582,18 @@ export function DocumentGuideTablePage() {
               },
               {
                 key: "preview",
-                label: "Preview doc",
-                onSelect: () => void openDocumentPreview(row),
+                label: row.fileNameEn ? "Preview doc (ID)" : "Preview doc",
+                onSelect: () => void openDocumentPreview(row, "id"),
               },
+              ...(row.fileNameEn
+                ? [
+                    {
+                      key: "preview-en",
+                      label: "Preview doc (EN)",
+                      onSelect: () => void openDocumentPreview(row, "en"),
+                    },
+                  ]
+                : []),
               {
                 key: "status",
                 label: row.status === "published" ? "Jadikan draft" : "Post",
@@ -609,6 +629,7 @@ export function DocumentGuideTablePage() {
       priceUsd: "",
       newUserDiscountPercent: "0",
       fileName: "",
+      fileNameEn: "",
       status: "draft",
       previewMode: "hide",
       previewPageCount: "3",
@@ -621,6 +642,8 @@ export function DocumentGuideTablePage() {
     setCreateCityIds([]);
     setCreateGeoLabels({});
     setPdfFile(null);
+    setPdfEnFile(null);
+    setRemoveDocumentEn(false);
     setCoverFiles([]);
     setRemoveCoverIds([]);
     setExistingCovers([]);
@@ -634,6 +657,8 @@ export function DocumentGuideTablePage() {
     setCreateError(null);
     setCreateSubmitting(false);
     setPdfFile(null);
+    setPdfEnFile(null);
+    setRemoveDocumentEn(false);
     setCoverFiles([]);
     setRemoveCoverIds([]);
     setExistingCovers([]);
@@ -766,11 +791,15 @@ export function DocumentGuideTablePage() {
 
     const isEdit = Boolean(editingId);
     if (!isEdit && !pdfFile) {
-      setCreateError("PDF document is required.");
+      setCreateError("PDF document (Bahasa Indonesia) is required.");
       return;
     }
     if (pdfFile && !isPdfFile(pdfFile)) {
-      setCreateError("Only PDF files are allowed.");
+      setCreateError("Only PDF files are allowed for Indonesian document.");
+      return;
+    }
+    if (pdfEnFile && !isPdfFile(pdfEnFile)) {
+      setCreateError("Only PDF files are allowed for English document.");
       return;
     }
     for (const f of coverFiles) {
@@ -829,6 +858,11 @@ export function DocumentGuideTablePage() {
       fd.append("tags", JSON.stringify(tagsPayload));
       if (pdfFile) {
         fd.append("document", pdfFile, pdfFile.name);
+      }
+      if (pdfEnFile) {
+        fd.append("documentEn", pdfEnFile, pdfEnFile.name);
+      } else if (removeDocumentEn) {
+        fd.append("removeDocumentEn", "true");
       }
       for (const f of coverFiles) {
         fd.append("coverImages", f, f.name);
@@ -889,6 +923,8 @@ export function DocumentGuideTablePage() {
     createCountryIds,
     createCityIds,
     pdfFile,
+    pdfEnFile,
+    removeDocumentEn,
     coverFiles,
     removeCoverIds,
     existingCovers,
@@ -1313,28 +1349,117 @@ export function DocumentGuideTablePage() {
             />
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Document (PDF only)</label>
-            <input
-              type="file"
-              accept="application/pdf,.pdf"
-              className="block w-full cursor-pointer text-sm text-slate-600 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-admin-primary-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-admin-primary-700 hover:file:bg-admin-primary-100"
-              disabled={createSubmitting}
-              onChange={(e) => {
-                const file = e.target.files?.[0] ?? null;
-                setPdfFile(file);
-                setForm((f) => ({ ...f, fileName: file ? file.name : f.fileName }));
-              }}
-            />
-            {pdfFile ? (
-              <p className="mt-1 text-xs text-slate-500">File baru: {pdfFile.name}</p>
-            ) : editingId ? (
-              <p className="mt-1 text-xs text-slate-500">
-                Berkas saat ini: {form.fileName || "—"}. Pilih PDF baru untuk mengganti (opsional).
-              </p>
-            ) : (
-              <p className="mt-1 text-xs text-slate-500">Belum ada file dipilih (wajib untuk buat baru).</p>
-            )}
+          {/* Document File Inputs (ID & EN) */}
+          <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                File Dokumen PDF
+              </span>
+              <span className="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                2 Bahasa Terpisah
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Unggah file PDF dokumen panduan secara terpisah untuk versi Bahasa Indonesia dan Bahasa Inggris.
+            </p>
+
+            {/* Dokumen Bahasa Indonesia (Wajib) */}
+            <div className="rounded-lg border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <span className="inline-flex items-center justify-center rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700 dark:bg-red-950/60 dark:text-red-300">
+                    ID
+                  </span>
+                  Dokumen Bahasa Indonesia <span className="text-red-500">*</span>
+                </label>
+              </div>
+              <input
+                type="file"
+                accept="application/pdf,.pdf"
+                className="block w-full cursor-pointer text-xs text-slate-600 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-admin-primary-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-admin-primary-700 hover:file:bg-admin-primary-100 dark:text-slate-300 dark:file:bg-slate-800 dark:file:text-slate-200"
+                disabled={createSubmitting}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setPdfFile(file);
+                }}
+              />
+              {pdfFile ? (
+                <p className="mt-1.5 text-xs font-medium text-admin-primary-600 dark:text-admin-primary-400">
+                  ✓ File baru dipilih: {pdfFile.name}
+                </p>
+              ) : editingId ? (
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                  Berkas saat ini: <span className="font-medium text-slate-700 dark:text-slate-300">{form.fileName || "—"}</span>. Pilih PDF baru jika ingin mengganti.
+                </p>
+              ) : (
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                  Wajib dipilih untuk membuat document guide baru.
+                </p>
+              )}
+            </div>
+
+            {/* Dokumen Bahasa Inggris (Opsional) */}
+            <div className="rounded-lg border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <span className="inline-flex items-center justify-center rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+                    EN
+                  </span>
+                  Dokumen Bahasa Inggris <span className="text-[10px] font-normal normal-case text-slate-400">(Opsional)</span>
+                </label>
+                {editingId && form.fileNameEn && !pdfEnFile ? (
+                  removeDocumentEn ? (
+                    <button
+                      type="button"
+                      onClick={() => setRemoveDocumentEn(false)}
+                      className="text-xs font-medium text-admin-primary-600 hover:underline dark:text-admin-primary-400"
+                    >
+                      Batalkan hapus EN
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setRemoveDocumentEn(true)}
+                      className="text-xs font-medium text-red-600 hover:underline dark:text-red-400"
+                    >
+                      Hapus Dokumen EN
+                    </button>
+                  )
+                ) : null}
+              </div>
+              <input
+                type="file"
+                accept="application/pdf,.pdf"
+                className="block w-full cursor-pointer text-xs text-slate-600 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-admin-primary-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-admin-primary-700 hover:file:bg-admin-primary-100 dark:text-slate-300 dark:file:bg-slate-800 dark:file:text-slate-200"
+                disabled={createSubmitting}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setPdfEnFile(file);
+                  if (file) {
+                    setRemoveDocumentEn(false);
+                  }
+                }}
+              />
+              {pdfEnFile ? (
+                <p className="mt-1.5 text-xs font-medium text-blue-600 dark:text-blue-400">
+                  ✓ File baru dipilih: {pdfEnFile.name}
+                </p>
+              ) : editingId ? (
+                removeDocumentEn ? (
+                  <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400">
+                    ⚠️ Dokumen EN ({form.fileNameEn}) akan dihapus saat disimpan.
+                  </p>
+                ) : (
+                  <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    Berkas saat ini: <span className="font-medium text-slate-700 dark:text-slate-300">{form.fileNameEn || "Belum ada (opsional)"}</span>.
+                  </p>
+                )
+              ) : (
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                  Opsional. Jika kosong, user berbahasa Inggris akan mengunduh dokumen ID.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </Modal>
@@ -1369,14 +1494,14 @@ export function DocumentGuideTablePage() {
           previewDocumentId && previewUrl && !previewLoading && !previewError ? (
             <div className="flex justify-end">
               <a
-                href={`/api/document-guide/${encodeURIComponent(previewDocumentId)}/download`}
+                href={`/api/document-guide/${encodeURIComponent(previewDocumentId)}/download${previewLocale === "en" ? "?locale=en" : ""}`}
                 download={pdfDownloadName(previewFileName)}
                 className={cn(
                   "inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2",
                 )}
               >
                 <Download className="h-4 w-4 shrink-0" aria-hidden />
-                Download PDF
+                Download PDF {previewLocale === "en" ? "(EN)" : "(ID)"}
               </a>
             </div>
           ) : null

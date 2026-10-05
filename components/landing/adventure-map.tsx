@@ -3,10 +3,9 @@
 import { useEffect, useRef } from "react";
 import type { PublicMapPin } from "@/lib/document-guide/parse-map-pins";
 
-const LEAFLET_CSS =
-  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
-const LEAFLET_JS =
-  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+const MAPBOX_CSS = "https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css";
+const MAPBOX_JS = "https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js";
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
 type AdventureMapProps = {
   pins: PublicMapPin[];
@@ -15,47 +14,17 @@ type AdventureMapProps = {
   viewGuidesLabel: string;
 };
 
-/** Minimal Leaflet surface used by this map (CDN-loaded, no npm resolve at build). */
-type LeafletNs = {
-  map: (
-    el: HTMLElement,
-    opts?: { scrollWheelZoom?: boolean; worldCopyJump?: boolean },
-  ) => LeafletMapInstance;
-  tileLayer: (
-    url: string,
-    opts?: Record<string, unknown>,
-  ) => { addTo: (map: LeafletMapInstance) => unknown };
-  marker: (latlng: [number, number]) => LeafletMarker;
-  Icon: {
-    Default: {
-      prototype: Record<string, unknown>;
-      mergeOptions: (opts: Record<string, string>) => void;
-    };
-  };
-};
-
-type LeafletMapInstance = {
-  setView: (latlng: [number, number], zoom: number) => LeafletMapInstance;
-  fitBounds: (
-    bounds: [number, number][],
-    opts?: { padding?: [number, number]; maxZoom?: number },
-  ) => void;
-  invalidateSize: () => void;
-  remove: () => void;
-};
-
-type LeafletMarker = {
-  addTo: (map: LeafletMapInstance) => LeafletMarker;
-  bindPopup: (
-    html: string,
-    opts?: { maxWidth?: number; className?: string },
-  ) => LeafletMarker;
-  remove: () => void;
+type MapboxNs = {
+  accessToken: string;
+  Map: new (opts: Record<string, any>) => any;
+  Marker: new (opts?: Record<string, any>) => any;
+  Popup: new (opts?: Record<string, any>) => any;
+  LngLatBounds: new () => any;
 };
 
 declare global {
   interface Window {
-    L?: LeafletNs;
+    mapboxgl?: MapboxNs;
   }
 }
 
@@ -110,41 +79,41 @@ function buildPopupHtml(
   `;
 }
 
-function ensureLeafletCss(): void {
-  if (document.querySelector(`link[href="${LEAFLET_CSS}"]`)) return;
+function ensureMapboxCss(): void {
+  if (document.querySelector(`link[href="${MAPBOX_CSS}"]`)) return;
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = LEAFLET_CSS;
+  link.href = MAPBOX_CSS;
   document.head.appendChild(link);
 }
 
-function loadLeafletScript(): Promise<LeafletNs> {
-  if (window.L) return Promise.resolve(window.L);
+function loadMapboxScript(): Promise<MapboxNs> {
+  if (window.mapboxgl) return Promise.resolve(window.mapboxgl);
 
   return new Promise((resolve, reject) => {
     const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${LEAFLET_JS}"]`,
+      `script[src="${MAPBOX_JS}"]`,
     );
     if (existing) {
       existing.addEventListener("load", () => {
-        if (window.L) resolve(window.L);
-        else reject(new Error("Leaflet failed to load"));
+        if (window.mapboxgl) resolve(window.mapboxgl);
+        else reject(new Error("Mapbox failed to load"));
       });
       existing.addEventListener("error", () =>
-        reject(new Error("Leaflet script error")),
+        reject(new Error("Mapbox script error")),
       );
-      if (window.L) resolve(window.L);
+      if (window.mapboxgl) resolve(window.mapboxgl);
       return;
     }
 
     const script = document.createElement("script");
-    script.src = LEAFLET_JS;
+    script.src = MAPBOX_JS;
     script.async = true;
     script.onload = () => {
-      if (window.L) resolve(window.L);
-      else reject(new Error("Leaflet failed to load"));
+      if (window.mapboxgl) resolve(window.mapboxgl);
+      else reject(new Error("Mapbox failed to load"));
     };
-    script.onerror = () => reject(new Error("Leaflet script error"));
+    script.onerror = () => reject(new Error("Mapbox script error"));
     document.head.appendChild(script);
   });
 }
@@ -156,8 +125,8 @@ export function AdventureMap({
   viewGuidesLabel,
 }: AdventureMapProps) {
   const hostRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<LeafletMapInstance | null>(null);
-  const markersRef = useRef<LeafletMarker[]>([]);
+  const mapRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -167,36 +136,28 @@ export function AdventureMap({
 
     void (async () => {
       try {
-        ensureLeafletCss();
-        const L = await loadLeafletScript();
+        ensureMapboxCss();
+        const mapboxgl = await loadMapboxScript();
         if (cancelled || !hostRef.current) return;
 
-        delete L.Icon.Default.prototype._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-          iconUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-          shadowUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-        });
+        mapboxgl.accessToken = MAPBOX_TOKEN;
 
         if (mapRef.current) {
           mapRef.current.remove();
           mapRef.current = null;
         }
 
-        const map = L.map(host, {
-          scrollWheelZoom: false,
-          worldCopyJump: true,
-        }).setView([20, 10], 2);
+        const map = new mapboxgl.Map({
+          container: host,
+          style: "mapbox://styles/mapbox/dark-v11",
+          center: [10, 20], // [lng, lat]
+          zoom: 2,
+          scrollZoom: false,
+          dragRotate: false,
+        });
 
-        L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-          subdomains: "abcd",
-          maxZoom: 18,
-        }).addTo(map);
+        // Add navigation controls (zoom in/out)
+        // map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
         mapRef.current = map;
 
@@ -206,28 +167,38 @@ export function AdventureMap({
         markersRef.current = [];
 
         const popupMaxWidth = Math.max(180, Math.min(300, host.clientWidth - 48));
-        const bounds: [number, number][] = [];
+        const bounds = new mapboxgl.LngLatBounds();
+        let hasPins = false;
+
         for (const pin of pins) {
-          const marker = L.marker([pin.lat, pin.lng]).addTo(map);
-          marker.bindPopup(
-            buildPopupHtml(pin, daysLabel, guidesLabel, viewGuidesLabel),
-            { maxWidth: popupMaxWidth, className: "ez-map-popup-wrap" },
-          );
+          hasPins = true;
+          const popup = new mapboxgl.Popup({
+            maxWidth: popupMaxWidth + "px",
+            className: "ez-map-popup-wrap",
+            offset: 25,
+          }).setHTML(buildPopupHtml(pin, daysLabel, guidesLabel, viewGuidesLabel));
+
+          const marker = new mapboxgl.Marker({ color: "#f28538" }) // EzTripx orange
+            .setLngLat([pin.lng, pin.lat]) // [lng, lat]
+            .setPopup(popup)
+            .addTo(map);
+
           markersRef.current.push(marker);
-          bounds.push([pin.lat, pin.lng]);
+          bounds.extend([pin.lng, pin.lat]);
         }
 
-        if (bounds.length === 1) {
-          map.setView(bounds[0], 5);
-        } else if (bounds.length > 1) {
-          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 5 });
-        }
+        // Wait for map to load before fitting bounds
+        map.on("load", () => {
+          if (cancelled) return;
+          if (hasPins && pins.length === 1) {
+            map.flyTo({ center: [pins[0].lng, pins[0].lat], zoom: 5 });
+          } else if (hasPins && pins.length > 1) {
+            map.fitBounds(bounds, { padding: 40, maxZoom: 5, duration: 1000 });
+          }
+        });
 
-        window.setTimeout(() => {
-          map.invalidateSize();
-        }, 80);
-      } catch {
-        // Map stays empty; section already has empty/error states upstream.
+      } catch (err) {
+        console.error("Failed to init Mapbox", err);
       }
     })();
 

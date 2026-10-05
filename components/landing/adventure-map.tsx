@@ -154,6 +154,7 @@ export function AdventureMap({
           zoom: 2,
           scrollZoom: false,
           dragRotate: false,
+          projection: "mercator", // Force flat map instead of globe
         });
 
         // Add navigation controls (zoom in/out)

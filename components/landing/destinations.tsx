@@ -128,23 +128,29 @@ export function DestinationsSection() {
   }
 
   return (
-    <section id="services" className="bg-gradient-to-b from-slate-50/80 to-white py-12 sm:py-20 dark:from-slate-900 dark:to-slate-950">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
-          <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-widest text-landing-orange">
+    <section id="services" className="relative bg-slate-50 py-16 sm:py-28 dark:bg-[#0b1120] overflow-hidden">
+      {/* Decorative Background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-[20%] top-0 h-[40vw] w-[40vw] rounded-full bg-landing-peach/40 blur-[120px] dark:bg-landing-orange/5" />
+        <div className="absolute -right-[20%] bottom-0 h-[50vw] w-[50vw] rounded-full bg-landing-orange/10 blur-[150px] dark:bg-emerald-500/5" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 flex flex-col items-start gap-4 sm:mb-14 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0 max-w-2xl">
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-landing-orange">
               {locale === "id" ? "Panduan perjalanan" : "Travel guides"}
             </p>
-            <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100">
               {hasFilters ? (
                 <>
                   {t.destinations.titleFiltered}{" "}
-                  <span className="text-landing-orange">{t.destinations.titleFilteredHighlight}</span>
+                  <span className="bg-gradient-to-r from-landing-orange to-[#ffb347] bg-clip-text text-transparent">{t.destinations.titleFilteredHighlight}</span>
                 </>
               ) : (
                 <>
                   {t.destinations.title}{" "}
-                  <span className="text-landing-orange">{t.destinations.titleHighlight}</span>
+                  <span className="bg-gradient-to-r from-landing-orange to-[#ffb347] bg-clip-text text-transparent">{t.destinations.titleHighlight}</span>
                 </>
               )}
             </h2>
@@ -258,7 +264,7 @@ function CarouselBtn({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-landing-orange hover:text-landing-orange disabled:opacity-30 dark:border-slate-700 dark:text-slate-300"
+      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-slate-200/60 bg-white text-slate-600 shadow-sm transition-all duration-300 hover:scale-110 hover:border-landing-orange hover:text-landing-orange hover:shadow-landing-orange/20 disabled:opacity-30 dark:border-slate-700/60 dark:bg-slate-900 dark:text-slate-300"
     >
       {children}
     </button>

@@ -14,7 +14,7 @@ type Slide = {
 };
 
 export function TestimonialsSection() {
-  const { t } = useLanding();
+  const { t, locale } = useLanding();
   const [published, setPublished] = useState<Slide[]>([]);
   const [index, setIndex] = useState(0);
 
@@ -71,17 +71,26 @@ export function TestimonialsSection() {
   if (!current) return null;
 
   return (
-    <section className="bg-slate-50 py-12 sm:py-20 dark:bg-slate-900">
-      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:px-8">
+    <section className="relative overflow-hidden bg-slate-50 py-20 sm:py-32 dark:bg-[#0b1120]">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-0 right-0 h-[800px] w-[800px] -translate-y-1/2 translate-x-1/3 rounded-full bg-landing-orange/5 blur-[120px]" />
+      </div>
+      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 sm:gap-16 sm:px-6 lg:grid-cols-2 lg:px-8">
         <div className="min-w-0">
-          <h2 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-landing-orange mb-3">
+            {locale === "id" ? "Kata Mereka" : "Testimonials"}
+          </p>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100">
             {t.testimonials.title}{" "}
-            <span className="text-landing-orange">{t.testimonials.titleHighlight}</span>
+            <span className="bg-gradient-to-r from-landing-orange to-[#ffb347] bg-clip-text text-transparent">{t.testimonials.titleHighlight}</span>
           </h2>
-          <p className="mt-4 text-sm text-slate-600 sm:text-base dark:text-slate-300">{t.testimonials.intro}</p>
+          <p className="mt-6 text-base leading-relaxed text-slate-600 sm:text-lg dark:text-slate-300">{t.testimonials.intro}</p>
 
-          <div className="mt-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:mt-8 sm:p-6 dark:border-slate-800 dark:bg-slate-950">
-            <p className="text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-200">
+          <div className="relative mt-10 rounded-[2.5rem] border border-white/50 bg-white/70 p-6 shadow-xl shadow-slate-200/50 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-landing-orange/20 hover:border-landing-orange/30 sm:mt-12 sm:p-10 dark:border-slate-800/80 dark:bg-slate-900/80 dark:shadow-none">
+            <svg className="absolute -top-6 -left-4 h-16 w-16 text-landing-orange/20" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
+            </svg>
+            <p className="relative z-10 text-lg italic leading-relaxed text-slate-700 sm:text-xl dark:text-slate-200">
               &ldquo;{current.quote}&rdquo;
             </p>
             <div className="mt-4 flex gap-0.5" aria-label={`${current.rating} / 5`}>
@@ -135,10 +144,10 @@ export function TestimonialsSection() {
         </div>
 
         <div
-          className="hidden min-h-[320px] rounded-3xl bg-gradient-to-br from-landing-peach to-orange-100 lg:flex lg:items-center justify-center dark:from-slate-800 dark:to-slate-900"
+          className="hidden min-h-[320px] rounded-3xl bg-gradient-to-br from-landing-peach to-orange-100 lg:flex lg:items-center justify-center dark:from-slate-800 dark:to-slate-900 group"
           aria-hidden
         >
-          <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-landing-orange/50 bg-white/70 text-3xl font-bold text-landing-orange dark:bg-white/10">
+          <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-landing-orange/50 bg-white/70 text-3xl font-bold text-landing-orange shadow-xl transition-transform duration-500 group-hover:scale-110 dark:bg-white/10">
             {current.name.slice(0, 1)}
           </div>
         </div>

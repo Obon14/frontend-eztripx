@@ -61,8 +61,8 @@ export function LandingHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-landing-forest/90 shadow-sm shadow-black/10 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-6 sm:py-3.5 lg:px-8">
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl rounded-full border border-white/10 bg-landing-forest/70 shadow-2xl shadow-landing-forest/30 backdrop-blur-xl">
+        <div className="mx-auto flex items-center justify-between gap-2 px-5 py-3 sm:gap-4 sm:px-6">
           <Link
             href="/"
             className="flex min-w-0 items-center gap-0.5 text-lg font-extrabold tracking-tight text-white sm:text-xl"

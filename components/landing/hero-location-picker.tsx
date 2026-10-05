@@ -73,14 +73,15 @@ function usePanelPosition(
     const el = anchorRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const pad = 8;
-    const width = Math.min(rect.width, window.innerWidth - pad * 2);
+    const pad = 16;
+    // Use a comfortable fixed width for the 3-column layout on desktop, max out at viewport width minus padding.
+    const width = Math.min(768, window.innerWidth - pad * 2);
     let left = rect.left;
     if (left + width > window.innerWidth - pad) {
       left = window.innerWidth - pad - width;
     }
     setPos({
-      top: rect.bottom + 8,
+      top: rect.bottom + 16, // added a little more gap from the pill
       left: Math.max(pad, left),
       width,
     });
@@ -600,28 +601,16 @@ export function HeroLocationPicker({ value, onChange }: HeroLocationPickerProps)
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className={cn(
-          "flex h-11 w-full items-center gap-2 rounded-xl border px-3 text-left transition outline-none",
-          open
-            ? "border-landing-orange bg-white ring-2 ring-landing-orange/15 dark:border-landing-orange dark:bg-slate-800 dark:ring-landing-orange/20"
-            : "border-slate-200/90 bg-slate-50/80 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-slate-600 dark:hover:bg-slate-800",
-        )}
+        className="flex w-full items-center gap-2 border-0 bg-transparent p-0 text-left outline-none"
       >
-        <MapPin className="h-4 w-4 shrink-0 text-landing-orange" />
         <span
           className={cn(
-            "min-w-0 flex-1 truncate text-sm",
-            hasSelection ? "font-semibold text-slate-900 dark:text-slate-100" : "text-slate-500 dark:text-slate-400",
+            "min-w-0 flex-1 truncate text-base",
+            hasSelection ? "font-semibold text-slate-900 dark:text-slate-100" : "text-slate-400 dark:text-slate-500",
           )}
         >
           {buildSummary()}
         </span>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 shrink-0 text-slate-400 transition dark:text-slate-500",
-            open && "rotate-180",
-          )}
-        />
       </button>
       {mounted && panel ? createPortal(panel, document.body) : null}
     </div>

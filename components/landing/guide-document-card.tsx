@@ -231,8 +231,8 @@ export function GuideDocumentCard({
 
   return (
     <>
-      <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100/80 bg-white shadow-sm ring-1 ring-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-landing-orange/20 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/5">
-        <div className="relative shrink-0">
+      <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgb(242,133,56,0.15)] dark:bg-slate-900/80 dark:shadow-none dark:ring-white/10 dark:hover:ring-landing-orange/50 backdrop-blur-md">
+        <div className="relative shrink-0 overflow-hidden">
           <GuideCoverCarousel
             guideId={item.id}
             coverImages={item.coverImages}
@@ -250,8 +250,8 @@ export function GuideDocumentCard({
             </span>
           ) : null}
         </div>
-        <div className="flex flex-1 flex-col p-4">
-          <h3 className="line-clamp-2 font-bold text-slate-900 dark:text-slate-100">{item.title}</h3>
+        <div className="flex flex-1 flex-col p-5 sm:p-6">
+          <h3 className="line-clamp-2 text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-landing-orange transition-colors duration-300 dark:text-slate-100">{item.title}</h3>
           {item.locationLabel ? (
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.locationLabel}</p>
           ) : null}
@@ -276,13 +276,13 @@ export function GuideDocumentCard({
                 </span>
               </div>
             ) : (
-              <p className="text-lg font-bold text-landing-orange">{displayPrice(item, locale)}</p>
+              <p className="text-2xl font-black text-landing-orange">{displayPrice(item, locale)}</p>
             )}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => void openPreview()}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-landing-orange hover:text-landing-orange dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+                className="rounded-xl border-2 border-slate-200/80 bg-slate-50/50 px-5 py-2.5 text-sm font-bold text-slate-700 transition-all hover:scale-105 hover:border-landing-orange hover:bg-white hover:text-landing-orange hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 {previewLabel}
               </button>
@@ -302,7 +302,7 @@ export function GuideDocumentCard({
                   type="button"
                   disabled={buying}
                   onClick={() => void handleBuy()}
-                  className="rounded-lg bg-landing-orange px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] disabled:opacity-50"
+                  className="rounded-xl bg-gradient-to-r from-landing-orange to-[#ffb347] px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-landing-orange/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-landing-orange/40 disabled:opacity-50"
                 >
                   {buying ? processingLabel : buyLabel}
                 </button>

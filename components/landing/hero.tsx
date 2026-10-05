@@ -44,82 +44,86 @@ export function HeroSection() {
   return (
     <section
       id="discover"
-      className="relative overflow-x-hidden bg-landing-forest pb-14 pt-10 sm:pb-24 sm:pt-16"
+      className="relative min-h-[80vh] flex flex-col justify-center overflow-x-hidden bg-landing-forest pb-20 pt-32 sm:pb-32 sm:pt-40 lg:pt-48"
     >
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 15% 20%, rgba(242,133,56,0.22) 0%, transparent 55%), radial-gradient(ellipse 70% 50% at 85% 80%, rgba(34,197,94,0.12) 0%, transparent 50%)",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-landing-orange/8 blur-3xl"
-        aria-hidden
-      />
+      {/* Subtle premium gradient depth, not neon */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-landing-forest-light/30 to-landing-forest" />
+      <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
 
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center lg:max-w-4xl">
-          <h1 className="text-[1.75rem] font-extrabold leading-[1.15] tracking-tight text-white sm:text-5xl lg:text-[3.25rem]">
+      <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-landing-orange">
+            {t.hero.location ? "EzTripx Travel & Itinerary" : "EzTripx Travel & Itinerary"}
+          </p>
+          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl">
             {t.hero.titleLine1}{" "}
-            <span className="bg-gradient-to-r from-landing-orange to-[#ffb347] bg-clip-text text-transparent">
+            <span className="text-landing-orange">
               {t.hero.titleHighlight}
             </span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/75 sm:mt-5 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl font-medium">
             {t.hero.subtitle}
           </p>
         </div>
 
-        <div className="mx-auto mt-8 max-w-4xl sm:mt-10">
-          <div className="overflow-hidden rounded-2xl bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] ring-1 ring-white/10 dark:border dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-slate-950/60 dark:ring-0">
-            <div className="flex flex-col lg:flex-row lg:items-stretch">
-              <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r dark:border-slate-800">
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
-                    <MapPin className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
-                  </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {t.hero.location}
-                  </span>
-                </div>
-                <HeroLocationPicker
-                  value={location}
-                  onChange={handleLocationChange}
-                />
-              </div>
-
-              <div className="flex border-b border-slate-100 lg:w-36 lg:flex-col lg:border-b-0 lg:border-r dark:border-slate-800 xl:w-40">
-                <div className="flex flex-1 flex-col justify-center px-4 py-4 sm:px-5">
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
-                      <Calendar className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
-                    </span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      {t.hero.duration}
-                    </span>
+        <div className="mx-auto mt-12 max-w-4xl sm:mt-16">
+          <div className="mx-auto max-w-3xl overflow-visible rounded-full bg-white p-2 shadow-2xl ring-1 ring-black/5 dark:bg-slate-900 dark:ring-white/10">
+            <div className="flex flex-col lg:flex-row lg:items-center">
+              {/* Location Field */}
+              <div className="relative flex-1 rounded-full transition-colors hover:bg-slate-100 dark:hover:bg-slate-800">
+                <div className="flex items-center px-6 py-3 lg:py-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                    <MapPin className="h-5 w-5" aria-hidden />
                   </div>
-                  <input
-                    id="hero-trip-days"
-                    type="number"
-                    min={1}
-                    max={365}
-                    placeholder={t.hero.durationPlaceholder}
-                    value={tripDays}
-                    onChange={(e) => setTripDays(e.target.value)}
-                    className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 scheme-light focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:scheme-dark dark:placeholder:text-slate-500 dark:focus:border-landing-orange dark:focus:bg-slate-800 dark:focus:ring-landing-orange/25"
-                  />
+                  <div className="ml-4 flex-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                      {t.hero.location}
+                    </label>
+                    <div className="mt-0.5 w-full">
+                      <HeroLocationPicker
+                        value={location}
+                        onChange={handleLocationChange}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-3 lg:flex lg:items-stretch lg:p-0">
+              <div className="hidden h-12 w-px bg-slate-200 lg:block dark:bg-slate-800" />
+
+              {/* Duration Field */}
+              <div className="relative flex-1 rounded-full transition-colors hover:bg-slate-100 dark:hover:bg-slate-800">
+                <div className="flex items-center px-6 py-3 lg:py-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                    <Calendar className="h-5 w-5" aria-hidden />
+                  </div>
+                  <div className="ml-4 flex-1">
+                    <label htmlFor="hero-trip-days" className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                      {t.hero.duration}
+                    </label>
+                    <input
+                      id="hero-trip-days"
+                      type="number"
+                      min={1}
+                      max={365}
+                      placeholder={t.hero.durationPlaceholder}
+                      value={tripDays}
+                      onChange={(e) => setTripDays(e.target.value)}
+                      className="mt-0.5 block w-full border-none bg-transparent p-0 text-base font-semibold text-slate-900 placeholder-slate-400 focus:ring-0 dark:text-slate-100 dark:placeholder-slate-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Search Button */}
+              <div className="p-2 lg:p-0 lg:pr-2">
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-landing-orange text-sm font-bold text-white shadow-md shadow-landing-orange/25 transition hover:bg-[#e07830] active:scale-[0.99] lg:h-full lg:min-w-[7rem] lg:rounded-none lg:rounded-r-2xl lg:px-6"
+                  className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-landing-orange px-8 text-base font-bold text-white transition-all hover:scale-105 hover:bg-[#e07830] hover:shadow-lg hover:shadow-landing-orange/30 active:scale-[0.98] lg:w-auto"
                 >
-                  <Search className="h-4 w-4" strokeWidth={2.5} />
-                  {t.hero.search}
+                  <Search className="h-5 w-5" strokeWidth={2.5} />
+                  <span className="lg:hidden">{t.hero.search}</span>
                 </button>
               </div>
             </div>

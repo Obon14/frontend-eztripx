@@ -224,15 +224,21 @@ export function GuideDocumentCatalog() {
   const emptyCopy = emptyMessage();
 
   return (
-    <section className="bg-gradient-to-b from-slate-50/80 to-white py-12 sm:py-16 dark:from-slate-900 dark:to-slate-950">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 max-w-2xl">
-          <p className="text-xs font-bold uppercase tracking-widest text-landing-orange">
+    <section className="relative overflow-hidden bg-slate-50 py-16 sm:py-24 dark:bg-[#0b1120]">
+      {/* Decorative ambient background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-1/4 top-0 h-[600px] w-[600px] rounded-full bg-landing-peach/30 blur-[120px] dark:bg-landing-peach/5" />
+        <div className="absolute -right-1/4 bottom-0 h-[600px] w-[600px] rounded-full bg-landing-orange/10 blur-[120px] dark:bg-emerald-500/5" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 max-w-3xl">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-landing-orange">
             {t.guides.eyebrow}
           </p>
-          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100">
             {t.guides.title}{" "}
-            <span className="text-landing-orange">{t.guides.titleHighlight}</span>
+            <span className="bg-gradient-to-r from-landing-orange to-[#ffb347] bg-clip-text text-transparent">{t.guides.titleHighlight}</span>
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
             {t.guides.subtitle}
@@ -241,62 +247,68 @@ export function GuideDocumentCatalog() {
 
         <form
           onSubmit={submitSearch}
-          className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-slate-950/50"
+          className="mb-12 rounded-[2rem] border border-white/50 bg-white/70 shadow-xl shadow-slate-200/50 backdrop-blur-xl transition-all duration-300 hover:shadow-2xl hover:shadow-landing-orange/10 dark:border-slate-800/80 dark:bg-slate-900/80 dark:shadow-none"
         >
-          <div className="flex flex-col lg:flex-row lg:items-stretch">
-            <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r dark:border-slate-800">
-              <div className="mb-2 flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
-                  <MapPin className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  {t.hero.location}
-                </span>
-              </div>
-              <HeroLocationPicker value={location} onChange={setLocation} />
-            </div>
-
-            <div className="flex border-b border-slate-100 lg:w-40 lg:flex-col lg:border-b-0 lg:border-r dark:border-slate-800 xl:w-44">
-              <div className="flex flex-1 flex-col justify-center px-4 py-4 sm:px-5">
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
-                    <Calendar className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
-                  </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {t.hero.duration}
-                  </span>
+          <div className="flex flex-col lg:flex-row lg:items-center">
+            <div className="relative flex-1 border-b border-slate-100 transition-colors hover:bg-slate-50/50 lg:border-b-0 lg:border-r dark:border-slate-800 dark:hover:bg-slate-800/30 rounded-tl-[2rem] lg:rounded-l-[2rem]">
+              <div className="flex items-center px-6 py-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                  <MapPin className="h-5 w-5 text-landing-orange" aria-hidden />
                 </div>
-                <input
-                  type="number"
-                  min={1}
-                  max={365}
-                  placeholder={t.hero.durationPlaceholder}
-                  value={tripDays}
-                  onChange={(e) => setTripDays(e.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 scheme-light focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:scheme-dark dark:placeholder:text-slate-500 dark:focus:border-landing-orange dark:focus:bg-slate-800 dark:focus:ring-landing-orange/25"
-                />
+                <div className="ml-4 flex-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                    {t.hero.location}
+                  </label>
+                  <div className="mt-0.5 w-full">
+                    <HeroLocationPicker value={location} onChange={setLocation} />
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="min-w-0 flex-1 border-b border-slate-100 p-4 sm:p-5 lg:border-b-0 lg:border-r dark:border-slate-800">
-              <div className="mb-2 flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-landing-orange/10">
-                  <Search className="h-3.5 w-3.5 text-landing-orange" aria-hidden />
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  {t.guides.search}
-                </span>
+            <div className="relative border-b border-slate-100 transition-colors hover:bg-slate-50/50 lg:w-48 lg:border-b-0 lg:border-r dark:border-slate-800 dark:hover:bg-slate-800/30">
+              <div className="flex items-center px-6 py-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                  <Calendar className="h-5 w-5 text-landing-orange" aria-hidden />
+                </div>
+                <div className="ml-4 flex-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                    {t.hero.duration}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    placeholder={t.hero.durationPlaceholder}
+                    value={tripDays}
+                    onChange={(e) => setTripDays(e.target.value)}
+                    className="mt-0.5 block w-full border-none bg-transparent p-0 text-base font-semibold text-slate-900 placeholder-slate-400 focus:ring-0 dark:text-slate-100 dark:placeholder-slate-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                </div>
               </div>
-              <input
-                type="search"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder={t.guides.searchPlaceholder}
-                className="h-11 w-full rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:font-normal placeholder:text-slate-400 scheme-light focus:border-landing-orange focus:bg-white focus:ring-2 focus:ring-landing-orange/15 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:scheme-dark dark:placeholder:text-slate-500 dark:focus:border-landing-orange dark:focus:bg-slate-800 dark:focus:ring-landing-orange/25"
-              />
             </div>
 
-            <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-stretch lg:w-auto lg:flex-col lg:justify-center lg:p-3">
+            <div className="relative flex-1 border-b border-slate-100 transition-colors hover:bg-slate-50/50 lg:border-b-0 lg:border-r dark:border-slate-800 dark:hover:bg-slate-800/30">
+              <div className="flex items-center px-6 py-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                  <Search className="h-5 w-5 text-landing-orange" aria-hidden />
+                </div>
+                <div className="ml-4 flex-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                    {t.guides.search}
+                  </label>
+                  <input
+                    type="search"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder={t.guides.searchPlaceholder}
+                    className="mt-0.5 block w-full border-none bg-transparent p-0 text-base font-semibold text-slate-900 placeholder-slate-400 focus:ring-0 dark:text-slate-100 dark:placeholder-slate-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex p-4 gap-3 lg:pr-6">
               {filtersActive ||
               searchInput ||
               tripDays ||
@@ -306,16 +318,16 @@ export function GuideDocumentCatalog() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100 lg:min-w-[6.5rem]"
+                  className="flex h-14 items-center justify-center rounded-full border-2 border-slate-200 px-6 text-sm font-bold text-slate-600 transition-all hover:border-slate-300 hover:text-slate-900 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100 flex-1 lg:flex-none"
                 >
                   {t.guides.clearSearch}
                 </button>
               ) : null}
               <button
                 type="submit"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-landing-orange px-5 text-sm font-semibold text-white shadow-sm shadow-landing-orange/20 transition hover:bg-[#e07830] active:scale-[0.99] lg:min-w-[6.5rem]"
+                className="flex h-14 items-center justify-center gap-2 rounded-full bg-landing-orange px-8 text-base font-bold text-white shadow-xl shadow-landing-orange/30 transition-all hover:scale-105 hover:bg-[#e07830] active:scale-[0.98] flex-1 lg:flex-none"
               >
-                <Search className="h-4 w-4" aria-hidden />
+                <Search className="h-5 w-5" strokeWidth={2.5} />
                 {t.guides.search}
               </button>
             </div>

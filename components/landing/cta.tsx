@@ -16,7 +16,7 @@ export function CtaSection() {
         <button
           type="button"
           onClick={openRegister}
-          className="mt-6 w-full rounded-xl bg-landing-orange px-8 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-admin-primary-600 sm:mt-8 sm:w-auto"
+          className="mt-6 w-full rounded-xl bg-landing-orange px-8 py-3.5 text-base font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-admin-primary-600 sm:mt-8 sm:w-auto"
         >
           {t.cta.button}
         </button>

@@ -12,8 +12,9 @@ export function StoriesSection() {
   ];
 
   return (
-    <section id="about" className="bg-white py-12 sm:py-24 dark:bg-slate-950">
-      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
+    <section id="about" className="relative bg-white py-20 sm:py-32 dark:bg-[#0b1120] overflow-hidden">
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width%3D%2240%22 height%3D%2240%22 viewBox%3D%220 0 40 40%22 xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath d%3D%22M20 20.5V18H0v-2h20v-2.5a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 .5.5v2.5h20v2H21v2.5a.5.5 0 0 1-.5.5h-.5a.5.5 0 0 1-.5-.5z%22 fill%3D%22%23f28538%22 fill-opacity%3D%220.03%22 fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] opacity-100" />
+      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 sm:gap-16 sm:px-6 lg:grid-cols-2 lg:gap-24 lg:px-8">
         <div
           className="relative min-h-[220px] overflow-hidden rounded-3xl bg-gradient-to-br from-landing-forest via-landing-forest-light to-[#2d4a34] shadow-xl shadow-landing-forest/20 sm:min-h-[300px] lg:min-h-[360px]"
           aria-hidden
@@ -38,23 +39,23 @@ export function StoriesSection() {
         </div>
 
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-landing-orange">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-landing-orange">
             EzTripx
           </p>
-          <h2 className="mt-2 text-xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100">
             {t.stories.title}{" "}
-            <span className="text-landing-orange">{t.stories.titleHighlight}</span>
+            <span className="bg-gradient-to-r from-landing-orange to-[#ffb347] bg-clip-text text-transparent">{t.stories.titleHighlight}</span>
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:mt-5 sm:text-base dark:text-slate-300">{t.stories.p1}</p>
           <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:mt-4 sm:text-base dark:text-slate-300">{t.stories.p2}</p>
 
-          <div className="mt-8 grid grid-cols-3 gap-3 sm:mt-10 sm:gap-4">
+          <div className="mt-10 grid grid-cols-3 gap-4 sm:mt-14 sm:gap-6">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-center transition hover:border-landing-orange/30 hover:bg-white hover:shadow-md sm:p-5 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+                className="group rounded-[2rem] border border-slate-100 bg-white p-4 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:-translate-y-2 hover:scale-[1.05] hover:border-landing-orange/30 hover:shadow-[0_20px_40px_rgb(242,133,56,0.15)] sm:p-6 dark:border-slate-800/60 dark:bg-slate-900/80 dark:shadow-none backdrop-blur-md"
               >
-                <p className="text-lg font-extrabold text-landing-orange sm:text-3xl">
+                <p className="text-2xl font-black text-landing-orange transition-transform duration-500 group-hover:scale-110 sm:text-4xl">
                   {stat.value}
                 </p>
                 <p className="mt-1.5 text-[0.65rem] font-semibold uppercase leading-tight tracking-wide text-slate-500 sm:text-xs dark:text-slate-400">
